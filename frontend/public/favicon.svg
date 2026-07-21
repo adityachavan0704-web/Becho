@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Orange rounded square background -->
+  <rect width="100" height="100" rx="20" ry="20" fill="#E8611C"/>
+
+  <!-- 
+    The "b" letter: a thick vertical stem on the left,
+    with a circular bowl on the lower-right.
+    Constructed as a single white path.
+  -->
+  <path
+    d="
+      M 24 15
+      L 24 15
+      Q 24 15 24 15
+      A 8 8 0 0 1 38 15
+      L 38 42
+      A 22 22 0 1 1 38 73
+      L 38 85
+      A 8 8 0 0 1 24 85
+      Z
+    "
+    fill="white"
+  />
+  <!-- Knock out the inner bowl circle to create the counter -->
+  <circle cx="56" cy="64" r="13" fill="#E8611C"/>
+
+  <!-- Small play triangle arrow — upper right corner -->
+  <polygon points="62,18  76,27  62,36" fill="white"/>
+</svg>

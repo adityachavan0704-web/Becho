@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String?   // optional — Google OAuth users may not have a password
+  googleId      String?   @unique
+  name          String
+  role          UserRole  @default(BUYER)
+  isVerified    Boolean   @default(false)
+  reputation    Float     @default(0)
+  collegeId     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  listings      Listing[]
+  mentorships   Mentorship[]
+  sentMessages  Message[]    @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+}
+
+enum UserRole {
+  BUYER
+  SELLER
+}
+
+model Listing {
+  id          String       @id @default(uuid())
+  title       String
+  description String
+  price       Float        @default(0)
+  type        ListingType
+  category    String       // e.g., "Notes", "Books", "Cycles"
+  subject     String?
+  semester    Int?
+  condition   String?      // for offline items
+  isFree      Boolean      @default(false)
+  status      ListingStatus @default(ACTIVE)
+  images      String[]     // array of URLs/paths
+  fileUrl     String?      // for online items (PDFs, etc)
+  
+  sellerId    String
+  seller      User         @relation(fields: [sellerId], references: [id])
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+enum ListingType {
+  ONLINE
+  OFFLINE
+}
+
+enum ListingStatus {
+  ACTIVE
+  SOLD
+  HIDDEN
+}
+
+model Mentorship {
+  id          String   @id @default(uuid())
+  subject     String
+  description String
+  hourlyRate  Float    @default(0)
+  mentorId    String
+  mentor      User     @relation(fields: [mentorId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  content     String
+  senderId    String
+  receiverId  String
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  createdAt   DateTime @default(now())
+}
