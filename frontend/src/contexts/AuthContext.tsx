@@ -1,94 +1,119 @@
+// src/contexts/AuthContext.tsx — Auth state with refresh token support
+
 import { createContext, useContext, useState, useEffect, useCallback } from "react"
 import type { ReactNode } from "react"
+import { tokenStore, apiFetch, ApiRequestError } from "../lib/api"
 
-// ─── Types ─────────────────────────────────────────────────────────────────
+// ─── Types ─────────────────────────────────────────────────────
 
 export interface AuthUser {
   id: string
   email: string
   name: string
   role: "BUYER" | "SELLER"
+  reputation?: number
 }
 
 interface AuthContextValue {
   user: AuthUser | null
-  token: string | null
   isAuthenticated: boolean
   isLoading: boolean
-  login: (token: string) => Promise<void>
-  logout: () => void
+  /** Call after receiving accessToken + refreshToken from login/register/OAuth */
+  login: (accessToken: string, refreshToken: string) => Promise<void>
+  logout: () => Promise<void>
+  /** Returns the current access token (may be refreshed if needed) */
+  getAccessToken: () => string | null
 }
 
-// ─── Context ────────────────────────────────────────────────────────────────
+// ─── Context ───────────────────────────────────────────────────
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
-const TOKEN_KEY = "becho_token"
-const API_URL = import.meta.env["VITE_API_URL"] as string ?? "http://localhost:3000"
-
-// ─── Provider ───────────────────────────────────────────────────────────────
+// ─── Provider ──────────────────────────────────────────────────
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
-  const [token, setToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Fetch /api/auth/me using the stored token
-  const fetchMe = useCallback(async (tok: string): Promise<AuthUser | null> => {
+  // Fetch current user from /api/auth/me
+  const fetchMe = useCallback(async (): Promise<AuthUser | null> => {
     try {
-      const res = await fetch(`${API_URL}/api/auth/me`, {
-        headers: { Authorization: `Bearer ${tok}` },
-      })
-      if (!res.ok) return null
-      const data = await res.json() as { user: AuthUser }
+      const data = await apiFetch<{ user: AuthUser }>("/api/auth/me")
       return data.user
     } catch {
       return null
     }
   }, [])
 
-  // On mount: restore session from localStorage
+  // On mount: try to restore session from stored refresh token
   useEffect(() => {
-    const stored = localStorage.getItem(TOKEN_KEY)
+    const stored = tokenStore.getRefresh()
     if (!stored) {
       setIsLoading(false)
       return
     }
 
-    void fetchMe(stored).then((u) => {
-      if (u) {
-        setToken(stored)
-        setUser(u)
+    void (async () => {
+      // Try to get a new access token using the stored refresh token
+      const res = await fetch(
+        `${import.meta.env["VITE_API_URL"] ?? "http://localhost:3000"}/api/auth/refresh`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshToken: stored }),
+        }
+      )
+
+      if (res.ok) {
+        const data = await res.json() as { accessToken: string; user: AuthUser }
+        tokenStore.setAccess(data.accessToken)
+        const u = await fetchMe()
+        if (u) setUser(u)
+        else tokenStore.clear()
       } else {
-        localStorage.removeItem(TOKEN_KEY)
+        tokenStore.clear()
       }
       setIsLoading(false)
-    })
+    })()
   }, [fetchMe])
 
-  // Call this after receiving a token (login form or OAuth callback)
-  const login = useCallback(async (tok: string): Promise<void> => {
-    localStorage.setItem(TOKEN_KEY, tok)
-    setToken(tok)
-    const u = await fetchMe(tok)
+  const login = useCallback(async (accessToken: string, refreshToken: string): Promise<void> => {
+    tokenStore.setAccess(accessToken)
+    tokenStore.setRefresh(refreshToken)
+    const u = await fetchMe()
     if (u) setUser(u)
   }, [fetchMe])
 
-  const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY)
-    setToken(null)
+  const logout = useCallback(async (): Promise<void> => {
+    const refreshToken = tokenStore.getRefresh()
+    if (refreshToken) {
+      // Fire-and-forget — invalidate server-side refresh token
+      try {
+        await apiFetch("/api/auth/logout", {
+          method: "POST",
+          body: JSON.stringify({ refreshToken }),
+        })
+      } catch (e) {
+        if (!(e instanceof ApiRequestError)) console.error(e)
+      }
+    }
+    tokenStore.clear()
     setUser(null)
+  }, [])
+
+  const getAccessToken = useCallback((): string | null => {
+    return tokenStore.getAccess()
   }, [])
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        token,
         isAuthenticated: !!user,
         isLoading,
         login,
         logout,
+        getAccessToken,
       }}
     >
       {children}
@@ -96,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 }
 
-// ─── Hook ───────────────────────────────────────────────────────────────────
+// ─── Hook ──────────────────────────────────────────────────────
 
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext)

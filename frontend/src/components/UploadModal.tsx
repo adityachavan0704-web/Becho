@@ -44,7 +44,7 @@ const STEPS = [
 ]
 
 export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadModalProps) {
-  const { token } = useAuth()
+  const { getAccessToken } = useAuth()
   const [step, setStep] = useState<Step>(defaultType ? 2 : 1)
   const [form, setForm] = useState<FormData>({
     type: defaultType ?? "OFFLINE",
@@ -107,7 +107,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
 
       const res = await fetch(`${API_URL}/api/listings`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${getAccessToken()}` },
         body: fd,
       })
 

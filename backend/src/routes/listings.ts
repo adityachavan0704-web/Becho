@@ -1,20 +1,14 @@
+// src/routes/listings.ts — Listings CRUD + search + similar
+
 import { Router } from "express";
 import type { Request, Response } from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { prisma } from "../db";
 import { requireAuth } from "../middleware/auth";
 
 const router = Router();
-
-const DB_URL =
-  process.env["DIRECT_DATABASE_URL"] ??
-  "postgres://postgres:postgres@localhost:51214/template1?sslmode=disable&connection_limit=10&connect_timeout=0&max_idle_connection_lifetime=0&pool_timeout=0&socket_timeout=0";
-
-const adapter = new PrismaPg({ connectionString: DB_URL });
-const prisma = new PrismaClient({ adapter });
 
 // ─── Multer setup ─────────────────────────────────────────────
 const uploadsDir = path.join(process.cwd(), "uploads");
@@ -44,20 +38,19 @@ const upload = multer({
 });
 
 const BACKEND_URL = process.env["BACKEND_URL"] ?? "http://localhost:3000";
-
-// ─── Helper ────────────────────────────────────────────────────
 function fileUrl(filename: string) {
   return `${BACKEND_URL}/uploads/${filename}`;
 }
 
 // ─── GET /api/listings ─────────────────────────────────────────
-// Query params: q, type (ONLINE|OFFLINE), category, page, limit
+// Query: q, type (ONLINE|OFFLINE), category, isFree, page, limit
 router.get("/", async (req: Request, res: Response) => {
   try {
     const {
       q = "",
       type,
       category,
+      isFree,
       page = "1",
       limit = "20",
     } = req.query as Record<string, string>;
@@ -66,7 +59,8 @@ router.get("/", async (req: Request, res: Response) => {
     const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10)));
     const skip = (pageNum - 1) * limitNum;
 
-    const where: Record<string, unknown> = { status: "ACTIVE" };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: Record<string, any> = { status: "ACTIVE" };
 
     if (q.trim()) {
       where["OR"] = [
@@ -76,9 +70,9 @@ router.get("/", async (req: Request, res: Response) => {
         { subject: { contains: q, mode: "insensitive" } },
       ];
     }
-
     if (type === "ONLINE" || type === "OFFLINE") where["type"] = type;
-    if (category) where["category"] = { equals: category, mode: "insensitive" };
+    if (category && category !== "All") where["category"] = { equals: category, mode: "insensitive" };
+    if (isFree === "true") where["isFree"] = true;
 
     const [listings, total] = await Promise.all([
       prisma.listing.findMany({
@@ -86,9 +80,7 @@ router.get("/", async (req: Request, res: Response) => {
         skip,
         take: limitNum,
         orderBy: { createdAt: "desc" },
-        include: {
-          seller: { select: { id: true, name: true, reputation: true } },
-        },
+        include: { seller: { select: { id: true, name: true, reputation: true } } },
       }),
       prisma.listing.count({ where }),
     ]);
@@ -98,7 +90,7 @@ router.get("/", async (req: Request, res: Response) => {
       meta: { total, page: pageNum, limit: limitNum, pages: Math.ceil(total / limitNum) },
     });
   } catch (err) {
-    console.error(err);
+    console.error("[listings/GET]", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -110,10 +102,38 @@ router.get("/my", requireAuth, async (req: Request, res: Response) => {
     const listings = await prisma.listing.findMany({
       where: { sellerId: userId },
       orderBy: { createdAt: "desc" },
+      include: { seller: { select: { id: true, name: true, reputation: true } } },
     });
     res.json({ listings });
   } catch (err) {
-    console.error(err);
+    console.error("[listings/my]", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ─── GET /api/listings/:id/similar ────────────────────────────
+router.get("/:id/similar", async (req: Request, res: Response) => {
+  try {
+    const listing = await prisma.listing.findUnique({ where: { id: req.params["id"] } });
+    if (!listing) { res.status(404).json({ error: "Not found" }); return; }
+
+    const similar = await prisma.listing.findMany({
+      where: {
+        status: "ACTIVE",
+        id: { not: listing.id },
+        OR: [
+          { category: { equals: listing.category, mode: "insensitive" } },
+          { type: listing.type },
+        ],
+      },
+      take: 6,
+      orderBy: { createdAt: "desc" },
+      include: { seller: { select: { id: true, name: true, reputation: true } } },
+    });
+
+    res.json({ listings: similar });
+  } catch (err) {
+    console.error("[listings/similar]", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -130,7 +150,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     if (!listing) { res.status(404).json({ error: "Not found" }); return; }
     res.json({ listing });
   } catch (err) {
-    console.error(err);
+    console.error("[listings/:id]", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -175,14 +195,12 @@ router.post(
           fileUrl: fileUrlValue,
           sellerId: userId!,
         },
-        include: {
-          seller: { select: { id: true, name: true, reputation: true } },
-        },
+        include: { seller: { select: { id: true, name: true, reputation: true } } },
       });
 
       res.status(201).json({ listing });
     } catch (err) {
-      console.error(err);
+      console.error("[listings/POST]", err);
       res.status(500).json({ error: "Internal server error" });
     }
   }
@@ -196,7 +214,9 @@ router.patch("/:id", requireAuth, async (req: Request, res: Response) => {
     if (!existing) { res.status(404).json({ error: "Not found" }); return; }
     if (existing.sellerId !== userId) { res.status(403).json({ error: "Forbidden" }); return; }
 
-    const { title, description, price, status, isFree } = req.body as Record<string, string>;
+    const { title, description, price, status, isFree, condition } =
+      req.body as Record<string, string>;
+
     const listing = await prisma.listing.update({
       where: { id: req.params["id"] },
       data: {
@@ -205,16 +225,17 @@ router.patch("/:id", requireAuth, async (req: Request, res: Response) => {
         ...(price !== undefined && { price: parseFloat(price) }),
         ...(status && { status: status as "ACTIVE" | "SOLD" | "HIDDEN" }),
         ...(isFree !== undefined && { isFree: isFree === "true" }),
+        ...(condition !== undefined && { condition }),
       },
     });
     res.json({ listing });
   } catch (err) {
-    console.error(err);
+    console.error("[listings/PATCH]", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// ─── DELETE /api/listings/:id (soft-delete: set status=HIDDEN) ─
+// ─── DELETE /api/listings/:id (soft-delete → HIDDEN) ──────────
 router.delete("/:id", requireAuth, async (req: Request, res: Response) => {
   try {
     const userId = req.authUser?.userId;
@@ -222,10 +243,13 @@ router.delete("/:id", requireAuth, async (req: Request, res: Response) => {
     if (!existing) { res.status(404).json({ error: "Not found" }); return; }
     if (existing.sellerId !== userId) { res.status(403).json({ error: "Forbidden" }); return; }
 
-    await prisma.listing.update({ where: { id: req.params["id"] }, data: { status: "HIDDEN" } });
+    await prisma.listing.update({
+      where: { id: req.params["id"] },
+      data: { status: "HIDDEN" },
+    });
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error("[listings/DELETE]", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });

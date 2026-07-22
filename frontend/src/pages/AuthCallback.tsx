@@ -4,7 +4,8 @@ import { useAuth } from "../contexts/AuthContext"
 
 /**
  * Landing page after Google OAuth redirect.
- * Reads ?token= from URL, stores it, then navigates to the app.
+ * Reads ?token=ACCESS_TOKEN&refresh=REFRESH_TOKEN from URL,
+ * stores both, then navigates to the app.
  */
 export default function AuthCallback() {
   const [searchParams] = useSearchParams()
@@ -13,14 +14,15 @@ export default function AuthCallback() {
 
   useEffect(() => {
     const token = searchParams.get("token")
+    const refresh = searchParams.get("refresh")
     const error = searchParams.get("error")
 
-    if (error || !token) {
+    if (error || !token || !refresh) {
       navigate("/login?error=oauth_failed", { replace: true })
       return
     }
 
-    void login(token).then(() => {
+    void login(token, refresh).then(() => {
       navigate("/browse", { replace: true })
     })
   }, [login, navigate, searchParams])

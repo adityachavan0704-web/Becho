@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Becho — Prisma Schema
+// Prisma 7: url is configured in prisma.config.ts, NOT here.
 
 generator client {
   provider = "prisma-client-js"
@@ -12,51 +9,11 @@ datasource db {
   provider = "postgresql"
 }
 
-
-model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  passwordHash  String?   // optional — Google OAuth users may not have a password
-  googleId      String?   @unique
-  name          String
-  role          UserRole  @default(BUYER)
-  isVerified    Boolean   @default(false)
-  reputation    Float     @default(0)
-  collegeId     String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  listings      Listing[]
-  mentorships   Mentorship[]
-  sentMessages  Message[]    @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
-}
+// ─── Enums ──────────────────────────────────────────────────────
 
 enum UserRole {
   BUYER
   SELLER
-}
-
-model Listing {
-  id          String       @id @default(uuid())
-  title       String
-  description String
-  price       Float        @default(0)
-  type        ListingType
-  category    String       // e.g., "Notes", "Books", "Cycles"
-  subject     String?
-  semester    Int?
-  condition   String?      // for offline items
-  isFree      Boolean      @default(false)
-  status      ListingStatus @default(ACTIVE)
-  images      String[]     // array of URLs/paths
-  fileUrl     String?      // for online items (PDFs, etc)
-  
-  sellerId    String
-  seller      User         @relation(fields: [sellerId], references: [id])
-  
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
 }
 
 enum ListingType {
@@ -70,11 +27,67 @@ enum ListingStatus {
   HIDDEN
 }
 
+// ─── Models ─────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String?   // null for Google-only accounts
+  googleId      String?   @unique
+  name          String
+  role          UserRole  @default(BUYER)
+  isVerified    Boolean   @default(false)
+  reputation    Float     @default(0)
+  collegeId     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  listings         Listing[]
+  mentorships      Mentorship[]
+  sentMessages     Message[]      @relation("SentMessages")
+  receivedMessages Message[]      @relation("ReceivedMessages")
+  refreshTokens    RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Listing {
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  price       Float         @default(0)
+  type        ListingType
+  category    String
+  subject     String?
+  semester    Int?
+  condition   String?       // for offline items
+  isFree      Boolean       @default(false)
+  status      ListingStatus @default(ACTIVE)
+  images      String[]      // Postgres native array of image URLs
+  fileUrl     String?       // for digital downloads (ONLINE type)
+
+  sellerId    String
+  seller      User          @relation(fields: [sellerId], references: [id])
+  messages    Message[]
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
 model Mentorship {
   id          String   @id @default(uuid())
   subject     String
   description String
   hourlyRate  Float    @default(0)
+  tags        String[] // e.g. ["DSA", "DBMS", "Web Dev"]
+  isActive    Boolean  @default(true)
   mentorId    String
   mentor      User     @relation(fields: [mentorId], references: [id])
   createdAt   DateTime @default(now())
@@ -82,11 +95,13 @@ model Mentorship {
 }
 
 model Message {
-  id          String   @id @default(uuid())
-  content     String
-  senderId    String
-  receiverId  String
-  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
-  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
-  createdAt   DateTime @default(now())
+  id         String   @id @default(uuid())
+  content    String
+  senderId   String
+  receiverId String
+  listingId  String?  // optional: message tied to a specific listing chat
+  sender     User     @relation("SentMessages",   fields: [senderId],   references: [id])
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  listing    Listing? @relation(fields: [listingId], references: [id])
+  createdAt  DateTime @default(now())
 }

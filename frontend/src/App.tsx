@@ -7,6 +7,8 @@ import Dashboard from "./pages/Dashboard"
 import Browse from "./pages/Browse"
 import AuthCallback from "./pages/AuthCallback"
 import ListingDetail from "./pages/ListingDetail"
+import Mentorship from "./pages/Mentorship"
+import Chat from "./pages/Chat"
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/mentorship" element={<Mentorship />} />
 
             {/* Protected routes — require login */}
             <Route
@@ -41,6 +44,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/chat/:listingId"
+              element={
+                <ProtectedRoute>
+                  <Chat />
                 </ProtectedRoute>
               }
             />

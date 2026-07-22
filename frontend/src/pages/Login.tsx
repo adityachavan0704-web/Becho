@@ -11,7 +11,8 @@ const API_URL = (import.meta.env["VITE_API_URL"] as string | undefined) ?? "http
 type Tab = "signin" | "register"
 
 interface ApiAuthResponse {
-  token?: string
+  accessToken?: string
+  refreshToken?: string
   error?: string
 }
 
@@ -56,12 +57,12 @@ export default function Login() {
       })
       const data = await res.json() as ApiAuthResponse
 
-      if (!res.ok || !data.token) {
+      if (!res.ok || !data.accessToken || !data.refreshToken) {
         setError(data.error ?? "Something went wrong. Please try again.")
         return
       }
 
-      await login(data.token)
+      await login(data.accessToken, data.refreshToken)
       navigate(role === "seller" ? "/dashboard" : "/browse", { replace: true })
     } catch {
       setError("Unable to reach the server. Make sure the backend is running.")

@@ -1,3 +1,5 @@
+// src/middleware/auth.ts — JWT authentication middleware
+
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
@@ -15,6 +17,20 @@ declare global {
   }
 }
 
+// Fail loudly at module load — no silent fallback
+const JWT_SECRET = (() => {
+  const s = process.env["JWT_SECRET"];
+  if (!s) {
+    throw new Error(
+      "JWT_SECRET is not set. Add it to backend/.env\n" +
+      "  Generate one: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
+    );
+  }
+  return s;
+})();
+
+export { JWT_SECRET };
+
 export function requireAuth(req: Request, res: Response, next: NextFunction): void {
   const authHeader = req.headers["authorization"];
   const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
@@ -25,8 +41,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
   }
 
   try {
-    const secret = process.env["JWT_SECRET"] ?? "fallback_secret";
-    const payload = jwt.verify(token, secret) as AuthPayload;
+    const payload = jwt.verify(token, JWT_SECRET) as AuthPayload;
     req.authUser = payload;
     next();
   } catch {

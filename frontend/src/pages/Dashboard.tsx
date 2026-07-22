@@ -27,7 +27,7 @@ const NAV_ITEMS = [
 export default function Dashboard() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { user, token, logout } = useAuth()
+  const { user, getAccessToken, logout } = useAuth()
 
   const [activeSection, setActiveSection] = useState<ActiveSection>("overview")
   const [uploadOpen, setUploadOpen] = useState(false)
@@ -37,6 +37,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState({ active: 0, earned: 0, reputation: 0 })
 
   const fetchMyListings = useCallback(async () => {
+    const token = getAccessToken()
     if (!token) return
     setLoadingListings(true)
     try {
@@ -52,12 +53,12 @@ export default function Dashboard() {
           earned: data.listings
             .filter((l) => (l as unknown as { status: string }).status === "SOLD")
             .reduce((sum, l) => sum + l.price, 0),
-          reputation: user?.role === "SELLER" ? 4.8 : 0,
+          reputation: user?.reputation ?? 0,
         })
       }
     } catch { /* silent */ }
     finally { setLoadingListings(false) }
-  }, [token, user])
+  }, [getAccessToken, user])
 
   useEffect(() => { void fetchMyListings() }, [fetchMyListings])
 
