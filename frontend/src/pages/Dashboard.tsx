@@ -75,8 +75,8 @@ export default function Dashboard() {
   }
 
   const statusColor: Record<string, string> = {
-    ACTIVE: "text-emerald-400 bg-emerald-400/10",
-    SOLD: "text-blue-400 bg-blue-400/10",
+    ACTIVE: "text-orange-400 bg-orange-400/10",
+    SOLD: "text-zinc-400 bg-zinc-400/10",
     HIDDEN: "text-zinc-500 bg-zinc-800",
   }
 
@@ -86,8 +86,8 @@ export default function Dashboard() {
       <aside className="w-60 flex-shrink-0 flex flex-col border-r border-white/[0.05] bg-zinc-950/80 backdrop-blur">
         {/* Logo */}
         <div className="flex items-center gap-2.5 px-5 py-5 border-b border-white/[0.05]">
-          <div className="w-7 h-7 rounded-lg bg-[#00fcb5] flex items-center justify-center">
-            <Zap className="h-4 w-4 text-black" />
+          <div className="w-7 h-7 rounded-lg bg-[#E8611C] flex items-center justify-center">
+            <Zap className="h-4 w-4 text-white" />
           </div>
           <span className="text-base font-bold text-white tracking-tight">Becho</span>
         </div>
@@ -105,14 +105,14 @@ export default function Dashboard() {
               className={cn(
                 "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group",
                 activeSection === item.id && item.id !== "browse"
-                  ? "bg-[#00fcb5]/10 text-[#00fcb5]"
+                  ? "bg-[#E8611C]/10 text-[#E8611C]"
                   : "text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04]"
               )}
             >
               <item.icon className="h-4 w-4 flex-shrink-0" />
               {item.label}
               {item.id === "messages" && (
-                <span className="ml-auto text-[10px] font-bold bg-[#00fcb5]/15 text-[#00fcb5] rounded-full px-1.5 py-0.5">
+                <span className="ml-auto text-[10px] font-bold bg-[#E8611C]/15 text-[#E8611C] rounded-full px-1.5 py-0.5">
                   2
                 </span>
               )}
@@ -142,8 +142,8 @@ export default function Dashboard() {
         {/* User footer */}
         <div className="p-3 border-t border-white/[0.05]">
           <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-zinc-900/60 mb-1">
-            <div className="w-7 h-7 rounded-full bg-[#00fcb5]/20 flex items-center justify-center flex-shrink-0">
-              <span className="text-xs font-bold text-[#00fcb5]">
+            <div className="w-7 h-7 rounded-full bg-[#E8611C]/20 flex items-center justify-center flex-shrink-0">
+              <span className="text-xs font-bold text-[#E8611C]">
                 {user?.name?.[0]?.toUpperCase() ?? "?"}
               </span>
             </div>
@@ -259,8 +259,8 @@ function OverviewSection({
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "Active Listings", value: stats.active, icon: Package, color: "text-[#00fcb5]", bg: "bg-[#00fcb5]/10" },
-          { label: "Total Earned", value: `₹${stats.earned.toLocaleString("en-IN")}`, icon: TrendingUp, color: "text-blue-400", bg: "bg-blue-400/10" },
+          { label: "Active Listings", value: stats.active, icon: Package, color: "text-[#E8611C]", bg: "bg-[#E8611C]/10" },
+          { label: "Total Earned", value: `₹${stats.earned.toLocaleString("en-IN")}`, icon: TrendingUp, color: "text-white", bg: "bg-white/10" },
           { label: "Reputation", value: stats.reputation > 0 ? `${stats.reputation}/5` : "—", icon: Star, color: "text-amber-400", bg: "bg-amber-400/10" },
         ].map((s) => (
           <div key={s.label} className="rounded-2xl border border-white/[0.05] bg-zinc-900/40 p-5 flex items-center gap-4">
@@ -299,16 +299,16 @@ function OverviewSection({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => onUpload("ONLINE")}
-            className="flex items-center gap-3 p-4 rounded-xl border border-blue-500/20 bg-blue-500/[0.04] hover:bg-blue-500/[0.08] hover:border-blue-500/40 transition-all text-left group"
+            className="flex items-center gap-3 p-4 rounded-xl border border-[#E8611C]/20 bg-[#E8611C]/[0.04] hover:bg-[#E8611C]/[0.08] hover:border-[#E8611C]/40 transition-all text-left group"
           >
-            <div className="w-9 h-9 rounded-xl bg-blue-500/15 flex items-center justify-center flex-shrink-0">
-              <Upload className="h-4.5 w-4.5 text-blue-400" />
+            <div className="w-9 h-9 rounded-xl bg-[#E8611C]/15 flex items-center justify-center flex-shrink-0">
+              <Upload className="h-4.5 w-4.5 text-[#E8611C]" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white group-hover:text-blue-300 transition-colors">Upload Online Resource</p>
+              <p className="text-sm font-semibold text-white group-hover:text-orange-300 transition-colors">Upload Online Resource</p>
               <p className="text-xs text-zinc-600">Notes, PDFs, software…</p>
             </div>
-            <ArrowUpRight className="h-4 w-4 text-zinc-700 ml-auto group-hover:text-blue-400 transition-colors" />
+            <ArrowUpRight className="h-4 w-4 text-zinc-700 ml-auto group-hover:text-[#E8611C] transition-colors" />
           </motion.button>
         </div>
       </div>
@@ -319,7 +319,7 @@ function OverviewSection({
           <p className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Recent Listings</p>
           <button
             onClick={onViewListings}
-            className="text-xs text-[#00fcb5] hover:underline flex items-center gap-1"
+            className="text-xs text-[#E8611C] hover:underline flex items-center gap-1"
           >
             View all <ChevronRight className="h-3 w-3" />
           </button>
@@ -372,18 +372,18 @@ function OverviewSection({
                       <td className="px-4 py-3">
                         <span className={cn(
                           "text-[10px] font-semibold px-2 py-0.5 rounded-full",
-                          l.type === "ONLINE" ? "bg-blue-500/15 text-blue-400" : "bg-amber-500/15 text-amber-400"
+                          l.type === "ONLINE" ? "bg-[#E8611C]/15 text-[#E8611C]" : "bg-amber-500/15 text-amber-400"
                         )}>
                           {l.type}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-xs text-zinc-400">
-                        {l.isFree ? <span className="text-[#00fcb5] font-semibold">Free</span> : `₹${l.price}`}
+                        {l.isFree ? <span className="text-[#E8611C] font-semibold">Free</span> : `₹${l.price}`}
                       </td>
                       <td className="px-4 py-3">
                         <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", {
-                          "bg-emerald-400/10 text-emerald-400": ls.status === "ACTIVE",
-                          "bg-blue-400/10 text-blue-400": ls.status === "SOLD",
+                          "bg-orange-400/10 text-orange-400": ls.status === "ACTIVE",
+                          "bg-zinc-600/10 text-zinc-400": ls.status === "SOLD",
                           "bg-zinc-800 text-zinc-500": ls.status === "HIDDEN",
                         })}>
                           {ls.status}
@@ -442,7 +442,7 @@ function ListingsSection({
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600" />
         <input
-          className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#00fcb5]/50 transition-all"
+          className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#E8611C]/50 transition-all"
           placeholder="Search your listings…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -499,19 +499,19 @@ function ListingsSection({
                     </td>
                     <td className="px-4 py-3.5">
                       <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full",
-                        l.type === "ONLINE" ? "bg-blue-500/15 text-blue-400" : "bg-amber-500/15 text-amber-400"
+                        l.type === "ONLINE" ? "bg-[#E8611C]/15 text-[#E8611C]" : "bg-amber-500/15 text-amber-400"
                       )}>
                         {l.type}
                       </span>
                     </td>
                     <td className="px-4 py-3.5 text-xs text-zinc-500">{l.category}</td>
                     <td className="px-4 py-3.5 text-xs font-semibold">
-                      {l.isFree ? <span className="text-[#00fcb5]">Free</span> : <span className="text-white">₹{l.price}</span>}
+                      {l.isFree ? <span className="text-[#E8611C]">Free</span> : <span className="text-white">₹{l.price}</span>}
                     </td>
                     <td className="px-4 py-3.5">
                       <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", {
-                        "bg-emerald-400/10 text-emerald-400": ls.status === "ACTIVE",
-                        "bg-blue-400/10 text-blue-400": ls.status === "SOLD",
+                        "bg-orange-400/10 text-orange-400": ls.status === "ACTIVE",
+                        "bg-zinc-600/10 text-zinc-400": ls.status === "SOLD",
                         "bg-zinc-800 text-zinc-500": ls.status === "HIDDEN",
                       })}>
                         {ls.status}

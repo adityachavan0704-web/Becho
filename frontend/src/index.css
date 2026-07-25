@@ -1,28 +1,28 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 @theme {
-  /* Mint primary palette */
-  --color-primary-50: #e0fff5;
-  --color-primary-100: #b3ffe9;
-  --color-primary-200: #80ffd9;
-  --color-primary-300: #4dffc9;
-  --color-primary-400: #26ffbe;
-  --color-primary-500: #00fcb5;
-  --color-primary-600: #00c992;
-  --color-primary-700: #00996e;
-  --color-primary-800: #006649;
-  --color-primary-900: #003325;
+  /* Orange primary palette */
+  --color-primary-50: #fff3ee;
+  --color-primary-100: #ffe4d3;
+  --color-primary-200: #ffc5a0;
+  --color-primary-300: #ffa06d;
+  --color-primary-400: #ff7b3a;
+  --color-primary-500: #E8611C;
+  --color-primary-600: #c94e12;
+  --color-primary-700: #a33c0b;
+  --color-primary-800: #7a2c07;
+  --color-primary-900: #4f1b03;
 
   --color-background: #0a0a0a;
   --color-foreground: #ffffff;
-  --color-muted: #27272a;
+  --color-muted: #1a1a1a;
   --color-muted-foreground: #a1a1aa;
-  --color-border: #27272a;
+  --color-border: #222222;
 
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-heading: 'Inter', system-ui, sans-serif;
-  --font-mono: 'Space Mono', monospace;
+  --font-sans: 'Outfit', system-ui, sans-serif;
+  --font-heading: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'Outfit', monospace;
 
   --radius-lg: 1rem;
   --radius-md: 0.75rem;
@@ -37,19 +37,19 @@
     --card-foreground: #ffffff;
     --popover: #111111;
     --popover-foreground: #ffffff;
-    --primary: #00fcb5;
-    --primary-foreground: #000000;
-    --secondary: #1c1c1c;
+    --primary: #E8611C;
+    --primary-foreground: #ffffff;
+    --secondary: #1a1a1a;
     --secondary-foreground: #ffffff;
-    --muted: #1c1c1c;
+    --muted: #1a1a1a;
     --muted-foreground: #a1a1aa;
-    --accent: #1c1c1c;
+    --accent: #1a1a1a;
     --accent-foreground: #ffffff;
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
     --border: #222222;
-    --input: #1c1c1c;
-    --ring: #00fcb5;
+    --input: #1a1a1a;
+    --ring: #E8611C;
     --radius: 0.75rem;
   }
 }
@@ -67,7 +67,7 @@
   body {
     background-color: #0a0a0a;
     color: #ffffff;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Outfit', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -78,7 +78,7 @@
   h4,
   h5,
   h6 {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Outfit', system-ui, sans-serif;
     letter-spacing: -0.03em;
   }
 }
@@ -100,10 +100,10 @@
   }
 
   .text-glow {
-    text-shadow: 0 0 30px rgba(0, 252, 181, 0.35);
+    text-shadow: 0 0 30px rgba(232, 97, 28, 0.35);
   }
 
   .glow-border {
-    box-shadow: 0 0 20px rgba(0, 252, 181, 0.15), inset 0 0 20px rgba(0, 252, 181, 0.05);
+    box-shadow: 0 0 20px rgba(232, 97, 28, 0.15), inset 0 0 20px rgba(232, 97, 28, 0.05);
   }
 }

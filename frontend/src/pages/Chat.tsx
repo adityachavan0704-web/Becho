@@ -140,8 +140,8 @@ export default function Chat() {
         </button>
         <div className="flex-1 min-w-0">
           <div className="font-medium text-sm truncate">{chatTitle}</div>
-          <div className={cn("text-xs flex items-center gap-1", socketConnected ? "text-emerald-400" : "text-zinc-600")}>
-            <div className={cn("w-1.5 h-1.5 rounded-full", socketConnected ? "bg-emerald-400" : "bg-zinc-600")} />
+          <div className={cn("text-xs flex items-center gap-1", socketConnected ? "text-orange-400" : "text-zinc-600")}>
+            <div className={cn("w-1.5 h-1.5 rounded-full", socketConnected ? "bg-orange-400" : "bg-zinc-600")} />
             {socketConnected ? "Connected" : "Connecting…"}
           </div>
         </div>

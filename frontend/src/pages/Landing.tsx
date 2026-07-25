@@ -19,49 +19,49 @@ const carouselItems = [
     img: "/arduino_kit.png",
     label: "Arduino Kit",
     tag: "Electronics",
-    color: "#00fcb5",
+    color: "#E8611C",
   },
   {
     img: "/sensors_collection.png",
     label: "IoT Sensors",
     tag: "Hardware",
-    color: "#7df2ff",
+    color: "#ff7b3a",
   },
   {
     img: "/textbooks_stack.png",
     label: "Engineering Books",
     tag: "Books",
-    color: "#a78bfa",
+    color: "#ffffff",
   },
   {
     img: "/video_course.png",
     label: "Video Courses",
     tag: "Digital",
-    color: "#f472b6",
+    color: "#ffa06d",
   },
   {
     img: "/lab_equipment.png",
     label: "Lab Equipment",
     tag: "Instruments",
-    color: "#fb923c",
+    color: "#E8611C",
   },
   {
     img: "/notes_pdf.png",
     label: "Study Notes",
     tag: "Notes",
-    color: "#4ade80",
+    color: "#ffffff",
   },
   {
     img: "/raspberry_pi.png",
     label: "Raspberry Pi",
     tag: "Electronics",
-    color: "#38bdf8",
+    color: "#ff7b3a",
   },
   {
     img: "/mentorship.png",
     label: "Mentorship",
     tag: "Guidance",
-    color: "#facc15",
+    color: "#ffa06d",
   },
 ]
 
@@ -161,7 +161,7 @@ function SphereCarousel() {
           className="w-[600px] h-[600px] rounded-full"
           style={{
             background:
-              "radial-gradient(ellipse at center, rgba(0,252,181,0.08) 0%, transparent 70%)",
+              "radial-gradient(ellipse at center, rgba(232,97,28,0.08) 0%, transparent 70%)",
           }}
         />
       </div>
@@ -324,7 +324,7 @@ export default function Landing() {
       {/* ── Global background glow ── */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-20%] left-[20%] w-[60%] h-[60%] bg-primary/5 blur-[200px] rounded-full" />
-        <div className="absolute bottom-[-20%] right-[10%] w-[50%] h-[50%] bg-sky-500/5 blur-[160px] rounded-full" />
+        <div className="absolute bottom-[-20%] right-[10%] w-[50%] h-[50%] bg-orange-800/5 blur-[160px] rounded-full" />
       </div>
 
       {/* ── Navbar ── */}
@@ -396,7 +396,7 @@ export default function Landing() {
             className="text-transparent bg-clip-text"
             style={{
               backgroundImage:
-                "linear-gradient(135deg, #ffffff 0%, #00fcb5 50%, #7df2ff 100%)",
+                "linear-gradient(135deg, #ffffff 0%, #E8611C 60%, #ff7b3a 100%)",
             }}
           >
             for academic resources
@@ -446,7 +446,7 @@ export default function Landing() {
           className="flex items-center gap-3 text-zinc-500 text-sm mb-2"
         >
           <div className="flex -space-x-2">
-            {["#00fcb5", "#7df2ff", "#a78bfa", "#f472b6", "#fb923c"].map((c, i) => (
+            {["#E8611C", "#ff7b3a", "#ffa06d", "#ffffff", "#c94e12"].map((c, i) => (
               <div
                 key={i}
                 className="w-7 h-7 rounded-full border-2 border-[#0a0a0a] flex items-center justify-center text-[10px] font-bold"
@@ -524,42 +524,42 @@ export default function Landing() {
             icon={BookOpen}
             title="Digital & Physical"
             desc="PDF notes, textbooks, lab manuals, Arduino kits, sensors — list anything academic."
-            color="#00fcb5"
+            color="#E8611C"
             delay={0}
           />
           <FeatureCard
             icon={Shield}
             title="Verified Students Only"
             desc="College email verification ensures you only deal with real students from real campuses."
-            color="#7df2ff"
+            color="#ff7b3a"
             delay={0.1}
           />
           <FeatureCard
             icon={Zap}
             title="Lightning Fast"
             desc="List items in under 60 seconds. Browse, message, and close deals — all in one place."
-            color="#a78bfa"
+            color="#ffffff"
             delay={0.2}
           />
           <FeatureCard
             icon={ShoppingCart}
             title="Fair Pricing"
             desc="Set your own price. No platform fee gouging. Buyers and sellers both win."
-            color="#fb923c"
+            color="#ffa06d"
             delay={0.3}
           />
           <FeatureCard
             icon={MessageCircle}
             title="Mentorship Hub"
             desc="Connect with seniors who've aced what you're studying. Get guidance that matters."
-            color="#f472b6"
+            color="#E8611C"
             delay={0.4}
           />
           <FeatureCard
             icon={Star}
             title="Reputation System"
             desc="Star ratings and reviews so you always know who you're dealing with before you transact."
-            color="#4ade80"
+            color="#ff7b3a"
             delay={0.5}
           />
         </div>
@@ -574,14 +574,14 @@ export default function Landing() {
           className="max-w-4xl mx-auto relative rounded-3xl overflow-hidden border border-white/10 p-12 text-center"
           style={{
             background:
-              "linear-gradient(135deg, rgba(0,252,181,0.08) 0%, rgba(125,242,255,0.05) 50%, rgba(0,0,0,0) 100%)",
+              "linear-gradient(135deg, rgba(232,97,28,0.08) 0%, rgba(255,123,58,0.04) 50%, rgba(0,0,0,0) 100%)",
           }}
         >
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse at top, rgba(0,252,181,0.12) 0%, transparent 60%)",
+                "radial-gradient(ellipse at top, rgba(232,97,28,0.12) 0%, transparent 60%)",
             }}
           />
           <span className="text-xs font-mono uppercase tracking-widest text-primary mb-4 block">

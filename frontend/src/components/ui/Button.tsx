@@ -15,17 +15,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       default:
-        "bg-[#00fcb5] text-black hover:bg-[#26ffbe] shadow-[0_0_20px_rgba(0,252,181,0.25)] hover:shadow-[0_0_35px_rgba(0,252,181,0.5)] font-semibold",
+        "bg-[#E8611C] text-white hover:bg-[#ff7b3a] shadow-[0_0_20px_rgba(232,97,28,0.25)] hover:shadow-[0_0_35px_rgba(232,97,28,0.45)] font-semibold",
       destructive:
         "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm",
       outline:
-        "border border-white/15 bg-transparent text-white hover:border-[#00fcb5]/60 hover:text-[#00fcb5] hover:shadow-[0_0_20px_rgba(0,252,181,0.12)]",
+        "border border-white/15 bg-transparent text-white hover:border-[#E8611C]/60 hover:text-[#E8611C] hover:shadow-[0_0_20px_rgba(232,97,28,0.12)]",
       secondary:
         "bg-zinc-800 text-zinc-100 hover:bg-zinc-700",
       ghost:
         "hover:bg-zinc-800/70 text-zinc-300 hover:text-white",
       link:
-        "text-[#00fcb5] underline-offset-4 hover:underline",
+        "text-[#E8611C] underline-offset-4 hover:underline",
     }
 
     const sizes = {

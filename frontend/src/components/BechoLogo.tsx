@@ -51,7 +51,7 @@ export default function BechoLogo({ size = 40, showWordmark = true, className = 
       {showWordmark && (
         <span
           style={{
-            fontFamily: "'Inter', system-ui, sans-serif",
+            fontFamily: "'Outfit', system-ui, sans-serif",
             fontWeight: 800,
             fontSize: size * 0.7,
             letterSpacing: "-0.03em",

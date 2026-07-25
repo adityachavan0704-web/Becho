@@ -31,16 +31,16 @@ export function ListingCard({ listing, className }: ListingCardProps) {
 
   const typeColor =
     listing.type === "ONLINE"
-      ? "bg-blue-500/15 text-blue-400 border-blue-500/20"
+      ? "bg-[#E8611C]/15 text-[#E8611C] border-[#E8611C]/20"
       : "bg-amber-500/15 text-amber-400 border-amber-500/20"
 
   const categoryColors: Record<string, string> = {
-    Notes: "bg-purple-500/15 text-purple-400",
-    Books: "bg-rose-500/15 text-rose-400",
+    Notes: "bg-zinc-700/50 text-zinc-300",
+    Books: "bg-zinc-700/50 text-zinc-300",
     Hardware: "bg-orange-500/15 text-orange-400",
-    Cycles: "bg-green-500/15 text-green-400",
-    Equipment: "bg-sky-500/15 text-sky-400",
-    Software: "bg-indigo-500/15 text-indigo-400",
+    Cycles: "bg-zinc-700/50 text-zinc-300",
+    Equipment: "bg-zinc-700/50 text-zinc-300",
+    Software: "bg-zinc-700/50 text-zinc-300",
   }
   const catColor = categoryColors[listing.category] ?? "bg-zinc-700/50 text-zinc-300"
 
@@ -51,7 +51,7 @@ export function ListingCard({ listing, className }: ListingCardProps) {
       onClick={() => navigate(`/listings/${listing.id}`)}
       className={cn(
         "group cursor-pointer rounded-2xl border border-white/[0.06] bg-zinc-900/60 overflow-hidden",
-        "hover:border-[#00fcb5]/25 hover:shadow-[0_0_30px_rgba(0,252,181,0.07)] transition-all duration-300",
+        "hover:border-[#E8611C]/25 hover:shadow-[0_0_30px_rgba(232,97,28,0.07)] transition-all duration-300",
         className
       )}
     >
@@ -83,7 +83,7 @@ export function ListingCard({ listing, className }: ListingCardProps) {
         </div>
         {listing.isFree && (
           <div className="absolute top-2.5 right-2.5">
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#00fcb5]/20 text-[#00fcb5] border border-[#00fcb5]/30">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#E8611C]/20 text-[#E8611C] border border-[#E8611C]/30">
               FREE
             </span>
           </div>
@@ -92,15 +92,15 @@ export function ListingCard({ listing, className }: ListingCardProps) {
 
       {/* Content */}
       <div className="p-4">
-        <h3 className="font-semibold text-sm text-white leading-snug line-clamp-2 mb-1 group-hover:text-[#00fcb5] transition-colors">
+        <h3 className="font-semibold text-sm text-white leading-snug line-clamp-2 mb-1 group-hover:text-[#E8611C] transition-colors">
           {listing.title}
         </h3>
         <p className="text-xs text-zinc-500 line-clamp-2 mb-3">{listing.description}</p>
 
         {/* Seller & subject */}
         <div className="flex items-center gap-1.5 mb-3">
-          <div className="w-5 h-5 rounded-full bg-[#00fcb5]/15 flex items-center justify-center flex-shrink-0">
-            <span className="text-[8px] font-bold text-[#00fcb5]">
+          <div className="w-5 h-5 rounded-full bg-[#E8611C]/15 flex items-center justify-center flex-shrink-0">
+            <span className="text-[8px] font-bold text-[#E8611C]">
               {listing.seller.name[0]?.toUpperCase()}
             </span>
           </div>
@@ -117,7 +117,7 @@ export function ListingCard({ listing, className }: ListingCardProps) {
         <div className="flex items-center justify-between border-t border-white/[0.05] pt-3">
           <div>
             {listing.isFree ? (
-              <p className="text-base font-bold text-[#00fcb5]">Free</p>
+              <p className="text-base font-bold text-[#E8611C]">Free</p>
             ) : (
               <p className="text-base font-bold text-white">
                 ₹{listing.price.toLocaleString("en-IN")}
@@ -126,7 +126,7 @@ export function ListingCard({ listing, className }: ListingCardProps) {
           </div>
           <motion.button
             whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-1 text-xs font-semibold text-[#00fcb5] hover:underline"
+            className="flex items-center gap-1 text-xs font-semibold text-[#E8611C] hover:underline"
           >
             View <ExternalLink className="h-3 w-3" />
           </motion.button>

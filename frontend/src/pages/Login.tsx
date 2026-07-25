@@ -79,9 +79,9 @@ export default function Login() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background glow orbs */}
       <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full opacity-10 blur-3xl"
-        style={{ background: "radial-gradient(circle, #00fcb5, transparent)" }} />
+        style={{ background: "radial-gradient(circle, #E8611C, transparent)" }} />
       <div className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full opacity-10 blur-3xl"
-        style={{ background: "radial-gradient(circle, #00fcb5, transparent)" }} />
+        style={{ background: "radial-gradient(circle, #E8611C, transparent)" }} />
 
       {/* Back button */}
       <Button

@@ -76,7 +76,7 @@ export default function ListingDetail() {
   }
 
   const typeColor = listing.type === "ONLINE"
-    ? "bg-blue-500/15 text-blue-400 border-blue-500/20"
+    ? "bg-[#E8611C]/15 text-[#E8611C] border-[#E8611C]/20"
     : "bg-amber-500/15 text-amber-400 border-amber-500/20"
 
   const isOwner = user?.id === listing.seller.id
@@ -86,8 +86,8 @@ export default function ListingDetail() {
       {/* Nav */}
       <nav className="sticky top-0 z-40 bg-[#080808]/90 backdrop-blur border-b border-white/[0.05] px-6 py-3.5 flex items-center gap-3">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#00fcb5] flex items-center justify-center">
-            <Zap className="h-4 w-4 text-black" />
+          <div className="w-7 h-7 rounded-lg bg-[#E8611C] flex items-center justify-center">
+            <Zap className="h-4 w-4 text-white" />
           </div>
           <span className="text-base font-bold text-white tracking-tight">Becho</span>
         </div>
@@ -132,7 +132,7 @@ export default function ListingDetail() {
                     onClick={() => setActiveImg(idx)}
                     className={cn(
                       "w-16 h-16 rounded-xl overflow-hidden border-2 transition-all",
-                      activeImg === idx ? "border-[#00fcb5]" : "border-transparent"
+                      activeImg === idx ? "border-[#E8611C]" : "border-transparent"
                     )}
                   >
                     <img src={img} alt="" className="w-full h-full object-cover" />
@@ -153,13 +153,13 @@ export default function ListingDetail() {
                 {listing.category}
               </span>
               {listing.isFree && (
-                <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#00fcb5]/15 text-[#00fcb5] border border-[#00fcb5]/30">
+                <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-[#E8611C]/15 text-[#E8611C] border border-[#E8611C]/30">
                   FREE
                 </span>
               )}
               <span className={cn("ml-auto text-[11px] font-semibold px-2.5 py-1 rounded-full", {
-                "bg-emerald-400/10 text-emerald-400": listing.status === "ACTIVE",
-                "bg-blue-400/10 text-blue-400": listing.status === "SOLD",
+                "bg-orange-400/10 text-orange-400": listing.status === "ACTIVE",
+                "bg-zinc-600/10 text-zinc-400": listing.status === "SOLD",
                 "bg-zinc-800 text-zinc-500": listing.status === "HIDDEN",
               })}>
                 {listing.status}
@@ -177,7 +177,7 @@ export default function ListingDetail() {
             {/* Price */}
             <div>
               {listing.isFree ? (
-                <p className="text-3xl font-bold text-[#00fcb5]">Free</p>
+                <p className="text-3xl font-bold text-[#E8611C]">Free</p>
               ) : (
                 <p className="text-3xl font-bold text-white">₹{listing.price.toLocaleString("en-IN")}</p>
               )}
@@ -206,8 +206,8 @@ export default function ListingDetail() {
 
             {/* Seller */}
             <div className="flex items-center gap-3 p-4 rounded-xl bg-zinc-900/40 border border-white/[0.05]">
-              <div className="w-10 h-10 rounded-full bg-[#00fcb5]/15 flex items-center justify-center flex-shrink-0">
-                <span className="text-sm font-bold text-[#00fcb5]">{listing.seller.name[0]?.toUpperCase()}</span>
+              <div className="w-10 h-10 rounded-full bg-[#E8611C]/15 flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-bold text-[#E8611C]">{listing.seller.name[0]?.toUpperCase()}</span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-white">{listing.seller.name}</p>
