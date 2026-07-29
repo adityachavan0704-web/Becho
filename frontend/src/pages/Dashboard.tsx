@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   LayoutDashboard, Package, ShoppingBag, MessageSquare, LogOut,
-  User, Plus, Upload, TrendingUp, Star, Eye, Bell,
+  Plus, Upload, TrendingUp, Star, Eye, Bell,
   ChevronRight, Loader2, PackagePlus, FileText, Search,
   MoreHorizontal, ArrowUpRight, Zap
 } from "lucide-react"
@@ -74,11 +74,6 @@ export default function Dashboard() {
     setUploadOpen(true)
   }
 
-  const statusColor: Record<string, string> = {
-    ACTIVE: "text-orange-400 bg-orange-400/10",
-    SOLD: "text-zinc-400 bg-zinc-400/10",
-    HIDDEN: "text-zinc-500 bg-zinc-800",
-  }
 
   return (
     <div className="flex h-screen bg-[#080808] overflow-hidden">
@@ -205,7 +200,6 @@ export default function Dashboard() {
                 loading={loadingListings}
                 onUpload={openUpload}
                 onViewDetail={(id) => navigate(`/listings/${id}`)}
-                statusColor={statusColor}
               />
             )}
             {activeSection === "messages" && (
@@ -407,13 +401,12 @@ function OverviewSection({
 // ── Listings Section ──────────────────────────────────────────────────────────
 
 function ListingsSection({
-  listings, loading, onUpload, onViewDetail, statusColor
+  listings, loading, onUpload, onViewDetail
 }: {
   listings: Listing[]
   loading: boolean
   onUpload: (type?: "ONLINE" | "OFFLINE") => void
   onViewDetail: (id: string) => void
-  statusColor: Record<string, string>
 }) {
   const [search, setSearch] = useState("")
   const filtered = listings.filter((l) =>

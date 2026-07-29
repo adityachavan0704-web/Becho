@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { motion, useAnimationFrame } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import { Button } from "../components/ui/Button"
@@ -167,7 +167,7 @@ function SphereCarousel() {
       </div>
 
       {/* Cards */}
-      {[...cards].sort((a, b) => a.z - b.z).map((card, i) => (
+      {[...cards].sort((a, b) => a.z - b.z).map((card, _i) => (
         <div
           key={card.item.label}
           className="absolute"
