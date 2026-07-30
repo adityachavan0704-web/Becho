@@ -13,6 +13,7 @@ import { Input } from "../components/ui/Input"
 import { apiFetch, ApiRequestError } from "../lib/api"
 import { cn } from "../lib/utils"
 
+const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
 
 interface MentorUser {
   id: string

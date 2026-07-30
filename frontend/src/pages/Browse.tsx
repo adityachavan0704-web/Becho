@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  Search, X,
-  Zap, LogOut, Bell, LayoutDashboard
+  Search, X, SlidersHorizontal, ArrowLeft, Loader2,
+  Package, FileText, Zap, LogOut, Bell, User, LayoutDashboard
 } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
 import { ListingCard } from "../components/ListingCard"

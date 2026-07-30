@@ -23,14 +23,8 @@ function App() {
             <Route path="/mentorship" element={<Mentorship />} />
 
             {/* Protected routes — require login */}
-            <Route
-              path="/browse"
-              element={
-                <ProtectedRoute>
-                  <Browse />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/browse" element={<Browse />} />
+
             <Route
               path="/listings/:id"
               element={
@@ -39,14 +33,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route
               path="/chat/:listingId"
               element={

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { motion, useAnimationFrame } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import { Button } from "../components/ui/Button"
@@ -167,7 +167,7 @@ function SphereCarousel() {
       </div>
 
       {/* Cards */}
-      {[...cards].sort((a, b) => a.z - b.z).map((card, _i) => (
+      {[...cards].sort((a, b) => a.z - b.z).map((card, i) => (
         <div
           key={card.item.label}
           className="absolute"
@@ -392,13 +392,7 @@ export default function Landing() {
         >
           The student market
           <br />
-          <span
-            className="text-transparent bg-clip-text"
-            style={{
-              backgroundImage:
-                "linear-gradient(135deg, #ffffff 0%, #E8611C 60%, #ff7b3a 100%)",
-            }}
-          >
+          <span className="text-white">
             for academic resources
           </span>
         </motion.h1>
@@ -424,17 +418,9 @@ export default function Landing() {
           <Button
             size="lg"
             className="h-13 px-8 text-sm font-mono uppercase tracking-widest"
-            onClick={() => navigate("/login?role=seller")}
+            onClick={() => navigate("/dashboard")}
           >
-            Start Selling <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="h-13 px-8 text-sm font-mono uppercase tracking-widest"
-            onClick={() => navigate("/browse")}
-          >
-            Browse Items
+            Get Started <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </motion.div>
 
@@ -597,17 +583,9 @@ export default function Landing() {
             <Button
               size="lg"
               className="h-13 px-10 text-sm font-mono uppercase tracking-widest"
-              onClick={() => navigate("/login?role=seller")}
+              onClick={() => navigate("/dashboard")}
             >
-              Start Selling Now <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="h-13 px-10 text-sm font-mono uppercase tracking-widest"
-              onClick={() => navigate("/browse")}
-            >
-              Explore Listings
+              Get Started <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
         </motion.div>
