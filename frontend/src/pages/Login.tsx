@@ -2,8 +2,9 @@ import { useState } from "react"
 import { Button } from "../components/ui/Button"
 import { Input } from "../components/ui/Input"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { ArrowLeft, Mail, Lock, User, AlertCircle } from "lucide-react"
+import { ArrowLeft, Mail, Lock, User, AlertCircle, Sun, Moon } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
+import { useTheme } from "../contexts/ThemeContext"
 import BechoLogo from "../components/BechoLogo"
 
 const API_URL = (import.meta.env["VITE_API_URL"] as string | undefined) ?? "http://localhost:3000"
@@ -23,6 +24,7 @@ export default function Login() {
   const oauthError = searchParams.get("error")
 
   const { login, isAuthenticated } = useAuth()
+  const { isDark, toggleTheme } = useTheme()
 
   const [tab, setTab] = useState<Tab>("signin")
   const [name, setName] = useState("")
@@ -76,7 +78,8 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
+      style={{ backgroundColor: "var(--bg)" }}>
       {/* Background glow orbs */}
       <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full opacity-10 blur-3xl"
         style={{ background: "radial-gradient(circle, #E8611C, transparent)" }} />
@@ -86,11 +89,22 @@ export default function Login() {
       {/* Back button */}
       <Button
         variant="ghost"
-        className="absolute top-4 left-4 text-muted-foreground hover:text-foreground"
+        className="absolute top-4 left-4"
+        style={{ color: "var(--text-muted)" }}
         onClick={() => navigate("/")}
       >
         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
       </Button>
+
+      {/* Theme toggle */}
+      <button
+        onClick={toggleTheme}
+        className="absolute top-4 right-4 h-9 w-9 rounded-xl flex items-center justify-center transition-all"
+        style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
+        title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+      >
+        {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      </button>
 
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
@@ -98,27 +112,27 @@ export default function Login() {
           <div className="flex justify-center mb-4">
             <BechoLogo size={52} showWordmark={false} />
           </div>
-          <h1 className="text-3xl font-bold" style={{ letterSpacing: "-0.03em" }}>
+          <h1 className="text-3xl font-bold" style={{ letterSpacing: "-0.03em", color: "var(--text)" }}>
             Welcome to Becho
           </h1>
-          <p className="text-muted-foreground mt-2 text-sm">
+          <p className="mt-2 text-sm" style={{ color: "var(--text-muted)" }}>
             {role === "seller"
               ? "Create an account to start selling resources."
               : "Sign in to browse and download resources."}
           </p>
         </div>
 
-        <div className="glass rounded-2xl p-8 border border-border shadow-2xl">
+        <div className="rounded-2xl p-8 shadow-2xl" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
           {/* Tab toggle */}
-          <div className="flex gap-1 p-1 rounded-xl mb-6"
-            style={{ background: "rgba(255,255,255,0.04)" }}>
+          <div className="flex gap-1 p-1 rounded-xl mb-6" style={{ background: "var(--surface-2)" }}>
             <button
               onClick={() => { setTab("signin"); setError(null) }}
               className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                 tab === "signin"
-                  ? "bg-primary text-black shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-primary text-white shadow-sm"
+                  : ""
               }`}
+              style={tab !== "signin" ? { color: "var(--text-muted)" } : {}}
             >
               Sign In
             </button>
@@ -126,9 +140,10 @@ export default function Login() {
               onClick={() => { setTab("register"); setError(null) }}
               className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                 tab === "register"
-                  ? "bg-primary text-black shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-primary text-white shadow-sm"
+                  : ""
               }`}
+              style={tab !== "register" ? { color: "var(--text-muted)" } : {}}
             >
               Register
             </button>
@@ -137,7 +152,8 @@ export default function Login() {
           {/* Google OAuth button */}
           <button
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-border text-sm font-medium transition-all duration-200 hover:border-primary/40 hover:bg-white/5 mb-4 group"
+            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 mb-4 group"
+            style={{ border: "1px solid var(--border)", color: "var(--text-muted)" }}
           >
             {/* Google "G" icon using SVG */}
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -153,9 +169,9 @@ export default function Login() {
 
           {/* Divider */}
           <div className="flex items-center gap-4 mb-4">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-xs text-muted-foreground">or continue with email</span>
-            <div className="flex-1 h-px bg-border" />
+            <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
+            <span className="text-xs" style={{ color: "var(--text-muted)" }}>or continue with email</span>
+            <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
           </div>
 
           {/* Error banner */}
@@ -175,7 +191,7 @@ export default function Login() {
           <form onSubmit={(e) => { void handleSubmit(e) }} className="space-y-4">
             {tab === "register" && (
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground/80">Full Name</label>
+            <label className="text-sm font-medium" style={{ color: "var(--text)" }}>Full Name</label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -191,7 +207,7 @@ export default function Login() {
             )}
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground/80">College Email</label>
+            <label className="text-sm font-medium" style={{ color: "var(--text)" }}>College Email</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -206,7 +222,7 @@ export default function Login() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground/80">Password</label>
+            <label className="text-sm font-medium" style={{ color: "var(--text)" }}>Password</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input

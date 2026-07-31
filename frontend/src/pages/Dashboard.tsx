@@ -5,9 +5,11 @@ import {
   LayoutDashboard, Package, ShoppingBag, MessageSquare, LogOut,
   User, Plus, Upload, TrendingUp, Star, Eye, Bell,
   ChevronRight, Loader2, PackagePlus, FileText, Search,
-  MoreHorizontal, ArrowUpRight, Zap, Lock, X, ShoppingCart, ArrowRight
+  MoreHorizontal, ArrowUpRight, Zap, Lock, X, ShoppingCart, ArrowRight,
+  Moon, Sun
 } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
+import { useTheme } from "../contexts/ThemeContext"
 import { Button } from "../components/ui/Button"
 import { UploadModal } from "../components/UploadModal"
 import { cn } from "../lib/utils"
@@ -16,10 +18,10 @@ import type { Listing } from "../components/ListingCard"
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
 type ActiveSection = "overview" | "listings" | "browse" | "messages"
 const NAV_ITEMS = [
-  { id: "overview" as const, label: "Overview", icon: LayoutDashboard },
-  { id: "listings" as const, label: "My Listings", icon: Package },
-  { id: "browse" as const, label: "Marketplace", icon: ShoppingBag },
-  { id: "messages" as const, label: "Messages", icon: MessageSquare },
+  { id: "overview"  as const, label: "Overview",     icon: LayoutDashboard },
+  { id: "listings"  as const, label: "My Listings",  icon: Package },
+  { id: "browse"    as const, label: "Marketplace",  icon: ShoppingBag },
+  { id: "messages"  as const, label: "Messages",     icon: MessageSquare },
 ]
 
 const MOCK_LISTINGS = [
@@ -50,6 +52,19 @@ const MOCK_LISTINGS = [
   { id:"m25", title:"Electromagnetic Field Theory – Hayt & Buck",        description:"8th edition EMF Theory book. Lightly used, excellent condition. Covers fields, waves, transmission lines.",                                     price:290,   type:"OFFLINE" , category:"Books",     subject:"EMF Theory",         isFree:false, images:[], seller:{id:"s25", name:"Ankit Verma",    reputation:4.6}, createdAt:"2026-07-24T09:00:00Z"},
 ] as const
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const T = {
+  bg:       "var(--bg)",
+  surface:  "var(--surface)",
+  surface2: "var(--surface-2)",
+  border:   "var(--border)",
+  text:     "var(--text)",
+  muted:    "var(--text-muted)",
+  subtle:   "var(--text-subtle)",
+  primary:  "var(--primary)",
+  primaryDim:"var(--primary-dim)",
+}
+
 // ── Login Prompt Modal ────────────────────────────────────────────────────────
 function LoginPromptModal({ open, onClose, action }: { open: boolean; onClose: () => void; action: "buy" | "sell" }) {
   const navigate = useNavigate()
@@ -68,19 +83,23 @@ function LoginPromptModal({ open, onClose, action }: { open: boolean; onClose: (
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 260, damping: 22 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-sm bg-zinc-950 border border-white/10 rounded-3xl p-8 text-center overflow-hidden"
+            className="relative w-full max-w-sm rounded-3xl p-8 text-center overflow-hidden"
+            style={{ background: T.surface, border: `1px solid ${T.border}` }}
           >
-            <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at top, rgba(232,97,28,0.12) 0%, transparent 60%)" }} />
-            <button onClick={onClose} className="absolute top-4 right-4 text-zinc-600 hover:text-zinc-300 transition-colors">
+            <div className="absolute inset-0 pointer-events-none"
+              style={{ background: "radial-gradient(ellipse at top, rgba(232,97,28,0.12) 0%, transparent 60%)" }} />
+            <button onClick={onClose} className="absolute top-4 right-4 transition-colors"
+              style={{ color: T.subtle }}>
               <X className="h-4 w-4" />
             </button>
-            <div className="w-14 h-14 rounded-2xl bg-[#E8611C]/10 border border-[#E8611C]/20 flex items-center justify-center mx-auto mb-5">
-              <Lock className="h-6 w-6 text-[#E8611C]" />
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5"
+              style={{ background: "rgba(232,97,28,0.10)", border: "1px solid rgba(232,97,28,0.20)" }}>
+              <Lock className="h-6 w-6" style={{ color: T.primary }} />
             </div>
-            <h3 className="text-lg font-bold text-white mb-2">
+            <h3 className="text-xl font-bold mb-2" style={{ color: T.text }}>
               {action === "buy" ? "Login to Buy" : "Login to Sell"}
             </h3>
-            <p className="text-sm text-zinc-400 mb-6 leading-relaxed">
+            <p className="text-sm mb-6 leading-relaxed" style={{ color: T.muted }}>
               {action === "buy"
                 ? "Create an account or log in to contact the seller and complete your purchase."
                 : "Log in or register to start listing your items on Becho."}
@@ -105,6 +124,7 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user, getAccessToken, logout, isAuthenticated } = useAuth()
+  const { isDark, toggleTheme } = useTheme()
 
   const [activeSection, setActiveSection] = useState<ActiveSection>("browse")
   const [uploadOpen, setUploadOpen] = useState(false)
@@ -141,7 +161,7 @@ export default function Dashboard() {
     else if (location.hash === "#browse") setActiveSection("browse")
   }, [location.hash])
 
-  const handleLogout = () => { logout(); navigate("/", { replace: true }) }
+  const handleLogout = () => { void logout(); navigate("/", { replace: true }) }
 
   const openUpload = (type?: "ONLINE" | "OFFLINE") => {
     if (!isAuthenticated) { setLoginPrompt({ open: true, action: "sell" }); return }
@@ -149,76 +169,124 @@ export default function Dashboard() {
     setUploadOpen(true)
   }
 
+  // Sidebar active style helpers
+  const navActive   = { background: "rgba(232,97,28,0.12)", color: T.primary }
+  const navInactive = { color: T.muted }
 
   return (
-    <div className="flex h-screen bg-[#080808] overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-60 flex-shrink-0 flex flex-col border-r border-white/[0.05] bg-zinc-950/80 backdrop-blur">
-        <div className="flex items-center gap-2.5 px-5 py-5 border-b border-white/[0.05]">
-          <div className="w-7 h-7 rounded-lg bg-[#E8611C] flex items-center justify-center">
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: T.bg }}>
+      {/* ── Sidebar ── */}
+      <aside className="w-64 flex-shrink-0 flex flex-col backdrop-blur"
+        style={{ borderRight: `1px solid ${T.border}`, backgroundColor: isDark ? "rgba(8,8,8,0.85)" : "rgba(253,248,242,0.90)" }}>
+
+        {/* Logo */}
+        <div className="flex items-center gap-3 px-5 py-5" style={{ borderBottom: `1px solid ${T.border}` }}>
+          <div className="w-8 h-8 rounded-lg bg-[#E8611C] flex items-center justify-center">
             <Zap className="h-4 w-4 text-white" />
           </div>
-          <span className="text-base font-bold text-white tracking-tight">Becho</span>
+          <span className="text-lg font-bold tracking-tight" style={{ color: T.text }}>Becho</span>
         </div>
-        <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+
+        {/* Nav */}
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {NAV_ITEMS.map((item) => (
             <button key={item.id} onClick={() => setActiveSection(item.id)}
-              className={cn("w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
-                activeSection === item.id ? "bg-[#E8611C]/10 text-[#E8611C]" : "text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04]")}>
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
+              style={activeSection === item.id ? navActive : navInactive}
+            >
               <item.icon className="h-4 w-4 flex-shrink-0" />
               {item.label}
-              {item.id === "messages" && <span className="ml-auto text-[10px] font-bold bg-[#E8611C]/15 text-[#E8611C] rounded-full px-1.5 py-0.5">2</span>}
+              {item.id === "messages" && (
+                <span className="ml-auto text-[10px] font-bold rounded-full px-1.5 py-0.5"
+                  style={{ background: "rgba(232,97,28,0.15)", color: T.primary }}>2</span>
+              )}
             </button>
           ))}
-          <div className="pt-3 border-t border-white/[0.04] mt-2 space-y-0.5">
-            <p className="text-[10px] font-semibold text-zinc-600 px-3 pb-1 uppercase tracking-wider">Quick Upload</p>
-            <button onClick={() => openUpload("OFFLINE")} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04] transition-all">
-              <Package className="h-3.5 w-3.5 flex-shrink-0" /> Hardware Item
+
+          {/* Quick upload */}
+          <div className="pt-3 mt-2" style={{ borderTop: `1px solid ${T.border}` }}>
+            <p className="text-xs font-semibold px-4 pb-2 uppercase tracking-wider" style={{ color: T.subtle }}>
+              Quick Upload
+            </p>
+            <button onClick={() => openUpload("OFFLINE")}
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all"
+              style={{ color: T.muted }}>
+              <Package className="h-4 w-4 flex-shrink-0" /> Hardware Item
             </button>
-            <button onClick={() => openUpload("ONLINE")} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-zinc-500 hover:text-zinc-200 hover:bg-white/[0.04] transition-all">
-              <FileText className="h-3.5 w-3.5 flex-shrink-0" /> Online Resource
+            <button onClick={() => openUpload("ONLINE")}
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all"
+              style={{ color: T.muted }}>
+              <FileText className="h-4 w-4 flex-shrink-0" /> Online Resource
             </button>
           </div>
         </nav>
-        <div className="p-3 border-t border-white/[0.05]">
+
+        {/* User footer */}
+        <div className="p-3" style={{ borderTop: `1px solid ${T.border}` }}>
           {isAuthenticated && user ? (
             <>
-              <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-zinc-900/60 mb-1">
-                <div className="w-7 h-7 rounded-full bg-[#E8611C]/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-xs font-bold text-[#E8611C]">{user?.name?.[0]?.toUpperCase() ?? "?"}</span>
+              <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1"
+                style={{ backgroundColor: T.surface2 }}>
+                <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: "rgba(232,97,28,0.20)" }}>
+                  <span className="text-sm font-bold" style={{ color: T.primary }}>
+                    {user?.name?.[0]?.toUpperCase() ?? "?"}
+                  </span>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-white truncate">{user?.name ?? "—"}</p>
-                  <p className="text-[10px] text-zinc-600 truncate">{user?.email ?? ""}</p>
+                  <p className="text-sm font-semibold truncate" style={{ color: T.text }}>{user?.name ?? "—"}</p>
+                  <p className="text-xs truncate" style={{ color: T.subtle }}>{user?.email ?? ""}</p>
                 </div>
               </div>
-              <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-600 hover:text-red-400 hover:bg-red-400/5 transition-all">
-                <LogOut className="h-3.5 w-3.5" /> Sign Out
+              <button onClick={handleLogout}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-red-400 hover:bg-red-400/5 transition-all">
+                <LogOut className="h-4 w-4" /> Sign Out
               </button>
             </>
           ) : (
-            <button onClick={() => navigate("/login")} className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold text-[#E8611C] border border-[#E8611C]/20 bg-[#E8611C]/5 hover:bg-[#E8611C]/10 transition-all">
-              <User className="h-3.5 w-3.5" /> Log In / Register
+            <button onClick={() => navigate("/login")}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all"
+              style={{ color: T.primary, border: "1px solid rgba(232,97,28,0.20)", background: "rgba(232,97,28,0.05)" }}>
+              <User className="h-4 w-4" /> Log In / Register
             </button>
           )}
         </div>
       </aside>
 
-      {/* Main */}
+      {/* ── Main ── */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="flex items-center justify-between px-8 py-4 border-b border-white/[0.05] bg-zinc-950/60 backdrop-blur flex-shrink-0">
+        {/* Header */}
+        <header className="flex items-center justify-between px-8 py-5 flex-shrink-0 backdrop-blur"
+          style={{ borderBottom: `1px solid ${T.border}`, backgroundColor: isDark ? "rgba(8,8,8,0.70)" : "rgba(253,248,242,0.80)" }}>
           <div>
-            <h1 className="text-lg font-semibold text-white">{NAV_ITEMS.find((n) => n.id === activeSection)?.label ?? "Dashboard"}</h1>
-            <p className="text-xs text-zinc-600 mt-0.5">{new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}</p>
+            <h1 className="text-3xl font-bold" style={{ color: T.text }}>
+              {NAV_ITEMS.find((n) => n.id === activeSection)?.label ?? "Dashboard"}
+            </h1>
+            <p className="text-sm mt-1" style={{ color: T.muted }}>
+              {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}
+            </p>
           </div>
           <div className="flex items-center gap-2">
-            <button className="h-9 w-9 rounded-xl border border-white/[0.06] bg-zinc-900/60 flex items-center justify-center hover:border-zinc-700 transition-all">
-              <Bell className="h-4 w-4 text-zinc-500" />
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              className="h-10 w-10 rounded-xl flex items-center justify-center transition-all"
+              style={{ background: T.surface2, border: `1px solid ${T.border}`, color: T.muted }}
+            >
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
-            <Button size="sm" onClick={() => openUpload()}><Plus className="h-4 w-4 mr-1.5" /> New Listing</Button>
+            <button className="h-10 w-10 rounded-xl flex items-center justify-center transition-all"
+              style={{ background: T.surface2, border: `1px solid ${T.border}`, color: T.muted }}>
+              <Bell className="h-4 w-4" />
+            </button>
+            <Button size="sm" onClick={() => openUpload()}>
+              <Plus className="h-4 w-4 mr-1.5" /> SELL
+            </Button>
           </div>
         </header>
-        <div className="flex-1 overflow-y-auto">
+
+        <div className="flex-1 overflow-y-auto" style={{ backgroundColor: T.bg }}>
           <AnimatePresence mode="wait">
             {activeSection === "overview" && (
               <OverviewSection key="overview" user={user} isAuthenticated={isAuthenticated} stats={stats} myListings={myListings} loadingListings={loadingListings} onUpload={openUpload} onViewListings={() => setActiveSection("listings")} onViewMarketplace={() => setActiveSection("browse")} onViewDetail={(id) => navigate(`/listings/${id}`)} />
@@ -258,22 +326,24 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.22 }} className="p-8 space-y-8 max-w-5xl">
       <div>
-        <h2 className="text-2xl font-bold text-white">
+        <h2 className="text-2xl font-bold" style={{ color: T.text }}>
           {isAuthenticated ? `Welcome back, ${user?.name?.split(" ")[0] ?? "there"} 👋` : "Welcome to Becho 👋"}
         </h2>
-        <p className="text-sm text-zinc-500 mt-1">
+        <p className="text-base mt-1" style={{ color: T.muted }}>
           {isAuthenticated ? "Here's what's happening with your account." : "Browse 25+ academic listings or log in to buy, sell, and more."}
         </p>
       </div>
 
       {!isAuthenticated ? (
-        <div className="relative rounded-2xl border border-[#E8611C]/20 bg-[#E8611C]/[0.04] p-8 overflow-hidden">
-          <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at top left, rgba(232,97,28,0.08) 0%, transparent 60%)" }} />
+        <div className="relative rounded-2xl p-8 overflow-hidden"
+          style={{ border: "1px solid rgba(232,97,28,0.20)", background: "rgba(232,97,28,0.04)" }}>
+          <div className="absolute inset-0 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse at top left, rgba(232,97,28,0.08) 0%, transparent 60%)" }} />
           <div className="flex items-center justify-between flex-wrap gap-6">
             <div>
-              <p className="text-xs font-mono uppercase tracking-widest text-[#E8611C] mb-2">Join the community</p>
-              <h3 className="text-xl font-bold text-white mb-1">Start trading smarter</h3>
-              <p className="text-sm text-zinc-400 max-w-md">Log in to buy items, list your own, message sellers, and access the full marketplace.</p>
+              <p className="text-xs font-mono uppercase tracking-widest mb-2" style={{ color: T.primary }}>Join the community</p>
+              <h3 className="text-xl font-bold mb-1" style={{ color: T.text }}>Start trading smarter</h3>
+              <p className="text-sm max-w-md" style={{ color: T.muted }}>Log in to buy items, list your own, message sellers, and access the full marketplace.</p>
             </div>
             <div className="flex gap-3">
               <Button onClick={() => { window.location.href = "/login" }} className="text-sm font-mono uppercase tracking-widest">Log In <ArrowRight className="ml-2 h-4 w-4" /></Button>
@@ -284,103 +354,140 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
       ) : (
         <div className="grid grid-cols-3 gap-4">
           {[
-            { label: "Active Listings", value: stats.active, icon: Package, color: "text-[#E8611C]", bg: "bg-[#E8611C]/10" },
-            { label: "Total Earned", value: `₹${stats.earned.toLocaleString("en-IN")}`, icon: TrendingUp, color: "text-white", bg: "bg-white/10" },
-            { label: "Reputation", value: stats.reputation > 0 ? `${stats.reputation}/5` : "—", icon: Star, color: "text-amber-400", bg: "bg-amber-400/10" },
+            { label: "Active Listings", value: stats.active,                                           icon: Package,   colorStyle: { color: T.primary }, bgStyle: { background: T.primaryDim } },
+            { label: "Total Earned",    value: `₹${stats.earned.toLocaleString("en-IN")}`,             icon: TrendingUp, colorStyle: { color: T.text },    bgStyle: { background: T.surface2 } },
+            { label: "Reputation",      value: stats.reputation > 0 ? `${stats.reputation}/5` : "—",  icon: Star,       colorStyle: { color: "#f59e0b" },  bgStyle: { background: "rgba(245,158,11,0.12)" } },
           ].map((s) => (
-            <div key={s.label} className="rounded-2xl border border-white/[0.05] bg-zinc-900/40 p-5 flex items-center gap-4">
-              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", s.bg)}>
-                <s.icon className={cn("h-5 w-5", s.color)} />
+            <div key={s.label} className="rounded-2xl p-5 flex items-center gap-4"
+              style={{ border: `1px solid ${T.border}`, background: T.surface }}>
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={s.bgStyle}>
+                <s.icon className="h-5 w-5" style={s.colorStyle} />
               </div>
               <div>
-                <p className="text-xs text-zinc-600">{s.label}</p>
-                <p className="text-xl font-bold text-white mt-0.5">{s.value}</p>
+                <p className="text-sm" style={{ color: T.muted }}>{s.label}</p>
+                <p className="text-2xl font-bold mt-0.5" style={{ color: T.text }}>{s.value}</p>
               </div>
             </div>
           ))}
         </div>
       )}
 
+      {/* Quick Actions */}
       <div>
-        <p className="text-xs font-semibold text-zinc-600 uppercase tracking-wider mb-3">Quick Actions</p>
+        <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: T.subtle }}>Quick Actions</p>
         <div className="grid grid-cols-2 gap-3">
           <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => onUpload("OFFLINE")}
-            className="flex items-center gap-3 p-4 rounded-xl border border-amber-500/20 bg-amber-500/[0.04] hover:bg-amber-500/[0.08] hover:border-amber-500/40 transition-all text-left group">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/15 flex items-center justify-center flex-shrink-0"><Package className="h-4 w-4 text-amber-400" /></div>
-            <div><p className="text-sm font-semibold text-white group-hover:text-amber-300 transition-colors">Upload Hardware</p><p className="text-xs text-zinc-600">Books, cycles, equipment…</p></div>
-            <ArrowUpRight className="h-4 w-4 text-zinc-700 ml-auto group-hover:text-amber-400 transition-colors" />
+            className="flex items-center gap-3 p-5 rounded-xl transition-all text-left group"
+            style={{ border: "1px solid rgba(245,158,11,0.25)", background: "rgba(245,158,11,0.04)" }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: "rgba(245,158,11,0.15)" }}>
+              <Package className="h-5 w-5 text-amber-400" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold" style={{ color: T.text }}>Upload Hardware</p>
+              <p className="text-xs mt-0.5" style={{ color: T.muted }}>Books, cycles, equipment…</p>
+            </div>
+            <ArrowUpRight className="h-4 w-4 ml-auto" style={{ color: T.subtle }} />
           </motion.button>
           <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => onUpload("ONLINE")}
-            className="flex items-center gap-3 p-4 rounded-xl border border-[#E8611C]/20 bg-[#E8611C]/[0.04] hover:bg-[#E8611C]/[0.08] hover:border-[#E8611C]/40 transition-all text-left group">
-            <div className="w-9 h-9 rounded-xl bg-[#E8611C]/15 flex items-center justify-center flex-shrink-0"><Upload className="h-4 w-4 text-[#E8611C]" /></div>
-            <div><p className="text-sm font-semibold text-white group-hover:text-orange-300 transition-colors">Upload Online Resource</p><p className="text-xs text-zinc-600">Notes, PDFs, software…</p></div>
-            <ArrowUpRight className="h-4 w-4 text-zinc-700 ml-auto group-hover:text-[#E8611C] transition-colors" />
+            className="flex items-center gap-3 p-5 rounded-xl transition-all text-left group"
+            style={{ border: "1px solid rgba(232,97,28,0.25)", background: "rgba(232,97,28,0.04)" }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: "rgba(232,97,28,0.15)" }}>
+              <Upload className="h-5 w-5" style={{ color: T.primary }} />
+            </div>
+            <div>
+              <p className="text-sm font-semibold" style={{ color: T.text }}>Upload Online Resource</p>
+              <p className="text-xs mt-0.5" style={{ color: T.muted }}>Notes, PDFs, software…</p>
+            </div>
+            <ArrowUpRight className="h-4 w-4 ml-auto" style={{ color: T.subtle }} />
           </motion.button>
         </div>
       </div>
 
+      {/* Featured in marketplace */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <p className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Featured in Marketplace</p>
-          <button onClick={onViewMarketplace} className="text-xs text-[#E8611C] hover:underline flex items-center gap-1">View all <ChevronRight className="h-3 w-3" /></button>
+          <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: T.subtle }}>Featured in Marketplace</p>
+          <button onClick={onViewMarketplace} className="text-xs flex items-center gap-1" style={{ color: T.primary }}>
+            View all <ChevronRight className="h-3 w-3" />
+          </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {MOCK_LISTINGS.slice(0, 4).map((item) => (
-            <div key={item.id} onClick={onViewMarketplace} className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.05] bg-zinc-900/30 hover:bg-zinc-900/60 transition-all cursor-pointer group">
-              <div className="w-9 h-9 rounded-lg bg-zinc-800 flex items-center justify-center flex-shrink-0">
-                {item.type === "ONLINE" ? <FileText className="h-4 w-4 text-[#E8611C]" /> : <Package className="h-4 w-4 text-amber-400" />}
+            <div key={item.id} onClick={onViewMarketplace}
+              className="flex items-center gap-3 p-3 rounded-xl transition-all cursor-pointer group"
+              style={{ border: `1px solid ${T.border}`, background: T.surface }}>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ background: T.surface2 }}>
+                {item.type === "ONLINE" ? <FileText className="h-4 w-4" style={{ color: T.primary }} /> : <Package className="h-4 w-4 text-amber-400" />}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-zinc-200 line-clamp-1 group-hover:text-white">{item.title}</p>
-                <p className="text-[10px] text-zinc-600">{item.seller.name}</p>
+                <p className="text-sm font-semibold line-clamp-1" style={{ color: T.text }}>{item.title}</p>
+                <p className="text-xs" style={{ color: T.muted }}>{item.seller.name}</p>
               </div>
-              <span className="text-xs font-bold flex-shrink-0">
-                {item.isFree ? <span className="text-[#E8611C]">Free</span> : <span className="text-white">₹{item.price}</span>}
+              <span className="text-sm font-bold flex-shrink-0">
+                {item.isFree ? <span style={{ color: T.primary }}>Free</span> : <span style={{ color: T.text }}>₹{item.price}</span>}
               </span>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Recent listings */}
       {isAuthenticated && (
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Recent Listings</p>
-            <button onClick={onViewListings} className="text-xs text-[#E8611C] hover:underline flex items-center gap-1">View all <ChevronRight className="h-3 w-3" /></button>
+            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: T.subtle }}>Recent Listings</p>
+            <button onClick={onViewListings} className="text-xs flex items-center gap-1" style={{ color: T.primary }}>
+              View all <ChevronRight className="h-3 w-3" />
+            </button>
           </div>
           {loadingListings ? (
-            <div className="flex items-center justify-center py-10"><Loader2 className="h-5 w-5 text-zinc-600 animate-spin" /></div>
+            <div className="flex items-center justify-center py-10"><Loader2 className="h-5 w-5 animate-spin" style={{ color: T.muted }} /></div>
           ) : recentListings.length === 0 ? (
             <EmptyListings onUpload={onUpload} />
           ) : (
-            <div className="rounded-xl border border-white/[0.05] overflow-hidden">
+            <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${T.border}` }}>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-white/[0.05] bg-zinc-900/30">
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-600">Title</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-600">Type</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-600">Price</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-zinc-600">Status</th>
-                    <th className="w-8" />
+                  <tr style={{ borderBottom: `1px solid ${T.border}`, background: T.surface }}>
+                    {["Title","Type","Price","Status",""].map((h, i) => (
+                      <th key={i} className={`text-left px-4 py-3 text-xs font-semibold ${i === 4 ? "w-8" : ""}`} style={{ color: T.muted }}>{h}</th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
                   {recentListings.map((l, idx) => {
                     const ls = l as unknown as { status: string }
                     return (
-                      <tr key={l.id} onClick={() => onViewDetail(l.id)} className={cn("cursor-pointer hover:bg-zinc-800/30 transition-colors group", idx < recentListings.length - 1 && "border-b border-white/[0.03]")}>
+                      <tr key={l.id} onClick={() => onViewDetail(l.id)}
+                        className="cursor-pointer transition-colors group"
+                        style={{ borderBottom: idx < recentListings.length - 1 ? `1px solid ${T.border}` : "none" }}>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                              {l.images?.[0] ? <img src={l.images[0]} alt="" className="w-full h-full object-cover" /> : l.type === "ONLINE" ? <FileText className="h-3.5 w-3.5 text-zinc-600" /> : <Package className="h-3.5 w-3.5 text-zinc-600" />}
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden" style={{ background: T.surface2 }}>
+                              {l.images?.[0] ? <img src={l.images[0]} alt="" className="w-full h-full object-cover" /> : l.type === "ONLINE" ? <FileText className="h-3.5 w-3.5" style={{ color: T.muted }} /> : <Package className="h-3.5 w-3.5" style={{ color: T.muted }} />}
                             </div>
-                            <span className="text-xs font-medium text-zinc-300 group-hover:text-white transition-colors line-clamp-1">{l.title}</span>
+                            <span className="text-sm font-medium line-clamp-1" style={{ color: T.text }}>{l.title}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3"><span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", l.type === "ONLINE" ? "bg-[#E8611C]/15 text-[#E8611C]" : "bg-amber-500/15 text-amber-400")}>{l.type}</span></td>
-                        <td className="px-4 py-3 text-xs text-zinc-400">{l.isFree ? <span className="text-[#E8611C] font-semibold">Free</span> : `₹${l.price}`}</td>
-                        <td className="px-4 py-3"><span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", { "bg-orange-400/10 text-orange-400": ls.status === "ACTIVE", "bg-zinc-600/10 text-zinc-400": ls.status === "SOLD", "bg-zinc-800 text-zinc-500": ls.status === "HIDDEN" })}>{ls.status}</span></td>
-                        <td className="px-4 py-3"><Eye className="h-3.5 w-3.5 text-zinc-700 group-hover:text-zinc-400 transition-colors" /></td>
+                        <td className="px-4 py-3">
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                            style={l.type === "ONLINE" ? { background: T.primaryDim, color: T.primary } : { background: "rgba(245,158,11,0.15)", color: "#f59e0b" }}>
+                            {l.type}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm" style={{ color: T.muted }}>
+                          {l.isFree ? <span style={{ color: T.primary, fontWeight: 600 }}>Free</span> : `₹${l.price}`}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                            style={ls.status === "ACTIVE" ? { background: "rgba(251,146,60,0.12)", color: "#fb923c" } : ls.status === "SOLD" ? { background: T.surface2, color: T.muted } : { background: T.surface2, color: T.subtle }}>
+                            {ls.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3"><Eye className="h-3.5 w-3.5" style={{ color: T.subtle }} /></td>
                       </tr>
                     )
                   })}
@@ -401,78 +508,116 @@ function MarketplaceSection({ isAuthenticated, onLoginPrompt }: {
   isAuthenticated: boolean
   onLoginPrompt: (action: "buy" | "sell") => void
 }) {
-  const [search, setSearch] = useState("")
-  const [activeCat, setActiveCat] = useState("All")
+  const [search, setSearch]     = useState("")
+  const [activeCat, setActiveCat]   = useState("All")
   const [activeType, setActiveType] = useState<"" | "ONLINE" | "OFFLINE">("")
 
   const filtered = MOCK_LISTINGS.filter((item) => {
-    const q = search.toLowerCase()
+    const q           = search.toLowerCase()
     const matchSearch = !q || item.title.toLowerCase().includes(q) || item.category.toLowerCase().includes(q) || (item.subject ?? "").toLowerCase().includes(q)
-    const matchCat = activeCat === "All" || item.category === activeCat
-    const matchType = !activeType || item.type === activeType
+    const matchCat    = activeCat === "All" || item.category === activeCat
+    const matchType   = !activeType || item.type === activeType
     return matchSearch && matchCat && matchType
   })
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="p-8 max-w-6xl space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-white">Marketplace</h2>
-          <p className="text-xs text-zinc-600 mt-0.5">{filtered.length} items available</p>
-        </div>
-        {!isAuthenticated && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#E8611C]/20 bg-[#E8611C]/5 text-xs text-[#E8611C] font-mono">
-            <Lock className="h-3 w-3" /> Log in to buy or sell
-          </div>
-        )}
+      <div>
+        <h2 className="text-2xl font-bold" style={{ color: T.text }}>Marketplace</h2>
+        <p className="text-sm mt-0.5" style={{ color: T.muted }}>{filtered.length} items available</p>
       </div>
 
+      {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600" />
-          <input className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#E8611C]/50 transition-all" placeholder="Search items…" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: T.subtle }} />
+          <input
+            className="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none transition-all"
+            style={{ background: T.surface, border: `1px solid ${T.border}`, color: T.text }}
+            placeholder="Search items…" value={search} onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
-        <div className="flex items-center gap-1 bg-zinc-900/60 border border-zinc-800 rounded-xl p-1">
+        <div className="flex items-center gap-1 rounded-xl p-1" style={{ background: T.surface, border: `1px solid ${T.border}` }}>
           {([["All", ""], ["Online", "ONLINE"], ["Hardware", "OFFLINE"]] as [string, "" | "ONLINE" | "OFFLINE"][]).map(([label, val]) => (
-            <button key={val} onClick={() => setActiveType(val)} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium transition-all", activeType === val ? "bg-[#E8611C] text-white" : "text-zinc-500 hover:text-zinc-200")}>{label}</button>
+            <button key={val} onClick={() => setActiveType(val)}
+              className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
+              style={activeType === val ? { background: T.primary, color: "#fff" } : { color: T.muted }}>
+              {label}
+            </button>
           ))}
         </div>
         <div className="flex items-center gap-1.5 flex-wrap">
           {MARKETPLACE_CATS.map((cat) => (
-            <button key={cat} onClick={() => setActiveCat(cat)} className={cn("px-3 py-1.5 rounded-full text-xs font-medium border transition-all", activeCat === cat ? "bg-zinc-100 text-zinc-900 border-transparent" : "border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300")}>{cat}</button>
+            <button key={cat} onClick={() => setActiveCat(cat)}
+              className="px-3 py-1.5 rounded-full text-sm font-medium transition-all"
+              style={activeCat === cat
+                ? { background: T.text, color: T.bg, border: "1px solid transparent" }
+                : { border: `1px solid ${T.border}`, color: T.muted }}>
+              {cat}
+            </button>
           ))}
         </div>
       </div>
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-4"><Search className="h-6 w-6 text-zinc-600" /></div>
-          <p className="text-sm font-semibold text-zinc-400">No items found</p>
-          <p className="text-xs text-zinc-600 mt-1.5">Try a different search or category.</p>
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
+            style={{ background: T.surface, border: `1px solid ${T.border}` }}>
+            <Search className="h-6 w-6" style={{ color: T.subtle }} />
+          </div>
+          <p className="text-base font-semibold" style={{ color: T.muted }}>No items found</p>
+          <p className="text-sm mt-1.5" style={{ color: T.subtle }}>Try a different search or category.</p>
         </div>
       ) : (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((item, idx) => (
-            <motion.div key={item.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.03, duration: 0.2 }} whileHover={{ y: -4 }}
-              className="group rounded-2xl border border-white/[0.06] bg-zinc-900/60 overflow-hidden hover:border-[#E8611C]/25 hover:shadow-[0_0_30px_rgba(232,97,28,0.07)] transition-all duration-300">
-              <div className="relative h-36 bg-zinc-800/80 flex items-center justify-center overflow-hidden">
-                {item.type === "ONLINE" ? <FileText className="h-10 w-10 text-zinc-600 group-hover:text-[#E8611C]/50 transition-colors" /> : <Package className="h-10 w-10 text-zinc-600 group-hover:text-amber-400/50 transition-colors" />}
+            <motion.div key={item.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.03, duration: 0.2 }} whileHover={{ y: -4 }}
+              className="group rounded-2xl overflow-hidden transition-all duration-300"
+              style={{ border: `1px solid ${T.border}`, background: T.surface }}>
+              <div className="relative h-36 flex items-center justify-center overflow-hidden"
+                style={{ background: T.surface2 }}>
+                {item.type === "ONLINE"
+                  ? <FileText className="h-10 w-10 transition-colors" style={{ color: T.subtle }} />
+                  : <Package className="h-10 w-10 transition-colors" style={{ color: T.subtle }} />}
                 <div className="absolute top-2.5 left-2.5">
-                  <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full border", item.type === "ONLINE" ? "bg-[#E8611C]/15 text-[#E8611C] border-[#E8611C]/20" : "bg-amber-500/15 text-amber-400 border-amber-500/20")}>{item.type === "ONLINE" ? "ONLINE" : "HARDWARE"}</span>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                    style={item.type === "ONLINE"
+                      ? { background: T.primaryDim, color: T.primary, border: "1px solid rgba(232,97,28,0.20)" }
+                      : { background: "rgba(245,158,11,0.15)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.20)" }}>
+                    {item.type === "ONLINE" ? "ONLINE" : "HARDWARE"}
+                  </span>
                 </div>
-                {item.isFree && <div className="absolute top-2.5 right-2.5"><span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#E8611C]/20 text-[#E8611C] border border-[#E8611C]/30">FREE</span></div>}
+                {item.isFree && (
+                  <div className="absolute top-2.5 right-2.5">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                      style={{ background: T.primaryDim, color: T.primary, border: "1px solid rgba(232,97,28,0.30)" }}>FREE</span>
+                  </div>
+                )}
               </div>
               <div className="p-3.5">
-                <h3 className="font-semibold text-xs text-white leading-snug line-clamp-2 mb-1 group-hover:text-[#E8611C] transition-colors">{item.title}</h3>
-                <p className="text-[11px] text-zinc-500 line-clamp-2 mb-3">{item.description}</p>
+                <h3 className="font-semibold text-sm leading-snug line-clamp-2 mb-1 group-hover:text-primary transition-colors"
+                  style={{ color: T.text }}>{item.title}</h3>
+                <p className="text-xs line-clamp-2 mb-3" style={{ color: T.muted }}>{item.description}</p>
                 <div className="flex items-center gap-1.5 mb-3">
-                  <div className="w-4 h-4 rounded-full bg-[#E8611C]/15 flex items-center justify-center flex-shrink-0"><span className="text-[8px] font-bold text-[#E8611C]">{item.seller.name[0]}</span></div>
-                  <span className="text-[10px] text-zinc-500 truncate">{item.seller.name}</span>
-                  <span className="ml-auto flex items-center gap-0.5 text-[10px] text-amber-400"><Star className="h-2.5 w-2.5 fill-amber-400" />{item.seller.reputation}</span>
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ background: T.primaryDim }}>
+                    <span className="text-[9px] font-bold" style={{ color: T.primary }}>{item.seller.name[0]}</span>
+                  </div>
+                  <span className="text-xs truncate" style={{ color: T.muted }}>{item.seller.name}</span>
+                  <span className="ml-auto flex items-center gap-0.5 text-xs text-amber-400">
+                    <Star className="h-3 w-3 fill-amber-400" />{item.seller.reputation}
+                  </span>
                 </div>
-                <div className="flex items-center justify-between border-t border-white/[0.05] pt-2.5">
-                  {item.isFree ? <p className="text-sm font-bold text-[#E8611C]">Free</p> : <p className="text-sm font-bold text-white">₹{item.price.toLocaleString("en-IN")}</p>}
-                  <button onClick={() => onLoginPrompt("buy")} className={cn("flex items-center gap-1 text-[10px] font-semibold px-2.5 py-1.5 rounded-lg transition-all", isAuthenticated ? "bg-[#E8611C]/15 text-[#E8611C] hover:bg-[#E8611C]/25" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white")}>
+                <div className="flex items-center justify-between pt-2.5" style={{ borderTop: `1px solid ${T.border}` }}>
+                  {item.isFree
+                    ? <p className="text-base font-bold" style={{ color: T.primary }}>Free</p>
+                    : <p className="text-base font-bold" style={{ color: T.text }}>₹{item.price.toLocaleString("en-IN")}</p>}
+                  <button onClick={() => onLoginPrompt("buy")}
+                    className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                    style={isAuthenticated
+                      ? { background: T.primaryDim, color: T.primary }
+                      : { background: T.surface2, color: T.muted }}>
                     {isAuthenticated ? <><ShoppingCart className="h-3 w-3" /> Buy</> : <><Lock className="h-3 w-3" /> Buy</>}
                   </button>
                 </div>
@@ -500,11 +645,15 @@ function ListingsSection({ listings, loading, isAuthenticated, onUpload, onViewD
   if (!isAuthenticated) {
     return (
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="p-8 max-w-5xl">
-        <h2 className="text-xl font-bold text-white mb-6">My Listings</h2>
-        <div className="flex flex-col items-center justify-center py-20 text-center rounded-xl border border-dashed border-white/[0.06]">
-          <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-4"><Lock className="h-6 w-6 text-zinc-600" /></div>
-          <p className="text-sm font-semibold text-zinc-400">Login to manage your listings</p>
-          <p className="text-xs text-zinc-600 mt-1.5 mb-5">Create an account to start selling your academic resources.</p>
+        <h2 className="text-2xl font-bold mb-6" style={{ color: T.text }}>My Listings</h2>
+        <div className="flex flex-col items-center justify-center py-20 text-center rounded-xl"
+          style={{ border: `1px dashed ${T.border}` }}>
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
+            style={{ background: T.surface2, border: `1px solid ${T.border}` }}>
+            <Lock className="h-6 w-6" style={{ color: T.subtle }} />
+          </div>
+          <p className="text-base font-semibold" style={{ color: T.muted }}>Login to manage your listings</p>
+          <p className="text-sm mt-1.5 mb-5" style={{ color: T.subtle }}>Create an account to start selling your academic resources.</p>
           <Button size="sm" onClick={onLoginPrompt}><User className="h-4 w-4 mr-1.5" /> Log In / Register</Button>
         </div>
       </motion.div>
@@ -515,53 +664,69 @@ function ListingsSection({ listings, loading, isAuthenticated, onUpload, onViewD
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="p-8 space-y-6 max-w-5xl">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-white">My Listings</h2>
-          <p className="text-xs text-zinc-600 mt-0.5">{listings.length} listing{listings.length !== 1 ? "s" : ""} total</p>
+          <h2 className="text-2xl font-bold" style={{ color: T.text }}>My Listings</h2>
+          <p className="text-sm mt-0.5" style={{ color: T.muted }}>{listings.length} listing{listings.length !== 1 ? "s" : ""} total</p>
         </div>
-        <Button size="sm" onClick={() => onUpload()}><Plus className="h-4 w-4 mr-1.5" /> New Listing</Button>
+        <Button size="sm" onClick={() => onUpload()}><Plus className="h-4 w-4 mr-1.5" /> SELL</Button>
       </div>
       <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600" />
-        <input className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#E8611C]/50 transition-all" placeholder="Search your listings…" value={search} onChange={(e) => setSearch(e.target.value)} />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: T.subtle }} />
+        <input
+          className="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none transition-all"
+          style={{ background: T.surface, border: `1px solid ${T.border}`, color: T.text }}
+          placeholder="Search your listings…" value={search} onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
       {loading ? (
-        <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 text-zinc-600 animate-spin" /></div>
+        <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin" style={{ color: T.muted }} /></div>
       ) : filtered.length === 0 ? (
         <EmptyListings onUpload={onUpload} />
       ) : (
-        <div className="rounded-xl border border-white/[0.05] overflow-hidden">
+        <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${T.border}` }}>
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/[0.05] bg-zinc-900/30">
-                <th className="text-left px-5 py-3.5 text-xs font-semibold text-zinc-600">Title</th>
-                <th className="text-left px-4 py-3.5 text-xs font-semibold text-zinc-600">Type</th>
-                <th className="text-left px-4 py-3.5 text-xs font-semibold text-zinc-600">Category</th>
-                <th className="text-left px-4 py-3.5 text-xs font-semibold text-zinc-600">Price</th>
-                <th className="text-left px-4 py-3.5 text-xs font-semibold text-zinc-600">Status</th>
-                <th className="w-10" />
+              <tr style={{ borderBottom: `1px solid ${T.border}`, background: T.surface }}>
+                {["Title","Type","Category","Price","Status",""].map((h, i) => (
+                  <th key={i} className={`text-left px-5 py-4 text-sm font-semibold ${i === 5 ? "w-10" : ""}`} style={{ color: T.muted }}>{h}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {filtered.map((l, idx) => {
                 const ls = l as unknown as { status: string }
                 return (
-                  <tr key={l.id} onClick={() => onViewDetail(l.id)} className={cn("cursor-pointer hover:bg-zinc-800/20 transition-colors group", idx < filtered.length - 1 && "border-b border-white/[0.03]")}>
-                    <td className="px-5 py-3.5">
+                  <tr key={l.id} onClick={() => onViewDetail(l.id)}
+                    className="cursor-pointer transition-colors group"
+                    style={{ borderBottom: idx < filtered.length - 1 ? `1px solid ${T.border}` : "none" }}>
+                    <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-zinc-800 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                          {l.images?.[0] ? <img src={l.images[0]} alt="" className="w-full h-full object-cover" /> : l.type === "ONLINE" ? <FileText className="h-4 w-4 text-zinc-600" /> : <Package className="h-4 w-4 text-zinc-600" />}
+                        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
+                          style={{ background: T.surface2 }}>
+                          {l.images?.[0] ? <img src={l.images[0]} alt="" className="w-full h-full object-cover" /> : l.type === "ONLINE" ? <FileText className="h-4 w-4" style={{ color: T.muted }} /> : <Package className="h-4 w-4" style={{ color: T.muted }} />}
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-zinc-300 group-hover:text-white transition-colors line-clamp-1">{l.title}</p>
-                          {l.subject && <p className="text-[10px] text-zinc-600">{l.subject}</p>}
+                          <p className="text-sm font-medium line-clamp-1" style={{ color: T.text }}>{l.title}</p>
+                          {l.subject && <p className="text-xs" style={{ color: T.subtle }}>{l.subject}</p>}
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3.5"><span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", l.type === "ONLINE" ? "bg-[#E8611C]/15 text-[#E8611C]" : "bg-amber-500/15 text-amber-400")}>{l.type}</span></td>
-                    <td className="px-4 py-3.5 text-xs text-zinc-500">{l.category}</td>
-                    <td className="px-4 py-3.5 text-xs font-semibold">{l.isFree ? <span className="text-[#E8611C]">Free</span> : <span className="text-white">₹{l.price}</span>}</td>
-                    <td className="px-4 py-3.5"><span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", { "bg-orange-400/10 text-orange-400": ls.status === "ACTIVE", "bg-zinc-600/10 text-zinc-400": ls.status === "SOLD", "bg-zinc-800 text-zinc-500": ls.status === "HIDDEN" })}>{ls.status}</span></td>
-                    <td className="px-4 py-3.5"><MoreHorizontal className="h-4 w-4 text-zinc-700 group-hover:text-zinc-400 transition-colors" /></td>
+                    <td className="px-4 py-4">
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                        style={l.type === "ONLINE" ? { background: T.primaryDim, color: T.primary } : { background: "rgba(245,158,11,0.15)", color: "#f59e0b" }}>
+                        {l.type}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-sm" style={{ color: T.muted }}>{l.category}</td>
+                    <td className="px-4 py-4 text-sm font-semibold">
+                      {l.isFree ? <span style={{ color: T.primary }}>Free</span> : <span style={{ color: T.text }}>₹{l.price}</span>}
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                        style={ls.status === "ACTIVE" ? { background: "rgba(251,146,60,0.12)", color: "#fb923c" } : ls.status === "SOLD" ? { background: T.surface2, color: T.muted } : { background: T.surface2, color: T.subtle }}>
+                        {ls.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4"><MoreHorizontal className="h-4 w-4" style={{ color: T.subtle }} /></td>
                   </tr>
                 )
               })}
@@ -577,13 +742,16 @@ function ListingsSection({ listings, loading, isAuthenticated, onUpload, onViewD
 function MessagesSection({ isAuthenticated, onLogin }: { isAuthenticated: boolean; onLogin: () => void }) {
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="p-8 max-w-5xl">
-      <h2 className="text-xl font-bold text-white mb-6">Messages</h2>
+      <h2 className="text-2xl font-bold mb-6" style={{ color: T.text }}>Messages</h2>
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-4">
-          {isAuthenticated ? <MessageSquare className="h-6 w-6 text-zinc-600" /> : <Lock className="h-6 w-6 text-zinc-600" />}
+        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
+          style={{ background: T.surface2, border: `1px solid ${T.border}` }}>
+          {isAuthenticated ? <MessageSquare className="h-6 w-6" style={{ color: T.subtle }} /> : <Lock className="h-6 w-6" style={{ color: T.subtle }} />}
         </div>
-        <p className="text-sm font-semibold text-zinc-400">{isAuthenticated ? "No messages yet" : "Login to view messages"}</p>
-        <p className="text-xs text-zinc-600 mt-1.5 mb-5">{isAuthenticated ? "When buyers contact you, messages will appear here." : "Log in to message sellers and manage your chats."}</p>
+        <p className="text-base font-semibold" style={{ color: T.muted }}>{isAuthenticated ? "No messages yet" : "Login to view messages"}</p>
+        <p className="text-sm mt-1.5 mb-5" style={{ color: T.subtle }}>
+          {isAuthenticated ? "When buyers contact you, messages will appear here." : "Log in to message sellers and manage your chats."}
+        </p>
         {!isAuthenticated && <Button size="sm" onClick={onLogin}><User className="h-4 w-4 mr-1.5" /> Log In</Button>}
       </div>
     </motion.div>
@@ -593,10 +761,14 @@ function MessagesSection({ isAuthenticated, onLogin }: { isAuthenticated: boolea
 // ── Empty state ───────────────────────────────────────────────────────────────
 function EmptyListings({ onUpload }: { onUpload: (type?: "ONLINE" | "OFFLINE") => void }) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-center rounded-xl border border-dashed border-white/[0.06]">
-      <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-3"><PackagePlus className="h-5 w-5 text-zinc-600" /></div>
-      <p className="text-sm font-semibold text-zinc-400">No listings yet</p>
-      <p className="text-xs text-zinc-600 mt-1 mb-4">Upload your first item to start selling.</p>
+    <div className="flex flex-col items-center justify-center py-16 text-center rounded-xl"
+      style={{ border: `1px dashed ${T.border}` }}>
+      <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
+        style={{ background: T.surface2, border: `1px solid ${T.border}` }}>
+        <PackagePlus className="h-5 w-5" style={{ color: T.subtle }} />
+      </div>
+      <p className="text-base font-semibold" style={{ color: T.muted }}>No listings yet</p>
+      <p className="text-sm mt-1 mb-4" style={{ color: T.subtle }}>Upload your first item to start selling.</p>
       <Button size="sm" onClick={() => onUpload()}><Plus className="h-4 w-4 mr-1.5" /> Create Listing</Button>
     </div>
   )

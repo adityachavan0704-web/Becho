@@ -55,7 +55,7 @@ export default function BechoLogo({ size = 40, showWordmark = true, className = 
             fontWeight: 800,
             fontSize: size * 0.7,
             letterSpacing: "-0.03em",
-            color: "#ffffff",
+            color: "var(--text)",
             lineHeight: 1,
           }}
         >
