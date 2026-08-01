@@ -12,7 +12,6 @@ import { useAuth } from "../contexts/AuthContext"
 import { useTheme } from "../contexts/ThemeContext"
 import { Button } from "../components/ui/Button"
 import { UploadModal } from "../components/UploadModal"
-import { cn } from "../lib/utils"
 import type { Listing } from "../components/ListingCard"
 import BechoLogo from "../components/BechoLogo"
 
