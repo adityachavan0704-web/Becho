@@ -428,16 +428,108 @@ export default function Landing() {
       </section>
 
       {/* ── Footer ── */}
-      <footer style={{ borderTop: "1px solid var(--border)" }} className="py-10 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <BechoLogo size={32} showWordmark={true} />
-          <p className="text-sm font-mono" style={{ color: "var(--text-muted)" }}>
-            © 2026 Becho · Built for students, by students
+      <footer style={{ backgroundColor: "#0a1628", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        {/* Top section */}
+        <div className="max-w-7xl mx-auto px-6 pt-16 pb-12 grid grid-cols-1 md:grid-cols-4 gap-10">
+
+          {/* Brand column */}
+          <div className="md:col-span-1 flex flex-col gap-5">
+            <BechoLogo size={38} showWordmark={true} wordmarkColor="white" />
+            <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+              The trusted marketplace built exclusively for college students — buy, sell, and share
+              academic resources within your campus community. Zero noise, verified students only.
+            </p>
+            {/* Social icons */}
+            <div className="flex gap-3 mt-1">
+              {[
+                { label: "Twitter / X", svg: <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.002 2.25h6.976l4.263 5.633 5.003-5.633Zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="rgba(255,255,255,0.7)" /> },
+                { label: "Instagram", svg: <><rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2"/><circle cx="17.5" cy="6.5" r="1" fill="rgba(255,255,255,0.7)"/></> },
+                { label: "LinkedIn", svg: <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z M4 6a2 2 0 100-4 2 2 0 000 4z" fill="rgba(255,255,255,0.7)" /> },
+              ].map(({ label, svg }) => (
+                <button key={label} title={label}
+                  className="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-white/10"
+                  style={{ border: "1px solid rgba(255,255,255,0.12)" }}>
+                  <svg viewBox="0 0 24 24" className="w-4 h-4">{svg}</svg>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Marketplace column */}
+          <div className="flex flex-col gap-4">
+            <h4 className="text-xs font-mono uppercase tracking-widest font-semibold" style={{ color: "#E8611C" }}>Marketplace</h4>
+            <ul className="flex flex-col gap-2.5">
+              {[
+                { label: "Browse Listings",   action: () => navigate("/browse") },
+                { label: "Sell Resources",     action: () => navigate("/login?role=seller") },
+                { label: "Mentorship Hub",     action: () => navigate("/mentorship") },
+                { label: "Become a Seller",    action: () => navigate("/login?role=seller") },
+              ].map(({ label, action }) => (
+                <li key={label}>
+                  <button onClick={action}
+                    className="text-sm transition-colors duration-200 hover:text-[#E8611C] text-left"
+                    style={{ color: "rgba(255,255,255,0.55)" }}>
+                    {label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Categories column */}
+          <div className="flex flex-col gap-4">
+            <h4 className="text-xs font-mono uppercase tracking-widest font-semibold" style={{ color: "#E8611C" }}>Categories</h4>
+            <ul className="flex flex-col gap-2.5">
+              {["Study Notes & PDFs", "Textbooks", "Electronics & Kits", "Lab Equipment", "Video Courses", "Project Files"].map((item) => (
+                <li key={item}>
+                  <button onClick={() => navigate("/browse")}
+                    className="text-sm transition-colors duration-200 hover:text-[#E8611C] text-left"
+                    style={{ color: "rgba(255,255,255,0.55)" }}>
+                    {item}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* About column */}
+          <div className="flex flex-col gap-4">
+            <h4 className="text-xs font-mono uppercase tracking-widest font-semibold" style={{ color: "#E8611C" }}>About</h4>
+            <ul className="flex flex-col gap-2.5">
+              {[
+                "Our Mission", "How It Works", "Student Safety", "Privacy Policy", "Terms of Service", "Contact Us"
+              ].map((item) => (
+                <li key={item}>
+                  <button className="text-sm transition-colors duration-200 hover:text-[#E8611C] text-left"
+                    style={{ color: "rgba(255,255,255,0.55)" }}>
+                    {item}
+                  </button>
+                </li>
+              ))}
+            </ul>
+
+            {/* Mission callout */}
+            <div className="mt-4 p-4 rounded-xl" style={{ background: "rgba(232,97,28,0.10)", border: "1px solid rgba(232,97,28,0.20)" }}>
+              <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.60)" }}>
+                <span style={{ color: "#E8611C", fontWeight: 600 }}>Our mission:</span> To empower every student with affordable access to academic resources — and a fair way to earn from what they already own.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }} />
+
+        {/* Bottom bar */}
+        <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs font-mono" style={{ color: "rgba(255,255,255,0.35)" }}>
+            © 2026 Becho · Built for students, by students · India 🇮🇳
           </p>
-          <div className="flex gap-6 text-sm font-mono" style={{ color: "var(--text-muted)" }}>
-            <button className="hover:text-primary transition-colors" onClick={() => navigate("/browse")}>Browse</button>
-            <button className="hover:text-primary transition-colors" onClick={() => navigate("/login")}>Sell</button>
-            <button className="hover:text-primary transition-colors">Privacy</button>
+          <div className="flex gap-5 text-xs font-mono" style={{ color: "rgba(255,255,255,0.35)" }}>
+            <button className="hover:text-white transition-colors">Privacy</button>
+            <button className="hover:text-white transition-colors">Terms</button>
+            <button className="hover:text-white transition-colors">Cookies</button>
+            <button onClick={() => navigate("/browse")} className="hover:text-white transition-colors">Browse</button>
           </div>
         </div>
       </footer>

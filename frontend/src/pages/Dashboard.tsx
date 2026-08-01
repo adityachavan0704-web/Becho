@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Package, ShoppingBag, MessageSquare, LogOut,
   User, Plus, Upload, TrendingUp, Star, Eye, Bell,
   ChevronRight, Loader2, PackagePlus, FileText, Search,
-  MoreHorizontal, ArrowUpRight, Zap, Lock, X, ShoppingCart, ArrowRight,
+  MoreHorizontal, ArrowUpRight, Lock, X, ShoppingCart, ArrowRight,
   Moon, Sun
 } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
@@ -14,6 +14,7 @@ import { Button } from "../components/ui/Button"
 import { UploadModal } from "../components/UploadModal"
 import { cn } from "../lib/utils"
 import type { Listing } from "../components/ListingCard"
+import BechoLogo from "../components/BechoLogo"
 
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
 type ActiveSection = "overview" | "listings" | "browse" | "messages"
@@ -181,10 +182,7 @@ export default function Dashboard() {
 
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-5" style={{ borderBottom: `1px solid ${T.border}` }}>
-          <div className="w-8 h-8 rounded-lg bg-[#E8611C] flex items-center justify-center">
-            <Zap className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-lg font-bold tracking-tight" style={{ color: T.text }}>Becho</span>
+          <BechoLogo size={36} showWordmark={true} />
         </div>
 
         {/* Nav */}

@@ -5,6 +5,8 @@ interface BechoLogoProps {
   showWordmark?: boolean
   /** Additional className for the wrapper */
   className?: string
+  /** Override the wordmark text color (defaults to var(--text)) */
+  wordmarkColor?: string
 }
 
 /**
@@ -13,7 +15,7 @@ interface BechoLogoProps {
  *
  * Matches the official Becho brand: #E8611C orange, white letterform.
  */
-export default function BechoLogo({ size = 40, showWordmark = true, className = "" }: BechoLogoProps) {
+export default function BechoLogo({ size = 40, showWordmark = true, className = "", wordmarkColor }: BechoLogoProps) {
   return (
     <div className={`flex items-center gap-3 ${className}`} style={{ lineHeight: 1 }}>
       {/* Icon */}
@@ -55,7 +57,7 @@ export default function BechoLogo({ size = 40, showWordmark = true, className = 
             fontWeight: 800,
             fontSize: size * 0.7,
             letterSpacing: "-0.03em",
-            color: "var(--text)",
+            color: wordmarkColor ?? "var(--text)",
             lineHeight: 1,
           }}
         >

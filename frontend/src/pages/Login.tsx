@@ -109,11 +109,13 @@ export default function Login() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <BechoLogo size={52} showWordmark={false} />
+          <div className="flex justify-center mb-5">
+            <BechoLogo size={48} showWordmark={true} />
           </div>
-          <h1 className="text-3xl font-bold" style={{ letterSpacing: "-0.03em", color: "var(--text)" }}>
-            Welcome to Becho
+          <h1 className="text-2xl font-bold" style={{ letterSpacing: "-0.03em", color: "var(--text)" }}>
+            {tab === "register"
+              ? <>Join <span style={{ color: "#E8611C" }}>Becho</span> — it's free</>
+              : <>Welcome <span style={{ color: "#E8611C" }}>back</span></>}
           </h1>
           <p className="mt-2 text-sm" style={{ color: "var(--text-muted)" }}>
             {role === "seller"
