@@ -177,7 +177,7 @@ export default function Dashboard() {
     <div className="flex h-screen overflow-hidden" style={{ backgroundColor: T.bg }}>
       {/* ── Sidebar ── */}
       <aside className="w-64 flex-shrink-0 flex flex-col backdrop-blur"
-        style={{ borderRight: `1px solid ${T.border}`, backgroundColor: isDark ? "rgba(8,8,8,0.85)" : "rgba(253,248,242,0.90)" }}>
+        style={{ borderRight: `1px solid ${T.border}`, backgroundColor: isDark ? "rgba(3,3,3,0.92)" : "rgba(210,200,186,0.95)" }}>
 
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-5" style={{ borderBottom: `1px solid ${T.border}` }}>
@@ -254,7 +254,7 @@ export default function Dashboard() {
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header className="flex items-center justify-between px-8 py-5 flex-shrink-0 backdrop-blur"
-          style={{ borderBottom: `1px solid ${T.border}`, backgroundColor: isDark ? "rgba(8,8,8,0.70)" : "rgba(253,248,242,0.80)" }}>
+          style={{ borderBottom: `1px solid ${T.border}`, backgroundColor: isDark ? "rgba(3,3,3,0.88)" : "rgba(210,200,186,0.95)" }}>
           <div>
             <h1 className="text-3xl font-bold" style={{ color: T.text }}>
               {NAV_ITEMS.find((n) => n.id === activeSection)?.label ?? "Dashboard"}
@@ -326,7 +326,10 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
         <h2 className="text-2xl font-bold" style={{ color: T.text }}>
           {isAuthenticated ? `Welcome back, ${user?.name?.split(" ")[0] ?? "there"} 👋` : "Welcome to Becho 👋"}
         </h2>
-        <p className="text-base mt-1" style={{ color: T.muted }}>
+        <p className="text-base mt-1" style={{ color: T.primary, fontWeight: 600, fontStyle: "italic" }}>
+          We sell what you want
+        </p>
+        <p className="text-sm mt-1" style={{ color: T.muted }}>
           {isAuthenticated ? "Here's what's happening with your account." : "Browse 25+ academic listings or log in to buy, sell, and more."}
         </p>
       </div>
@@ -567,16 +570,33 @@ function MarketplaceSection({ isAuthenticated, onLoginPrompt }: {
         </div>
       ) : (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filtered.map((item, idx) => (
+          {filtered.map((item, idx) => {
+            const gradientMap: Record<string, string> = {
+              Notes:     "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+              Books:     "linear-gradient(135deg, #2d1b00 0%, #4a2f00 50%, #6b4400 100%)",
+              Hardware:  "linear-gradient(135deg, #1a0a00 0%, #3d1a00 50%, #6b3000 100%)",
+              Equipment: "linear-gradient(135deg, #001a0a 0%, #003d1a 50%, #006b30 100%)",
+              "Lab Tools": "linear-gradient(135deg, #0a001a 0%, #1a003d 50%, #30006b 100%)",
+              Software:  "linear-gradient(135deg, #001a1a 0%, #003d3d 50%, #006b6b 100%)",
+              Cycles:    "linear-gradient(135deg, #1a1a00 0%, #3d3d00 50%, #6b6b00 100%)",
+            }
+            const emojiMap: Record<string, string> = {
+              Notes: "📚", Books: "📖", Hardware: "⚡", Equipment: "🔬",
+              "Lab Tools": "🧪", Software: "💻", Cycles: "🚲",
+            }
+            const bgGradient = gradientMap[item.category] ?? "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)"
+            const emoji = emojiMap[item.category] ?? "📦"
+            return (
             <motion.div key={item.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.03, duration: 0.2 }} whileHover={{ y: -4 }}
               className="group rounded-2xl overflow-hidden transition-all duration-300"
               style={{ border: `1px solid ${T.border}`, background: T.surface }}>
               <div className="relative h-36 flex items-center justify-center overflow-hidden"
-                style={{ background: T.surface2 }}>
-                {item.type === "ONLINE"
-                  ? <FileText className="h-10 w-10 transition-colors" style={{ color: T.subtle }} />
-                  : <Package className="h-10 w-10 transition-colors" style={{ color: T.subtle }} />}
+                style={{ background: bgGradient }}>
+                <div className="flex flex-col items-center justify-center gap-1">
+                  <span className="text-4xl">{emoji}</span>
+                  <span className="text-[10px] font-mono uppercase tracking-widest opacity-60" style={{ color: "rgba(255,255,255,0.7)" }}>{item.category}</span>
+                </div>
                 <div className="absolute top-2.5 left-2.5">
                   <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                     style={item.type === "ONLINE"
@@ -602,9 +622,6 @@ function MarketplaceSection({ isAuthenticated, onLoginPrompt }: {
                     <span className="text-[9px] font-bold" style={{ color: T.primary }}>{item.seller.name[0]}</span>
                   </div>
                   <span className="text-xs truncate" style={{ color: T.muted }}>{item.seller.name}</span>
-                  <span className="ml-auto flex items-center gap-0.5 text-xs text-amber-400">
-                    <Star className="h-3 w-3 fill-amber-400" />{item.seller.reputation}
-                  </span>
                 </div>
                 <div className="flex items-center justify-between pt-2.5" style={{ borderTop: `1px solid ${T.border}` }}>
                   {item.isFree
@@ -620,7 +637,8 @@ function MarketplaceSection({ isAuthenticated, onLoginPrompt }: {
                 </div>
               </div>
             </motion.div>
-          ))}
+            )
+          })}
         </motion.div>
       )}
     </motion.div>

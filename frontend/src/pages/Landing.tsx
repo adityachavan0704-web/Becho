@@ -244,7 +244,7 @@ export default function Landing() {
       {/* ── Navbar ── */}
       <nav
         className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl"
-        style={{ borderBottom: "1px solid var(--border)", background: isDark ? "rgba(8,8,8,0.80)" : "rgba(245,239,230,0.85)" }}
+        style={{ borderBottom: "1px solid var(--border)", background: isDark ? "rgba(4,4,4,0.92)" : "rgba(220,210,196,0.95)" }}
       >
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -259,15 +259,15 @@ export default function Landing() {
               <span style={{ color: "var(--text-subtle)" }}>|</span>
             </div>
             <ThemeToggle />
-            <Button variant="outline" className="text-xs uppercase tracking-widest font-mono h-9 px-5"
-              onClick={() => navigate("/login")}>Log in</Button>
+            <Button className="text-xs uppercase tracking-widest font-mono h-9 px-5"
+              onClick={() => navigate("/login")}>Log In</Button>
             <Button className="text-xs uppercase tracking-widest font-mono h-9 px-5"
               onClick={() => navigate("/login?role=buyer")}>Join Now</Button>
           </div>
           {/* Mobile */}
           <div className="flex md:hidden items-center gap-2">
             <ThemeToggle />
-            <Button variant="ghost" className="text-xs" onClick={() => navigate("/login")}>Log in</Button>
+            <Button className="text-xs" onClick={() => navigate("/login")}>Log In</Button>
             <Button className="text-xs" onClick={() => navigate("/login?role=buyer")}>Join</Button>
           </div>
         </div>
@@ -290,13 +290,22 @@ export default function Landing() {
         <motion.h1
           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.7, type: "spring", stiffness: 60 }}
-          className="text-5xl sm:text-6xl lg:text-[5.5rem] font-bold tracking-tight leading-[1.08] max-w-4xl mb-6"
+          className="text-5xl sm:text-6xl lg:text-[5.5rem] font-bold tracking-tight leading-[1.08] max-w-4xl mb-4"
           style={{ color: "var(--text)" }}
         >
           The student market
           <br />
           <span style={{ color: "var(--text)" }}>for academic resources</span>
         </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.5 }}
+          className="text-2xl sm:text-3xl font-semibold mb-5 tracking-tight"
+          style={{ color: "var(--primary)", fontStyle: "italic" }}
+        >
+          " We sell what you want "
+        </motion.p>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }}
@@ -333,11 +342,6 @@ export default function Landing() {
           <span>
             <span className="font-semibold" style={{ color: "var(--text)" }}>2,400+</span> students already trading
           </span>
-          <div className="flex gap-0.5">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-            ))}
-          </div>
         </motion.div>
       </section>
 
