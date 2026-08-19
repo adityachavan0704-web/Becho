@@ -6,7 +6,7 @@ import {
   User, Plus, Upload, TrendingUp, Star, Eye, Bell,
   ChevronRight, Loader2, PackagePlus, FileText, Search,
   MoreHorizontal, ArrowUpRight, Lock, X, ShoppingCart, ArrowRight,
-  Moon, Sun
+  Moon, Sun, Heart, Sparkles, Globe, MapPin
 } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
 import { useTheme } from "../contexts/ThemeContext"
@@ -16,12 +16,13 @@ import type { Listing } from "../components/ListingCard"
 import BechoLogo from "../components/BechoLogo"
 
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
-type ActiveSection = "overview" | "listings" | "browse" | "messages"
+type ActiveSection = "overview" | "listings" | "browse" | "messages" | "wishlist"
 const NAV_ITEMS = [
   { id: "overview"  as const, label: "Overview",     icon: LayoutDashboard },
   { id: "listings"  as const, label: "My Listings",  icon: Package },
   { id: "browse"    as const, label: "Marketplace",  icon: ShoppingBag },
   { id: "messages"  as const, label: "Messages",     icon: MessageSquare },
+  { id: "wishlist"  as const, label: "Wishlist",     icon: Heart },
 ]
 
 const MOCK_LISTINGS = [
@@ -133,6 +134,16 @@ export default function Dashboard() {
   const [loadingListings, setLoadingListings] = useState(false)
   const [stats, setStats] = useState({ active: 0, earned: 0, reputation: 0 })
   const [loginPrompt, setLoginPrompt] = useState<{ open: boolean; action: "buy" | "sell" }>({ open: false, action: "buy" })
+  const [globalWishlist, setGlobalWishlist] = useState<Set<string>>(new Set())
+
+  const toggleGlobalWishlist = (id: string) => {
+    setGlobalWishlist((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   const fetchMyListings = useCallback(async () => {
     const token = getAccessToken()
@@ -292,10 +303,13 @@ export default function Dashboard() {
               <ListingsSection key="listings" listings={myListings} loading={loadingListings} isAuthenticated={isAuthenticated} onUpload={openUpload} onViewDetail={(id) => navigate(`/listings/${id}`)} onLoginPrompt={() => setLoginPrompt({ open: true, action: "sell" })} />
             )}
             {activeSection === "browse" && (
-              <MarketplaceSection key="browse" isAuthenticated={isAuthenticated} onLoginPrompt={(action) => setLoginPrompt({ open: true, action })} />
+              <MarketplaceSection key="browse" isAuthenticated={isAuthenticated} onLoginPrompt={(action) => setLoginPrompt({ open: true, action })} wishlist={globalWishlist} onToggleWishlist={toggleGlobalWishlist} />
             )}
             {activeSection === "messages" && (
               <MessagesSection key="messages" isAuthenticated={isAuthenticated} onLogin={() => navigate("/login")} />
+            )}
+            {activeSection === "wishlist" && (
+              <WishlistSection key="wishlist" wishlist={globalWishlist} onToggleWishlist={toggleGlobalWishlist} isAuthenticated={isAuthenticated} onLoginPrompt={(action) => setLoginPrompt({ open: true, action })} />
             )}
           </AnimatePresence>
         </div>
@@ -502,56 +516,114 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
 }
 
 // ── Marketplace Section ───────────────────────────────────────────────────────
-const MARKETPLACE_CATS = ["All", "Notes", "Books", "Hardware", "Equipment", "Lab Tools", "Software", "Cycles"]
+const MARKETPLACE_CATS_ONLINE  = ["All", "Notes", "Software"]
+const MARKETPLACE_CATS_OFFLINE = ["All", "Books", "Hardware", "Equipment", "Lab Tools", "Cycles"]
+const MARKETPLACE_CATS_ALL     = ["All", "Notes", "Books", "Hardware", "Equipment", "Lab Tools", "Software", "Cycles"]
 
-function MarketplaceSection({ isAuthenticated, onLoginPrompt }: {
+// Real images from Unsplash (free)
+const CARD_IMAGES: Record<string, string> = {
+  Notes:       "https://images.unsplash.com/photo-1588702547919-26089e690ecc?w=400&q=80",
+  Books:       "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80",
+  Hardware:    "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+  Equipment:   "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&q=80",
+  "Lab Tools": "https://images.unsplash.com/photo-1576086213369-97a306d36557?w=400&q=80",
+  Software:    "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&q=80",
+  Cycles:      "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&q=80",
+}
+
+const FRESH_ITEMS = [
+  { id:"f1", title:"Signals & Systems – Oppenheim Notes",  category:"Notes",    type:"ONLINE",  price:159,  isFree:false, seller:"Ravi Kapoor",   img:"https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&q=80" },
+  { id:"f2", title:"Mechanical Keyboard – TKL 87 keys",   category:"Hardware", type:"OFFLINE", price:1200, isFree:false, seller:"Sneha Rao",     img:"https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&q=80" },
+  { id:"f3", title:"GATE 2026 Full Mock Test Series",     category:"Software", type:"ONLINE",  price:0,    isFree:true,  seller:"Arjun Singh",  img:"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&q=80" },
+  { id:"f4", title:"Trek 3500 Mountain Bike – Campus Use",category:"Cycles",   type:"OFFLINE", price:4500, isFree:false, seller:"Meera Joshi",  img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" },
+  { id:"f5", title:"Physics Wallah DPP Sheets – JEE",    category:"Notes",    type:"ONLINE",  price:99,   isFree:false, seller:"Tanvi Gupta",  img:"https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=400&q=80" },
+]
+
+function MarketplaceSection({ isAuthenticated, onLoginPrompt, wishlist, onToggleWishlist }: {
   isAuthenticated: boolean
   onLoginPrompt: (action: "buy" | "sell") => void
+  wishlist: Set<string>
+  onToggleWishlist: (id: string) => void
 }) {
-  const [search, setSearch]     = useState("")
+  const [search, setSearch]         = useState("")
   const [activeCat, setActiveCat]   = useState("All")
   const [activeType, setActiveType] = useState<"" | "ONLINE" | "OFFLINE">("")
 
+  const cats = activeType === "ONLINE" ? MARKETPLACE_CATS_ONLINE
+             : activeType === "OFFLINE" ? MARKETPLACE_CATS_OFFLINE
+             : MARKETPLACE_CATS_ALL
+
+  // Search by title words — matches "cycle", "board", "mouse", etc.
   const filtered = MOCK_LISTINGS.filter((item) => {
-    const q           = search.toLowerCase()
-    const matchSearch = !q || item.title.toLowerCase().includes(q) || item.category.toLowerCase().includes(q) || (item.subject ?? "").toLowerCase().includes(q)
+    const q = search.trim().toLowerCase()
+    if (!q) {
+      return (activeCat === "All" || item.category === activeCat) && (!activeType || item.type === activeType)
+    }
+    const words = q.split(/\s+/)
+    const haystack = `${item.title} ${item.category} ${item.subject ?? ""}`.toLowerCase()
+    const matchSearch = words.every((w) => haystack.includes(w))
     const matchCat    = activeCat === "All" || item.category === activeCat
     const matchType   = !activeType || item.type === activeType
     return matchSearch && matchCat && matchType
   })
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="p-8 max-w-6xl space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold" style={{ color: T.text }}>Marketplace</h2>
-        <p className="text-sm mt-0.5" style={{ color: T.muted }}>{filtered.length} items available</p>
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="p-8 max-w-6xl space-y-5">
+
+      {/* ── Item count header ── */}
+      <div className="flex items-baseline gap-3">
+        <span className="text-5xl font-black tabular-nums" style={{ color: T.text }}>{filtered.length}</span>
+        <span className="text-lg font-semibold" style={{ color: T.muted }}>items available</span>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: T.subtle }} />
-          <input
-            className="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none transition-all"
-            style={{ background: T.surface, border: `1px solid ${T.border}`, color: T.text }}
-            placeholder="Search items…" value={search} onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center gap-1 rounded-xl p-1" style={{ background: T.surface, border: `1px solid ${T.border}` }}>
-          {([["All", ""], ["Online", "ONLINE"], ["Hardware", "OFFLINE"]] as [string, "" | "ONLINE" | "OFFLINE"][]).map(([label, val]) => (
-            <button key={val} onClick={() => setActiveType(val)}
-              className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
-              style={activeType === val ? { background: T.primary, color: "#fff" } : { color: T.muted }}>
+      {/* ── Standalone search bar (no coloured box) ── */}
+      <div className="relative">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5" style={{ color: T.subtle }} />
+        <input
+          id="marketplace-search"
+          className="w-full rounded-2xl pl-12 pr-6 py-4 text-base font-medium focus:outline-none transition-all"
+          style={{
+            background: T.surface,
+            border: `1.5px solid ${T.border}`,
+            color: T.text,
+            boxShadow: "0 2px 16px rgba(0,0,0,0.10)",
+          }}
+          placeholder="Search by name — notes, keyboard, cycle, board…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        {search && (
+          <button
+            onClick={() => setSearch("")}
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center"
+            style={{ background: T.surface2 }}>
+            <X className="h-3.5 w-3.5" style={{ color: T.muted }} />
+          </button>
+        )}
+      </div>
+
+      {/* ── Filters (neutral surface, no orange tint) ── */}
+      <div className="rounded-2xl p-4 space-y-3" style={{ background: T.surface, border: `1px solid ${T.border}` }}>
+        {/* Online / Offline toggle */}
+        <div className="flex flex-wrap items-center gap-2">
+          {([["All", ""], ["Online", "ONLINE"], ["Offline", "OFFLINE"]] as [string, "" | "ONLINE" | "OFFLINE"][]).map(([label, val]) => (
+            <button key={label} onClick={() => { setActiveType(val); setActiveCat("All") }}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all"
+              style={activeType === val
+                ? { background: T.primary, color: "#fff" }
+                : { background: T.surface2, color: T.muted, border: `1px solid ${T.border}` }}>
+              {val === "ONLINE" ? <Globe className="h-3.5 w-3.5" /> : val === "OFFLINE" ? <MapPin className="h-3.5 w-3.5" /> : null}
               {label}
             </button>
           ))}
         </div>
+        {/* Category sub-filters */}
         <div className="flex items-center gap-1.5 flex-wrap">
-          {MARKETPLACE_CATS.map((cat) => (
+          {cats.map((cat) => (
             <button key={cat} onClick={() => setActiveCat(cat)}
-              className="px-3 py-1.5 rounded-full text-sm font-medium transition-all"
+              className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
               style={activeCat === cat
-                ? { background: T.text, color: T.bg, border: "1px solid transparent" }
+                ? { background: T.text, color: T.bg }
                 : { border: `1px solid ${T.border}`, color: T.muted }}>
               {cat}
             </button>
@@ -559,6 +631,39 @@ function MarketplaceSection({ isAuthenticated, onLoginPrompt }: {
         </div>
       </div>
 
+      {/* ── Fresh Recommendations ── */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <Sparkles className="h-4 w-4" style={{ color: T.primary }} />
+          <p className="text-sm font-bold uppercase tracking-wider" style={{ color: T.text }}>Fresh Recommendations</p>
+          <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: T.surface2, color: T.muted }}>New</span>
+        </div>
+        <div className="flex gap-4 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
+          {FRESH_ITEMS.map((fi) => (
+            <motion.div key={fi.id} whileHover={{ y: -4 }} className="flex-shrink-0 w-44 rounded-2xl overflow-hidden cursor-pointer relative group"
+              style={{ border: `1px solid ${T.border}`, background: T.surface }}>
+              <div className="relative h-28 overflow-hidden">
+                <img src={fi.img} alt={fi.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%)" }} />
+                {/* Wishlist button — always visible */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); onToggleWishlist(fi.id) }}
+                  className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all"
+                  style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)" }}>
+                  <Heart className="h-3.5 w-3.5" fill={wishlist.has(fi.id) ? "#e8611c" : "none"} style={{ color: wishlist.has(fi.id) ? "#e8611c" : "rgba(255,255,255,0.80)" }} />
+                </button>
+              </div>
+              {/* Below photo: only product name + price */}
+              <div className="p-3">
+                <p className="text-xs font-semibold line-clamp-2 leading-snug" style={{ color: T.text }}>{fi.title}</p>
+                <p className="text-base font-black mt-1.5" style={{ color: fi.isFree ? T.primary : T.text }}>{fi.isFree ? "Free" : `₹${fi.price}`}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Item Grid ── */}
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
@@ -566,51 +671,46 @@ function MarketplaceSection({ isAuthenticated, onLoginPrompt }: {
             <Search className="h-6 w-6" style={{ color: T.subtle }} />
           </div>
           <p className="text-base font-semibold" style={{ color: T.muted }}>No items found</p>
-          <p className="text-sm mt-1.5" style={{ color: T.subtle }}>Try a different search or category.</p>
+          <p className="text-sm mt-1.5" style={{ color: T.subtle }}>Try a different search or filter.</p>
         </div>
       ) : (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((item, idx) => {
-            const gradientMap: Record<string, string> = {
-              Notes:     "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
-              Books:     "linear-gradient(135deg, #2d1b00 0%, #4a2f00 50%, #6b4400 100%)",
-              Hardware:  "linear-gradient(135deg, #1a0a00 0%, #3d1a00 50%, #6b3000 100%)",
-              Equipment: "linear-gradient(135deg, #001a0a 0%, #003d1a 50%, #006b30 100%)",
-              "Lab Tools": "linear-gradient(135deg, #0a001a 0%, #1a003d 50%, #30006b 100%)",
-              Software:  "linear-gradient(135deg, #001a1a 0%, #003d3d 50%, #006b6b 100%)",
-              Cycles:    "linear-gradient(135deg, #1a1a00 0%, #3d3d00 50%, #6b6b00 100%)",
-            }
-            const emojiMap: Record<string, string> = {
-              Notes: "📚", Books: "📖", Hardware: "⚡", Equipment: "🔬",
-              "Lab Tools": "🧪", Software: "💻", Cycles: "🚲",
-            }
-            const bgGradient = gradientMap[item.category] ?? "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)"
-            const emoji = emojiMap[item.category] ?? "📦"
+            const imgSrc = CARD_IMAGES[item.category] ?? "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=400&q=80"
             return (
             <motion.div key={item.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.03, duration: 0.2 }} whileHover={{ y: -4 }}
-              className="group rounded-2xl overflow-hidden transition-all duration-300"
+              className="group rounded-2xl overflow-hidden transition-all duration-300 relative"
               style={{ border: `1px solid ${T.border}`, background: T.surface }}>
-              <div className="relative h-36 flex items-center justify-center overflow-hidden"
-                style={{ background: bgGradient }}>
-                <div className="flex flex-col items-center justify-center gap-1">
-                  <span className="text-4xl">{emoji}</span>
-                  <span className="text-[10px] font-mono uppercase tracking-widest opacity-60" style={{ color: "rgba(255,255,255,0.7)" }}>{item.category}</span>
-                </div>
+              {/* Image */}
+              <div className="relative h-36 overflow-hidden">
+                <img src={imgSrc} alt={item.category}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%)" }} />
+                {/* Type badge */}
                 <div className="absolute top-2.5 left-2.5">
                   <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                     style={item.type === "ONLINE"
-                      ? { background: T.primaryDim, color: T.primary, border: "1px solid rgba(232,97,28,0.20)" }
-                      : { background: "rgba(245,158,11,0.15)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.20)" }}>
-                    {item.type === "ONLINE" ? "ONLINE" : "HARDWARE"}
+                      ? { background: "rgba(232,97,28,0.85)", color: "#fff" }
+                      : { background: "rgba(245,158,11,0.85)", color: "#fff" }}>
+                    {item.type === "ONLINE" ? "ONLINE" : "OFFLINE"}
                   </span>
                 </div>
+                {/* Free badge */}
                 {item.isFree && (
-                  <div className="absolute top-2.5 right-2.5">
+                  <div className="absolute bottom-2.5 left-2.5">
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                      style={{ background: T.primaryDim, color: T.primary, border: "1px solid rgba(232,97,28,0.30)" }}>FREE</span>
+                      style={{ background: "rgba(232,97,28,0.90)", color: "#fff" }}>FREE</span>
                   </div>
                 )}
+                {/* Wishlist heart — always visible, fills when saved */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); onToggleWishlist(item.id) }}
+                  className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center transition-all"
+                  style={{ background: "rgba(0,0,0,0.50)", backdropFilter: "blur(6px)", border: wishlist.has(item.id) ? "1px solid rgba(232,97,28,0.50)" : "1px solid rgba(255,255,255,0.10)" }}
+                  title={wishlist.has(item.id) ? "Remove from Wishlist" : "Add to Wishlist"}>
+                  <Heart className="h-4 w-4" fill={wishlist.has(item.id) ? "#e8611c" : "none"} style={{ color: wishlist.has(item.id) ? "#e8611c" : "rgba(255,255,255,0.80)" }} />
+                </button>
               </div>
               <div className="p-3.5">
                 <h3 className="font-semibold text-sm leading-snug line-clamp-2 mb-1 group-hover:text-primary transition-colors"
@@ -618,8 +718,8 @@ function MarketplaceSection({ isAuthenticated, onLoginPrompt }: {
                 <p className="text-xs line-clamp-2 mb-3" style={{ color: T.muted }}>{item.description}</p>
                 <div className="flex items-center gap-1.5 mb-3">
                   <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ background: T.primaryDim }}>
-                    <span className="text-[9px] font-bold" style={{ color: T.primary }}>{item.seller.name[0]}</span>
+                    style={{ background: T.surface2 }}>
+                    <span className="text-[9px] font-bold" style={{ color: T.muted }}>{item.seller.name[0]}</span>
                   </div>
                   <span className="text-xs truncate" style={{ color: T.muted }}>{item.seller.name}</span>
                 </div>
@@ -632,7 +732,7 @@ function MarketplaceSection({ isAuthenticated, onLoginPrompt }: {
                     style={isAuthenticated
                       ? { background: T.primaryDim, color: T.primary }
                       : { background: T.surface2, color: T.muted }}>
-                    {isAuthenticated ? <><ShoppingCart className="h-3 w-3" /> Buy</> : <><Lock className="h-3 w-3" /> Buy</>}
+                    {isAuthenticated ? <><ShoppingCart className="h-3 w-3" />Buy</> : <><Lock className="h-3 w-3" />Buy</>}
                   </button>
                 </div>
               </div>
@@ -640,6 +740,81 @@ function MarketplaceSection({ isAuthenticated, onLoginPrompt }: {
             )
           })}
         </motion.div>
+      )}
+    </motion.div>
+  )
+}
+
+// ── Wishlist Section ───────────────────────────────────────────────────────
+function WishlistSection({ wishlist, onToggleWishlist, isAuthenticated, onLoginPrompt }: {
+  wishlist: Set<string>
+  onToggleWishlist: (id: string) => void
+  isAuthenticated: boolean
+  onLoginPrompt: (action: "buy" | "sell") => void
+}) {
+  const allItems = [...MOCK_LISTINGS, ...FRESH_ITEMS] as unknown as Array<{
+    id: string; title: string; category: string; type: string; price: number; isFree: boolean
+    description?: string; seller?: { name: string }
+  }>
+  const wishlisted = allItems.filter((item) => wishlist.has(item.id))
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="p-8 max-w-6xl space-y-6">
+      <div className="flex items-baseline gap-3">
+        <h2 className="text-3xl font-black" style={{ color: T.text }}>Wishlist</h2>
+        <span className="text-sm font-semibold px-2 py-0.5 rounded-full" style={{ background: T.surface2, color: T.muted }}>{wishlisted.length} saved</span>
+      </div>
+
+      {wishlisted.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 text-center rounded-2xl"
+          style={{ border: `1px dashed ${T.border}` }}>
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
+            style={{ background: T.surface2 }}>
+            <Heart className="h-7 w-7" style={{ color: T.subtle }} />
+          </div>
+          <p className="text-lg font-bold" style={{ color: T.muted }}>Your wishlist is empty</p>
+          <p className="text-sm mt-1" style={{ color: T.subtle }}>Tap the ♥ on any listing to save it here.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {wishlisted.map((item) => {
+            const imgSrc = CARD_IMAGES[item.category] ?? "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=400&q=80"
+            return (
+              <motion.div key={item.id} whileHover={{ y: -4 }}
+                className="group rounded-2xl overflow-hidden relative"
+                style={{ border: `1px solid ${T.border}`, background: T.surface }}>
+                <div className="relative h-36 overflow-hidden">
+                  <img src={imgSrc} alt={item.category} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 55%)" }} />
+                  {/* Always-visible filled heart */}
+                  <button
+                    onClick={() => onToggleWishlist(item.id)}
+                    className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center"
+                    style={{ background: "rgba(232,97,28,0.20)", border: "1px solid rgba(232,97,28,0.40)" }}
+                    title="Remove from Wishlist">
+                    <Heart className="h-4 w-4" fill="#e8611c" style={{ color: "#e8611c" }} />
+                  </button>
+                </div>
+                <div className="p-3.5">
+                  <h3 className="font-semibold text-sm line-clamp-2 mb-2" style={{ color: T.text }}>{item.title}</h3>
+                  {item.description && <p className="text-xs line-clamp-2 mb-2" style={{ color: T.muted }}>{item.description}</p>}
+                  <div className="flex items-center justify-between pt-2" style={{ borderTop: `1px solid ${T.border}` }}>
+                    <p className="text-base font-bold" style={{ color: item.isFree ? T.primary : T.text }}>
+                      {item.isFree ? "Free" : `₹${Number(item.price).toLocaleString("en-IN")}`}
+                    </p>
+                    <button onClick={() => onLoginPrompt("buy")}
+                      className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                      style={isAuthenticated
+                        ? { background: T.primaryDim, color: T.primary }
+                        : { background: T.surface2, color: T.muted }}>
+                      {isAuthenticated ? <><ShoppingCart className="h-3 w-3" />Buy</> : <><Lock className="h-3 w-3" />Buy</>}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
       )}
     </motion.div>
   )
