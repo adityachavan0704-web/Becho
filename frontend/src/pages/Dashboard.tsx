@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Package, ShoppingBag, MessageSquare, LogOut,
   User, Plus, Upload, TrendingUp, Star, Eye, Bell,
   ChevronRight, Loader2, PackagePlus, FileText, Search,
-  MoreHorizontal, ArrowUpRight, Lock, X, ShoppingCart, ArrowRight,
+  MoreHorizontal, ArrowUpRight, Lock, X, ArrowRight,
   Moon, Sun, Heart, Sparkles
 } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
@@ -18,52 +18,52 @@ import BechoLogo from "../components/BechoLogo"
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
 type ActiveSection = "overview" | "listings" | "browse" | "messages" | "wishlist"
 const NAV_ITEMS = [
-  { id: "overview"  as const, label: "Overview",     icon: LayoutDashboard },
-  { id: "listings"  as const, label: "My Listings",  icon: Package },
-  { id: "browse"    as const, label: "Marketplace",  icon: ShoppingBag },
-  { id: "messages"  as const, label: "Messages",     icon: MessageSquare },
-  { id: "wishlist"  as const, label: "Wishlist",     icon: Heart },
+  { id: "overview" as const, label: "Overview", icon: LayoutDashboard },
+  { id: "listings" as const, label: "My Listings", icon: Package },
+  { id: "browse" as const, label: "Marketplace", icon: ShoppingBag },
+  { id: "messages" as const, label: "Messages", icon: MessageSquare },
+  { id: "wishlist" as const, label: "Wishlist", icon: Heart },
 ]
 
 const MOCK_LISTINGS = [
-  { id:"m1",  title:"Data Structures & Algorithms – GATE Notes",        description:"Comprehensive handwritten notes covering arrays, trees, graphs, dynamic programming, and sorting algorithms. Perfect for GATE & placements.", price:149,   type:"ONLINE"  , category:"Notes",    subject:"DSA",                isFree:false, images:[], seller:{id:"s1",  name:"Rahul Sharma",   reputation:4.8}, createdAt:"2026-07-01T10:00:00Z"},
-  { id:"m2",  title:"Arduino Uno R3 Starter Kit",                             description:"Complete Arduino starter kit with breadboard, LEDs, resistors, jumper wires, and 30+ components. Barely used, great for IoT projects.",          price:850,   type:"OFFLINE" , category:"Hardware",  subject:null,                 isFree:false, images:[], seller:{id:"s2",  name:"Priya Singh",    reputation:4.9}, createdAt:"2026-07-05T09:00:00Z"},
-  { id:"m3",  title:"Engineering Mathematics – S.K. Mondal",             description:"Full solution set for SK Mondal Engineering Mathematics, topic-wise with shortcuts. Great for GATE 2026 prep.",                                  price:0,     type:"ONLINE"  , category:"Notes",    subject:"Engg. Maths",        isFree:true,  images:[], seller:{id:"s3",  name:"Aryan Mehta",    reputation:4.7}, createdAt:"2026-07-10T08:30:00Z"},
-  { id:"m4",  title:"Raspberry Pi 4 Model B (4GB)",                           description:"Raspberry Pi 4 with 4GB RAM, case, power supply, and 32GB SD card preloaded with Raspberry Pi OS. Perfect for ML projects.",                    price:3800,  type:"OFFLINE" , category:"Hardware",  subject:null,                 isFree:false, images:[], seller:{id:"s4",  name:"Sneha Patel",    reputation:4.6}, createdAt:"2026-07-08T11:00:00Z"},
-  { id:"m5",  title:"Computer Networks – Forouzan (5th Ed.)",            description:"Original textbook in excellent condition. All chapters intact, minimal highlighting. Covers OSI, TCP/IP, routing, and more.",                   price:320,   type:"OFFLINE" , category:"Books",     subject:"Computer Networks",  isFree:false, images:[], seller:{id:"s5",  name:"Vikram Nair",    reputation:4.5}, createdAt:"2026-07-12T14:00:00Z"},
-  { id:"m6",  title:"Python for Data Science – Full Course Notes",       description:"350+ pages of curated Python notes covering NumPy, Pandas, Matplotlib, Scikit-learn and ML fundamentals.",                                       price:199,   type:"ONLINE"  , category:"Notes",    subject:"Data Science",       isFree:false, images:[], seller:{id:"s6",  name:"Kavya Reddy",    reputation:4.9}, createdAt:"2026-07-15T10:30:00Z"},
-  { id:"m7",  title:"Hero Splendor Plus (Campus Use)",                        description:"Well-maintained Hero Splendor+ for campus commute. FC done, insurance valid, 52,000 km driven. Negotiable.",                                    price:28000, type:"OFFLINE" , category:"Cycles",    subject:null,                 isFree:false, images:[], seller:{id:"s7",  name:"Rohan Joshi",    reputation:4.4}, createdAt:"2026-07-11T09:00:00Z"},
-  { id:"m8",  title:"Digital Electronics Lab Manual",                         description:"Complete lab manual with circuit diagrams, truth tables, and viva questions for 8 experiments. Sem 4 ECE.",                                       price:80,    type:"ONLINE"  , category:"Notes",    subject:"Digital Electronics",isFree:false, images:[], seller:{id:"s8",  name:"Anjali Kumar",   reputation:4.3}, createdAt:"2026-07-14T15:00:00Z"},
-  { id:"m9",  title:"Operating Systems – Silberschatz (10th Ed.)",       description:"10th edition OS book. Clean, no torn pages. Covers processes, memory management, file systems, and deadlocks.",                                  price:450,   type:"OFFLINE" , category:"Books",     subject:"Operating Systems",  isFree:false, images:[], seller:{id:"s9",  name:"Dev Malhotra",   reputation:4.7}, createdAt:"2026-07-06T12:00:00Z"},
-  { id:"m10", title:"HC Verma – Concepts of Physics (Vol 1 & 2)",        description:"Classic HCV set, both volumes in good condition. A few pencil marks, easily erasable. Essential for JEE prep.",                                 price:600,   type:"OFFLINE" , category:"Books",     subject:"Physics",            isFree:false, images:[], seller:{id:"s10", name:"Pooja Sharma",   reputation:4.6}, createdAt:"2026-07-09T10:00:00Z"},
-  { id:"m11", title:"DBMS Complete Notes – SQL + Normalization",         description:"Covers ER diagrams, relational algebra, SQL queries, normalization up to BCNF, and transaction management.",                                     price:129,   type:"ONLINE"  , category:"Notes",    subject:"DBMS",               isFree:false, images:[], seller:{id:"s11", name:"Suresh Iyer",    reputation:4.8}, createdAt:"2026-07-13T11:30:00Z"},
-  { id:"m12", title:"Soldering Iron + Kit (60W)",                             description:"Professional 60W soldering iron with solder wire, flux, PCB stand, and cleaning sponge. Works perfectly.",                                      price:350,   type:"OFFLINE" , category:"Equipment", subject:null,                 isFree:false, images:[], seller:{id:"s12", name:"Manish Tiwari",  reputation:4.5}, createdAt:"2026-07-16T13:00:00Z"},
-  { id:"m13", title:"React + Node.js Full Stack Project Source Code",         description:"Complete e-commerce project with JWT auth, REST API, MongoDB. Well-documented codebase.",                                                        price:499,   type:"ONLINE"  , category:"Software",  subject:"Web Development",    isFree:false, images:[], seller:{id:"s13", name:"Nisha Agarwal",  reputation:4.9}, createdAt:"2026-07-17T09:00:00Z"},
-  { id:"m14", title:"Vernier Caliper (150mm) – Mitutoyo",                description:"Genuine Mitutoyo Vernier caliper, accurate to 0.02mm. Used for 2 lab sessions only, basically new.",                                           price:750,   type:"OFFLINE" , category:"Lab Tools", subject:null,                 isFree:false, images:[], seller:{id:"s14", name:"Kiran Bhat",     reputation:4.6}, createdAt:"2026-07-03T10:00:00Z"},
-  { id:"m15", title:"Machine Learning – Andrew Ng Notes + Assignments",  description:"Complete handwritten notes from Andrew Ng Coursera ML course + solved assignments in Python. 200+ pages.",                                      price:0,     type:"ONLINE"  , category:"Notes",    subject:"Machine Learning",   isFree:true,  images:[], seller:{id:"s15", name:"Tanveer Khan",   reputation:4.7}, createdAt:"2026-07-18T08:00:00Z"},
-  { id:"m16", title:"DSP – Digital Signal Processing Textbook",          description:"Proakis and Manolakis DSP book, 4th edition. Good condition, some highlighting in chapter 1-3.",                                                price:280,   type:"OFFLINE" , category:"Books",     subject:"DSP",                isFree:false, images:[], seller:{id:"s16", name:"Deepa Menon",    reputation:4.4}, createdAt:"2026-07-07T14:00:00Z"},
-  { id:"m17", title:"Scientific Calculator – Casio FX-991ES Plus",       description:"Casio FX-991ES Plus in perfect condition, all buttons working. Comes with original case.",                                                       price:400,   type:"OFFLINE" , category:"Equipment", subject:null,                 isFree:false, images:[], seller:{id:"s17", name:"Abhishek Roy",   reputation:4.5}, createdAt:"2026-07-10T16:00:00Z"},
-  { id:"m18", title:"STM32 Blue Pill Microcontroller Board",                  description:"STM32F103C8T6 development board with USB cable. Perfect for embedded systems and ARM Cortex-M3 learning.",                                      price:220,   type:"OFFLINE" , category:"Hardware",  subject:null,                 isFree:false, images:[], seller:{id:"s18", name:"Pallavi Das",    reputation:4.8}, createdAt:"2026-07-20T10:00:00Z"},
-  { id:"m19", title:"Compiler Design – Dragon Book Notes",               description:"Simplified notes from Aho, Lam, Sethi and Ullman. Covers lexing, parsing, semantic analysis, code generation and optimization.",               price:180,   type:"ONLINE"  , category:"Notes",    subject:"Compiler Design",    isFree:false, images:[], seller:{id:"s19", name:"Gautam Pillai",  reputation:4.6}, createdAt:"2026-07-19T11:00:00Z"},
-  { id:"m20", title:"Breadboard + 120 Jumper Wires Set",                      description:"Full-size 830 tie-point solderless breadboard + 120 jumper wires M-M, M-F, F-F. Ideal for circuit prototyping.",                               price:180,   type:"OFFLINE" , category:"Hardware",  subject:null,                 isFree:false, images:[], seller:{id:"s20", name:"Aishwarya Rao",  reputation:4.7}, createdAt:"2026-07-21T09:00:00Z"},
-  { id:"m21", title:"Theory of Computation – GATE 2026 Notes",           description:"Topic-wise notes covering FA, PDA, TM, decidability, and complexity. 150+ solved PYQs included.",                                             price:149,   type:"ONLINE"  , category:"Notes",    subject:"TOC",                isFree:false, images:[], seller:{id:"s21", name:"Harish Kumar",   reputation:4.9}, createdAt:"2026-07-22T08:00:00Z"},
-  { id:"m22", title:"Atlas Scientific Cycle + Lock",                          description:"Atlas road cycle in decent condition with chain lock. Tires recently replaced. Good for campus commuting.",                                      price:3500,  type:"OFFLINE" , category:"Cycles",    subject:null,                 isFree:false, images:[], seller:{id:"s22", name:"Riya Gupta",     reputation:4.3}, createdAt:"2026-07-04T12:00:00Z"},
-  { id:"m23", title:"Java – Complete Reference by Herbert Schildt",       description:"11th edition Java Complete Reference. No highlights, all pages intact. Great for OOP and Java SE prep.",                                       price:380,   type:"OFFLINE" , category:"Books",     subject:"Java",               isFree:false, images:[], seller:{id:"s23", name:"Saurabh Jain",   reputation:4.5}, createdAt:"2026-07-02T10:00:00Z"},
-  { id:"m24", title:"PCB Design Files – Mini Project Collection",        description:"Kicad design files for 10 mini PCB projects including power supply, amplifier, and sensor boards. Open-source.",                               price:0,     type:"ONLINE"  , category:"Software",  subject:"Electronics",        isFree:true,  images:[], seller:{id:"s24", name:"Meera Pillai",   reputation:4.8}, createdAt:"2026-07-23T10:00:00Z"},
-  { id:"m25", title:"Electromagnetic Field Theory – Hayt & Buck",        description:"8th edition EMF Theory book. Lightly used, excellent condition. Covers fields, waves, transmission lines.",                                     price:290,   type:"OFFLINE" , category:"Books",     subject:"EMF Theory",         isFree:false, images:[], seller:{id:"s25", name:"Ankit Verma",    reputation:4.6}, createdAt:"2026-07-24T09:00:00Z"},
+  { id: "m1", title: "Data Structures & Algorithms – GATE Notes", description: "Comprehensive handwritten notes covering arrays, trees, graphs, dynamic programming, and sorting algorithms. Perfect for GATE & placements.", price: 149, type: "ONLINE", category: "Notes", subject: "DSA", isFree: false, images: [], seller: { id: "s1", name: "Rahul Sharma", reputation: 4.8 }, createdAt: "2026-07-01T10:00:00Z" },
+  { id: "m2", title: "Arduino Uno R3 Starter Kit", description: "Complete Arduino starter kit with breadboard, LEDs, resistors, jumper wires, and 30+ components. Barely used, great for IoT projects.", price: 850, type: "OFFLINE", category: "Hardware", subject: null, isFree: false, images: [], seller: { id: "s2", name: "Priya Singh", reputation: 4.9 }, createdAt: "2026-07-05T09:00:00Z" },
+  { id: "m3", title: "Engineering Mathematics – S.K. Mondal", description: "Full solution set for SK Mondal Engineering Mathematics, topic-wise with shortcuts. Great for GATE 2026 prep.", price: 0, type: "ONLINE", category: "Notes", subject: "Engg. Maths", isFree: true, images: [], seller: { id: "s3", name: "Aryan Mehta", reputation: 4.7 }, createdAt: "2026-07-10T08:30:00Z" },
+  { id: "m4", title: "Raspberry Pi 4 Model B (4GB)", description: "Raspberry Pi 4 with 4GB RAM, case, power supply, and 32GB SD card preloaded with Raspberry Pi OS. Perfect for ML projects.", price: 3800, type: "OFFLINE", category: "Hardware", subject: null, isFree: false, images: [], seller: { id: "s4", name: "Sneha Patel", reputation: 4.6 }, createdAt: "2026-07-08T11:00:00Z" },
+  { id: "m5", title: "Computer Networks – Forouzan (5th Ed.)", description: "Original textbook in excellent condition. All chapters intact, minimal highlighting. Covers OSI, TCP/IP, routing, and more.", price: 320, type: "OFFLINE", category: "Books", subject: "Computer Networks", isFree: false, images: [], seller: { id: "s5", name: "Vikram Nair", reputation: 4.5 }, createdAt: "2026-07-12T14:00:00Z" },
+  { id: "m6", title: "Python for Data Science – Full Course Notes", description: "350+ pages of curated Python notes covering NumPy, Pandas, Matplotlib, Scikit-learn and ML fundamentals.", price: 199, type: "ONLINE", category: "Notes", subject: "Data Science", isFree: false, images: [], seller: { id: "s6", name: "Kavya Reddy", reputation: 4.9 }, createdAt: "2026-07-15T10:30:00Z" },
+  { id: "m7", title: "Hero Splendor Plus (Campus Use)", description: "Well-maintained Hero Splendor+ for campus commute. FC done, insurance valid, 52,000 km driven. Negotiable.", price: 28000, type: "OFFLINE", category: "Cycles", subject: null, isFree: false, images: [], seller: { id: "s7", name: "Rohan Joshi", reputation: 4.4 }, createdAt: "2026-07-11T09:00:00Z" },
+  { id: "m8", title: "Digital Electronics Lab Manual", description: "Complete lab manual with circuit diagrams, truth tables, and viva questions for 8 experiments. Sem 4 ECE.", price: 80, type: "ONLINE", category: "Notes", subject: "Digital Electronics", isFree: false, images: [], seller: { id: "s8", name: "Anjali Kumar", reputation: 4.3 }, createdAt: "2026-07-14T15:00:00Z" },
+  { id: "m9", title: "Operating Systems – Silberschatz (10th Ed.)", description: "10th edition OS book. Clean, no torn pages. Covers processes, memory management, file systems, and deadlocks.", price: 450, type: "OFFLINE", category: "Books", subject: "Operating Systems", isFree: false, images: [], seller: { id: "s9", name: "Dev Malhotra", reputation: 4.7 }, createdAt: "2026-07-06T12:00:00Z" },
+  { id: "m10", title: "HC Verma – Concepts of Physics (Vol 1 & 2)", description: "Classic HCV set, both volumes in good condition. A few pencil marks, easily erasable. Essential for JEE prep.", price: 600, type: "OFFLINE", category: "Books", subject: "Physics", isFree: false, images: [], seller: { id: "s10", name: "Pooja Sharma", reputation: 4.6 }, createdAt: "2026-07-09T10:00:00Z" },
+  { id: "m11", title: "DBMS Complete Notes – SQL + Normalization", description: "Covers ER diagrams, relational algebra, SQL queries, normalization up to BCNF, and transaction management.", price: 129, type: "ONLINE", category: "Notes", subject: "DBMS", isFree: false, images: [], seller: { id: "s11", name: "Suresh Iyer", reputation: 4.8 }, createdAt: "2026-07-13T11:30:00Z" },
+  { id: "m12", title: "Soldering Iron + Kit (60W)", description: "Professional 60W soldering iron with solder wire, flux, PCB stand, and cleaning sponge. Works perfectly.", price: 350, type: "OFFLINE", category: "Equipment", subject: null, isFree: false, images: [], seller: { id: "s12", name: "Manish Tiwari", reputation: 4.5 }, createdAt: "2026-07-16T13:00:00Z" },
+  { id: "m13", title: "React + Node.js Full Stack Project Source Code", description: "Complete e-commerce project with JWT auth, REST API, MongoDB. Well-documented codebase.", price: 499, type: "ONLINE", category: "Software", subject: "Web Development", isFree: false, images: [], seller: { id: "s13", name: "Nisha Agarwal", reputation: 4.9 }, createdAt: "2026-07-17T09:00:00Z" },
+  { id: "m14", title: "Vernier Caliper (150mm) – Mitutoyo", description: "Genuine Mitutoyo Vernier caliper, accurate to 0.02mm. Used for 2 lab sessions only, basically new.", price: 750, type: "OFFLINE", category: "Lab Tools", subject: null, isFree: false, images: [], seller: { id: "s14", name: "Kiran Bhat", reputation: 4.6 }, createdAt: "2026-07-03T10:00:00Z" },
+  { id: "m15", title: "Machine Learning – Andrew Ng Notes + Assignments", description: "Complete handwritten notes from Andrew Ng Coursera ML course + solved assignments in Python. 200+ pages.", price: 0, type: "ONLINE", category: "Notes", subject: "Machine Learning", isFree: true, images: [], seller: { id: "s15", name: "Tanveer Khan", reputation: 4.7 }, createdAt: "2026-07-18T08:00:00Z" },
+  { id: "m16", title: "DSP – Digital Signal Processing Textbook", description: "Proakis and Manolakis DSP book, 4th edition. Good condition, some highlighting in chapter 1-3.", price: 280, type: "OFFLINE", category: "Books", subject: "DSP", isFree: false, images: [], seller: { id: "s16", name: "Deepa Menon", reputation: 4.4 }, createdAt: "2026-07-07T14:00:00Z" },
+  { id: "m17", title: "Scientific Calculator – Casio FX-991ES Plus", description: "Casio FX-991ES Plus in perfect condition, all buttons working. Comes with original case.", price: 400, type: "OFFLINE", category: "Equipment", subject: null, isFree: false, images: [], seller: { id: "s17", name: "Abhishek Roy", reputation: 4.5 }, createdAt: "2026-07-10T16:00:00Z" },
+  { id: "m18", title: "STM32 Blue Pill Microcontroller Board", description: "STM32F103C8T6 development board with USB cable. Perfect for embedded systems and ARM Cortex-M3 learning.", price: 220, type: "OFFLINE", category: "Hardware", subject: null, isFree: false, images: [], seller: { id: "s18", name: "Pallavi Das", reputation: 4.8 }, createdAt: "2026-07-20T10:00:00Z" },
+  { id: "m19", title: "Compiler Design – Dragon Book Notes", description: "Simplified notes from Aho, Lam, Sethi and Ullman. Covers lexing, parsing, semantic analysis, code generation and optimization.", price: 180, type: "ONLINE", category: "Notes", subject: "Compiler Design", isFree: false, images: [], seller: { id: "s19", name: "Gautam Pillai", reputation: 4.6 }, createdAt: "2026-07-19T11:00:00Z" },
+  { id: "m20", title: "Breadboard + 120 Jumper Wires Set", description: "Full-size 830 tie-point solderless breadboard + 120 jumper wires M-M, M-F, F-F. Ideal for circuit prototyping.", price: 180, type: "OFFLINE", category: "Hardware", subject: null, isFree: false, images: [], seller: { id: "s20", name: "Aishwarya Rao", reputation: 4.7 }, createdAt: "2026-07-21T09:00:00Z" },
+  { id: "m21", title: "Theory of Computation – GATE 2026 Notes", description: "Topic-wise notes covering FA, PDA, TM, decidability, and complexity. 150+ solved PYQs included.", price: 149, type: "ONLINE", category: "Notes", subject: "TOC", isFree: false, images: [], seller: { id: "s21", name: "Harish Kumar", reputation: 4.9 }, createdAt: "2026-07-22T08:00:00Z" },
+  { id: "m22", title: "Atlas Scientific Cycle + Lock", description: "Atlas road cycle in decent condition with chain lock. Tires recently replaced. Good for campus commuting.", price: 3500, type: "OFFLINE", category: "Cycles", subject: null, isFree: false, images: [], seller: { id: "s22", name: "Riya Gupta", reputation: 4.3 }, createdAt: "2026-07-04T12:00:00Z" },
+  { id: "m23", title: "Java – Complete Reference by Herbert Schildt", description: "11th edition Java Complete Reference. No highlights, all pages intact. Great for OOP and Java SE prep.", price: 380, type: "OFFLINE", category: "Books", subject: "Java", isFree: false, images: [], seller: { id: "s23", name: "Saurabh Jain", reputation: 4.5 }, createdAt: "2026-07-02T10:00:00Z" },
+  { id: "m24", title: "PCB Design Files – Mini Project Collection", description: "Kicad design files for 10 mini PCB projects including power supply, amplifier, and sensor boards. Open-source.", price: 0, type: "ONLINE", category: "Software", subject: "Electronics", isFree: true, images: [], seller: { id: "s24", name: "Meera Pillai", reputation: 4.8 }, createdAt: "2026-07-23T10:00:00Z" },
+  { id: "m25", title: "Electromagnetic Field Theory – Hayt & Buck", description: "8th edition EMF Theory book. Lightly used, excellent condition. Covers fields, waves, transmission lines.", price: 290, type: "OFFLINE", category: "Books", subject: "EMF Theory", isFree: false, images: [], seller: { id: "s25", name: "Ankit Verma", reputation: 4.6 }, createdAt: "2026-07-24T09:00:00Z" },
 ] as const
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const T = {
-  bg:       "var(--bg)",
-  surface:  "var(--surface)",
+  bg: "var(--bg)",
+  surface: "var(--surface)",
   surface2: "var(--surface-2)",
-  border:   "var(--border)",
-  text:     "var(--text)",
-  muted:    "var(--text-muted)",
-  subtle:   "var(--text-subtle)",
-  primary:  "var(--primary)",
-  primaryDim:"var(--primary-dim)",
+  border: "var(--border)",
+  text: "var(--text)",
+  muted: "var(--text-muted)",
+  subtle: "var(--text-subtle)",
+  primary: "var(--primary)",
+  primaryDim: "var(--primary-dim)",
 }
 
 // ── Login Prompt Modal ────────────────────────────────────────────────────────
@@ -181,7 +181,7 @@ export default function Dashboard() {
   }
 
   // Sidebar active style helpers
-  const navActive   = { background: "rgba(232,97,28,0.12)", color: T.primary }
+  const navActive = { background: "rgba(232,97,28,0.12)", color: T.primary }
   const navInactive = { color: T.muted }
 
   return (
@@ -368,9 +368,9 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
       ) : (
         <div className="grid grid-cols-3 gap-4">
           {[
-            { label: "Active Listings", value: stats.active,                                           icon: Package,   colorStyle: { color: T.primary }, bgStyle: { background: T.primaryDim } },
-            { label: "Total Earned",    value: `₹${stats.earned.toLocaleString("en-IN")}`,             icon: TrendingUp, colorStyle: { color: T.text },    bgStyle: { background: T.surface2 } },
-            { label: "Reputation",      value: stats.reputation > 0 ? `${stats.reputation}/5` : "—",  icon: Star,       colorStyle: { color: "#f59e0b" },  bgStyle: { background: "rgba(245,158,11,0.12)" } },
+            { label: "Active Listings", value: stats.active, icon: Package, colorStyle: { color: T.primary }, bgStyle: { background: T.primaryDim } },
+            { label: "Total Earned", value: `₹${stats.earned.toLocaleString("en-IN")}`, icon: TrendingUp, colorStyle: { color: T.text }, bgStyle: { background: T.surface2 } },
+            { label: "Reputation", value: stats.reputation > 0 ? `${stats.reputation}/5` : "—", icon: Star, colorStyle: { color: "#f59e0b" }, bgStyle: { background: "rgba(245,158,11,0.12)" } },
           ].map((s) => (
             <div key={s.label} className="rounded-2xl p-5 flex items-center gap-4"
               style={{ border: `1px solid ${T.border}`, background: T.surface }}>
@@ -466,7 +466,7 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
               <table className="w-full text-sm">
                 <thead>
                   <tr style={{ borderBottom: `1px solid ${T.border}`, background: T.surface }}>
-                    {["Title","Type","Price","Status",""].map((h, i) => (
+                    {["Title", "Type", "Price", "Status", ""].map((h, i) => (
                       <th key={i} className={`text-left px-4 py-3 text-xs font-semibold ${i === 4 ? "w-8" : ""}`} style={{ color: T.muted }}>{h}</th>
                     ))}
                   </tr>
@@ -517,26 +517,26 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
 
 // ── Marketplace Section ───────────────────────────────────────────────────────
 const CARD_IMAGES: Record<string, string> = {
-  Notes:       "https://images.unsplash.com/photo-1588702547919-26089e690ecc?w=400&q=80",
-  Books:       "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80",
-  Hardware:    "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
-  Equipment:   "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&q=80",
+  Notes: "https://images.unsplash.com/photo-1588702547919-26089e690ecc?w=400&q=80",
+  Books: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80",
+  Hardware: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+  Equipment: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&q=80",
   "Lab Tools": "https://images.unsplash.com/photo-1576086213369-97a306d36557?w=400&q=80",
-  Software:    "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&q=80",
-  Cycles:      "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&q=80",
+  Software: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&q=80",
+  Cycles: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&q=80",
 }
 
 const FRESH_ITEMS = [
-  { id:"f1",  title:"Signals & Systems – Oppenheim Notes",  category:"Notes",    price:159,  isFree:false, img:"https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&q=80" },
-  { id:"f2",  title:"Mechanical Keyboard – TKL 87 keys",   category:"Hardware", price:1200, isFree:false, img:"https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&q=80" },
-  { id:"f3",  title:"GATE 2026 Full Mock Test Series",     category:"Software", price:0,    isFree:true,  img:"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&q=80" },
-  { id:"f4",  title:"Trek 3500 Mountain Bike – Campus Use",category:"Cycles",   price:4500, isFree:false, img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" },
-  { id:"f5",  title:"Physics Wallah DPP Sheets – JEE",    category:"Notes",    price:99,   isFree:false, img:"https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=400&q=80" },
-  { id:"f6",  title:"Arduino Starter Kit (30+ parts)",     category:"Hardware", price:850,  isFree:false, img:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80" },
-  { id:"f7",  title:"Operating Systems – Silberschatz",   category:"Books",    price:450,  isFree:false, img:"https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80" },
-  { id:"f8",  title:"Python Data Science Notes",          category:"Notes",    price:199,  isFree:false, img:"https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&q=80" },
-  { id:"f9",  title:"Casio FX-991ES Plus Calculator",     category:"Equipment",price:400,  isFree:false, img:"https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&q=80" },
-  { id:"f10", title:"Atlas Road Cycle + Lock",            category:"Cycles",   price:3500, isFree:false, img:"https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&q=80" },
+  { id: "f1", title: "Signals & Systems – Oppenheim Notes", category: "Notes", price: 159, isFree: false, img: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&q=80" },
+  { id: "f2", title: "Mechanical Keyboard – TKL 87 keys", category: "Hardware", price: 1200, isFree: false, img: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&q=80" },
+  { id: "f3", title: "GATE 2026 Full Mock Test Series", category: "Software", price: 0, isFree: true, img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&q=80" },
+  { id: "f4", title: "Trek 3500 Mountain Bike – Campus Use", category: "Cycles", price: 4500, isFree: false, img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" },
+  { id: "f5", title: "Physics Wallah DPP Sheets – JEE", category: "Notes", price: 99, isFree: false, img: "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=400&q=80" },
+  { id: "f6", title: "Arduino Starter Kit (30+ parts)", category: "Hardware", price: 850, isFree: false, img: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80" },
+  { id: "f7", title: "Operating Systems – Silberschatz", category: "Books", price: 450, isFree: false, img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80" },
+  { id: "f8", title: "Python Data Science Notes", category: "Notes", price: 199, isFree: false, img: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&q=80" },
+  { id: "f9", title: "Casio FX-991ES Plus Calculator", category: "Equipment", price: 400, isFree: false, img: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&q=80" },
+  { id: "f10", title: "Atlas Road Cycle + Lock", category: "Cycles", price: 3500, isFree: false, img: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&q=80" },
 ]
 
 const ALL_SEARCH_ITEMS = [
@@ -551,7 +551,7 @@ const ALL_SEARCH_ITEMS = [
   })),
 ]
 
-function MarketplaceSection({ isAuthenticated, onLoginPrompt, wishlist, onToggleWishlist }: {
+function MarketplaceSection({ onLoginPrompt, wishlist, onToggleWishlist }: {
   isAuthenticated: boolean
   onLoginPrompt: (action: "buy" | "sell") => void
   wishlist: Set<string>
@@ -728,7 +728,7 @@ function MarketplaceSection({ isAuthenticated, onLoginPrompt, wishlist, onToggle
 }
 
 // ── Wishlist Section ───────────────────────────────────────────────────────
-function WishlistSection({ wishlist, onToggleWishlist, isAuthenticated, onLoginPrompt }: {
+function WishlistSection({ wishlist, onToggleWishlist, }: {
   wishlist: Set<string>
   onToggleWishlist: (id: string) => void
   isAuthenticated: boolean
@@ -851,7 +851,7 @@ function ListingsSection({ listings, loading, isAuthenticated, onUpload, onViewD
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: `1px solid ${T.border}`, background: T.surface }}>
-                {["Title","Type","Category","Price","Status",""].map((h, i) => (
+                {["Title", "Type", "Category", "Price", "Status", ""].map((h, i) => (
                   <th key={i} className={`text-left px-5 py-4 text-sm font-semibold ${i === 5 ? "w-10" : ""}`} style={{ color: T.muted }}>{h}</th>
                 ))}
               </tr>
