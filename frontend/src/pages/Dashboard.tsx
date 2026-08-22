@@ -120,6 +120,193 @@ function LoginPromptModal({ open, onClose, action }: { open: boolean; onClose: (
   )
 }
 
+// ── Purchase Modal ────────────────────────────────────────────────────────────
+type PurchaseItem = {
+  id: string
+  title: string
+  category: string
+  price: number
+  isFree: boolean
+  img: string
+  description?: string
+  seller?: { name: string; reputation?: number }
+}
+
+function PurchaseModal({ item, open, onClose, isAuthenticated, onLoginPrompt }: {
+  item: PurchaseItem | null
+  open: boolean
+  onClose: () => void
+  isAuthenticated: boolean
+  onLoginPrompt: (action: "buy" | "sell") => void
+}) {
+  const [purchased, setPurchased] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  // Reset state when item changes
+  useEffect(() => {
+    if (open) { setPurchased(false); setLoading(false) }
+  }, [open, item?.id])
+
+  if (!item) return null
+
+  const handleBuy = () => {
+    if (!isAuthenticated) { onClose(); onLoginPrompt("buy"); return }
+    setLoading(true)
+    setTimeout(() => { setLoading(false); setPurchased(true) }, 1400)
+  }
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          style={{ background: "rgba(0,0,0,0.80)", backdropFilter: "blur(10px)" }}
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.88, y: 32 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.88, y: 32 }}
+            transition={{ type: "spring", stiffness: 280, damping: 24 }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-md rounded-3xl overflow-hidden"
+            style={{ background: T.surface, border: `1px solid ${T.border}` }}
+          >
+            {/* Ambient glow */}
+            <div className="absolute inset-0 pointer-events-none"
+              style={{ background: "radial-gradient(ellipse at top, rgba(232,97,28,0.10) 0%, transparent 60%)" }} />
+
+            {/* Hero image */}
+            <div className="relative w-full overflow-hidden" style={{ height: "220px" }}>
+              <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
+              <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.70) 0%, rgba(0,0,0,0.10) 60%)" }} />
+              {/* Close button */}
+              <button
+                onClick={onClose}
+                className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center"
+                style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)", color: "#fff" }}
+              >
+                <X className="h-4 w-4" />
+              </button>
+              {/* Price chip */}
+              <div className="absolute bottom-3 left-4">
+                <span
+                  className="text-3xl font-black"
+                  style={{ color: item.isFree ? "#4ade80" : "#fff", textShadow: "0 2px 12px rgba(0,0,0,0.6)" }}
+                >
+                  {item.isFree ? "FREE" : `₹${item.price.toLocaleString("en-IN")}`}
+                </span>
+              </div>
+              {/* Category badge */}
+              <div className="absolute top-3 left-4">
+                <span
+                  className="text-xs font-bold px-2.5 py-1 rounded-full"
+                  style={{ background: "rgba(232,97,28,0.85)", color: "#fff", backdropFilter: "blur(4px)" }}
+                >
+                  {item.category}
+                </span>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="p-6">
+              {purchased ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex flex-col items-center text-center py-4"
+                >
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 18, delay: 0.1 }}
+                    className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+                    style={{ background: "rgba(74,222,128,0.15)", border: "2px solid rgba(74,222,128,0.40)" }}
+                  >
+                    <span className="text-3xl">✓</span>
+                  </motion.div>
+                  <h3 className="text-xl font-bold mb-1" style={{ color: T.text }}>Request Sent!</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: T.muted }}>
+                    The seller has been notified. Check your <strong>Messages</strong> to continue the conversation.
+                  </p>
+                  <button
+                    onClick={onClose}
+                    className="mt-5 w-full py-3 rounded-2xl text-sm font-bold transition-all"
+                    style={{ background: "rgba(74,222,128,0.12)", color: "#4ade80", border: "1px solid rgba(74,222,128,0.25)" }}
+                  >
+                    Done
+                  </button>
+                </motion.div>
+              ) : (
+                <>
+                  <h3 className="text-lg font-bold leading-snug mb-1" style={{ color: T.text }}>{item.title}</h3>
+
+                  {item.description && (
+                    <p className="text-sm leading-relaxed mb-4" style={{ color: T.muted }}>{item.description}</p>
+                  )}
+
+                  {/* Seller chip */}
+                  {item.seller && (
+                    <div className="flex items-center gap-2.5 mb-5 p-3 rounded-xl" style={{ background: T.surface2, border: `1px solid ${T.border}` }}>
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ background: "rgba(232,97,28,0.18)" }}>
+                        <span className="text-sm font-bold" style={{ color: T.primary }}>
+                          {item.seller.name[0].toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold truncate" style={{ color: T.text }}>{item.seller.name}</p>
+                        <p className="text-xs" style={{ color: T.subtle }}>Seller</p>
+                      </div>
+                      {item.seller.reputation !== undefined && (
+                        <div className="flex items-center gap-1">
+                          <Star className="h-3 w-3" style={{ color: "#f59e0b" }} fill="#f59e0b" />
+                          <span className="text-xs font-bold" style={{ color: T.text }}>{item.seller.reputation}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* CTA */}
+                  <motion.button
+                    id={`purchase-btn-${item.id}`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={handleBuy}
+                    disabled={loading}
+                    className="w-full py-3.5 rounded-2xl text-sm font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+                    style={{
+                      background: loading ? T.surface2 : "linear-gradient(135deg, #e8611c 0%, #f87c3e 100%)",
+                      color: loading ? T.muted : "#fff",
+                      boxShadow: loading ? "none" : "0 4px 20px rgba(232,97,28,0.35)",
+                      border: "none",
+                    }}
+                  >
+                    {loading ? (
+                      <><Loader2 className="h-4 w-4 animate-spin" /> Sending Request…</>
+                    ) : item.isFree ? (
+                      <><ArrowRight className="h-4 w-4" /> Get for Free</>
+                    ) : (
+                      <><ShoppingBag className="h-4 w-4" /> {isAuthenticated ? "Contact Seller" : "Login to Buy"}</>
+                    )}
+                  </motion.button>
+
+                  {!isAuthenticated && (
+                    <p className="text-xs text-center mt-3" style={{ color: T.subtle }}>
+                      You'll be redirected to log in first.
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -134,6 +321,7 @@ export default function Dashboard() {
   const [loadingListings, setLoadingListings] = useState(false)
   const [stats, setStats] = useState({ active: 0, earned: 0, reputation: 0 })
   const [loginPrompt, setLoginPrompt] = useState<{ open: boolean; action: "buy" | "sell" }>({ open: false, action: "buy" })
+  const [purchaseItem, setPurchaseItem] = useState<PurchaseItem | null>(null)
   const [globalWishlist, setGlobalWishlist] = useState<Set<string>>(new Set())
 
   const toggleGlobalWishlist = (id: string) => {
@@ -303,7 +491,7 @@ export default function Dashboard() {
               <ListingsSection key="listings" listings={myListings} loading={loadingListings} isAuthenticated={isAuthenticated} onUpload={openUpload} onViewDetail={(id) => navigate(`/listings/${id}`)} onLoginPrompt={() => setLoginPrompt({ open: true, action: "sell" })} />
             )}
             {activeSection === "browse" && (
-              <MarketplaceSection key="browse" isAuthenticated={isAuthenticated} onLoginPrompt={(action) => setLoginPrompt({ open: true, action })} wishlist={globalWishlist} onToggleWishlist={toggleGlobalWishlist} />
+              <MarketplaceSection key="browse" isAuthenticated={isAuthenticated} onLoginPrompt={(action) => setLoginPrompt({ open: true, action })} wishlist={globalWishlist} onToggleWishlist={toggleGlobalWishlist} onBuyItem={(item) => setPurchaseItem(item)} />
             )}
             {activeSection === "messages" && (
               <MessagesSection key="messages" isAuthenticated={isAuthenticated} onLogin={() => navigate("/login")} />
@@ -317,6 +505,13 @@ export default function Dashboard() {
 
       <UploadModal isOpen={uploadOpen} onClose={() => setUploadOpen(false)} defaultType={uploadType} onSuccess={() => { void fetchMyListings() }} />
       <LoginPromptModal open={loginPrompt.open} onClose={() => setLoginPrompt({ open: false, action: "buy" })} action={loginPrompt.action} />
+      <PurchaseModal
+        item={purchaseItem}
+        open={purchaseItem !== null}
+        onClose={() => setPurchaseItem(null)}
+        isAuthenticated={isAuthenticated}
+        onLoginPrompt={(action) => setLoginPrompt({ open: true, action })}
+      />
     </div>
   )
 }
@@ -551,11 +746,12 @@ const ALL_SEARCH_ITEMS = [
   })),
 ]
 
-function MarketplaceSection({ onLoginPrompt, wishlist, onToggleWishlist }: {
+function MarketplaceSection({ onLoginPrompt: _onLoginPrompt, wishlist, onToggleWishlist, onBuyItem }: {
   isAuthenticated: boolean
   onLoginPrompt: (action: "buy" | "sell") => void
   wishlist: Set<string>
   onToggleWishlist: (id: string) => void
+  onBuyItem: (item: PurchaseItem) => void
 }) {
   const [search, setSearch] = useState("")
   const hasSearch = search.trim().length > 0
@@ -645,7 +841,7 @@ function MarketplaceSection({ onLoginPrompt, wishlist, onToggleWishlist }: {
                     whileHover={{ y: -5, scale: 1.02 }}
                     className="group rounded-2xl overflow-hidden cursor-pointer"
                     style={{ border: `1px solid ${T.border}`, background: T.surface }}
-                    onClick={() => onLoginPrompt("buy")}
+                    onClick={() => onBuyItem(item)}
                   >
                     {/* Photo */}
                     <div className="relative overflow-hidden" style={{ height: "160px" }}>
@@ -695,6 +891,16 @@ function MarketplaceSection({ onLoginPrompt, wishlist, onToggleWishlist }: {
                   whileHover={{ y: -5, scale: 1.02 }}
                   className="group rounded-2xl overflow-hidden cursor-pointer relative"
                   style={{ border: `1px solid ${T.border}`, background: T.surface }}
+                  onClick={() => onBuyItem({
+                    id: fi.id,
+                    title: fi.title,
+                    category: fi.category,
+                    price: fi.price,
+                    isFree: fi.isFree,
+                    img: fi.img,
+                    description: `A ${fi.category.toLowerCase()} item available on Becho marketplace. Tap 'Contact Seller' to connect and complete the purchase.`,
+                    seller: { name: "Campus Seller", reputation: 4.7 },
+                  })}
                 >
                   {/* Photo */}
                   <div className="relative overflow-hidden" style={{ height: "160px" }}>
@@ -707,6 +913,12 @@ function MarketplaceSection({ onLoginPrompt, wishlist, onToggleWishlist }: {
                       style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)" }}>
                       <Heart className="h-3.5 w-3.5" fill={wishlist.has(fi.id) ? "#e8611c" : "none"} style={{ color: wishlist.has(fi.id) ? "#e8611c" : "rgba(255,255,255,0.80)" }} />
                     </button>
+                    {/* Buy CTA hint on hover */}
+                    <div className="absolute inset-x-0 bottom-0 flex items-center justify-center pb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ background: "rgba(232,97,28,0.85)", color: "#fff", backdropFilter: "blur(4px)" }}>
+                        {fi.isFree ? "Get Free" : "Buy Now"}
+                      </span>
+                    </div>
                   </div>
                   {/* Price (large) + Name */}
                   <div className="p-3">

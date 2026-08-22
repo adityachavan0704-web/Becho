@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Button } from "../components/ui/Button"
 import { Input } from "../components/ui/Input"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom"
 import { ArrowLeft, Mail, Lock, User, AlertCircle, Sun, Moon } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
 import { useTheme } from "../contexts/ThemeContext"
@@ -19,9 +19,14 @@ interface ApiAuthResponse {
 
 export default function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const role = searchParams.get("role") ?? "buyer"
   const oauthError = searchParams.get("error")
+
+  // Where to redirect after successful login — set by ProtectedRoute via state.from
+  const from = (location.state as { from?: { pathname: string; search: string } } | null)?.from
+  const redirectTo = from ? `${from.pathname}${from.search ?? ""}` : (role === "seller" ? "/dashboard" : "/browse")
 
   const { login, isAuthenticated } = useAuth()
   const { isDark, toggleTheme } = useTheme()
@@ -37,7 +42,7 @@ export default function Login() {
 
   // If already logged in, redirect right away
   if (isAuthenticated) {
-    navigate(role === "seller" ? "/dashboard" : "/browse", { replace: true })
+    navigate(redirectTo, { replace: true })
     return null
   }
 
@@ -65,7 +70,7 @@ export default function Login() {
       }
 
       await login(data.accessToken, data.refreshToken)
-      navigate(role === "seller" ? "/dashboard" : "/browse", { replace: true })
+      navigate(redirectTo, { replace: true })
     } catch {
       setError("Unable to reach the server. Make sure the backend is running.")
     } finally {
@@ -74,6 +79,10 @@ export default function Login() {
   }
 
   const handleGoogleLogin = () => {
+    // Store where to go after OAuth so AuthCallback can redirect back
+    if (redirectTo && redirectTo !== "/browse") {
+      localStorage.setItem("becho_redirect_after_login", redirectTo)
+    }
     window.location.href = `${API_URL}/api/auth/google`
   }
 

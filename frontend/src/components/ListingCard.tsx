@@ -126,6 +126,7 @@ export function ListingCard({ listing, className }: ListingCardProps) {
           </div>
           <motion.button
             whileTap={{ scale: 0.95 }}
+            onClick={(e) => { e.stopPropagation(); navigate(`/listings/${listing.id}`) }}
             className="flex items-center gap-1 text-xs font-semibold text-[#E8611C] hover:underline"
           >
             View <ExternalLink className="h-3 w-3" />

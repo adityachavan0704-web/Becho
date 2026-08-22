@@ -18,45 +18,45 @@ import {
 
 // ─── 3D Carousel Data ────────────────────────────────────────────────────────
 const carouselItems = [
-  { img: "/arduino_kit.png",        label: "Arduino Kit",        tag: "Electronics", color: "#E8611C" },
-  { img: "/sensors_collection.png", label: "IoT Sensors",        tag: "Hardware",    color: "#ff7b3a" },
-  { img: "/textbooks_stack.png",    label: "Engineering Books",  tag: "Books",       color: "#ffffff"  },
-  { img: "/video_course.png",       label: "Video Courses",      tag: "Digital",     color: "#ffa06d" },
-  { img: "/lab_equipment.png",      label: "Lab Equipment",      tag: "Instruments", color: "#E8611C" },
-  { img: "/notes_pdf.png",          label: "Study Notes",        tag: "Notes",       color: "#ffffff"  },
-  { img: "/raspberry_pi.png",       label: "Raspberry Pi",       tag: "Electronics", color: "#ff7b3a" },
-  { img: "/mentorship.png",         label: "Mentorship",         tag: "Guidance",    color: "#ffa06d" },
+  { img: "/arduino_kit.png", label: "Arduino Kit", tag: "Electronics", color: "#E8611C" },
+  { img: "/sensors_collection.png", label: "IoT Sensors", tag: "Hardware", color: "#ff7b3a" },
+  { img: "/textbooks_stack.png", label: "Engineering Books", tag: "Books", color: "#ffffff" },
+  { img: "/video_course.png", label: "Video Courses", tag: "Digital", color: "#ffa06d" },
+  { img: "/lab_equipment.png", label: "Lab Equipment", tag: "Instruments", color: "#E8611C" },
+  { img: "/notes_pdf.png", label: "Study Notes", tag: "Notes", color: "#ffffff" },
+  { img: "/raspberry_pi.png", label: "Raspberry Pi", tag: "Electronics", color: "#ff7b3a" },
+  { img: "/mentorship.png", label: "Mentorship", tag: "Guidance", color: "#ffa06d" },
 ]
 
 // ─── 3D Sphere Carousel ───────────────────────────────────────────────────────
 function SphereCarousel() {
-  const angleRef    = useRef(0)
+  const angleRef = useRef(0)
   const [cards, setCards] = useState<
     { x: number; y: number; z: number; rotY: number; scale: number; opacity: number; item: (typeof carouselItems)[0] }[]
   >([])
   const containerRef = useRef<HTMLDivElement>(null)
-  const isDragging   = useRef(false)
-  const lastX        = useRef(0)
-  const velocityRef  = useRef(0)
+  const isDragging = useRef(false)
+  const lastX = useRef(0)
+  const velocityRef = useRef(0)
 
   const count = carouselItems.length
-  const rx    = 380
-  const ry    = 90
+  const rx = 380
+  const ry = 90
 
   const compute = (angle: number) =>
     carouselItems.map((item, i) => {
-      const theta  = (i / count) * Math.PI * 2 + angle
-      const x      = Math.sin(theta) * rx
-      const z      = Math.cos(theta) * rx
-      const yBias  = Math.sin(theta) * ry
-      const scale  = 0.6 + ((z + rx) / (2 * rx)) * 0.55
+      const theta = (i / count) * Math.PI * 2 + angle
+      const x = Math.sin(theta) * rx
+      const z = Math.cos(theta) * rx
+      const yBias = Math.sin(theta) * ry
+      const scale = 0.6 + ((z + rx) / (2 * rx)) * 0.55
       const opacity = 0.3 + ((z + rx) / (2 * rx)) * 0.7
       return { x, y: yBias, z, rotY: -(theta * 180) / Math.PI + 90, scale, opacity, item }
     })
 
   useAnimationFrame(() => {
     if (!isDragging.current) {
-      angleRef.current   += 0.004
+      angleRef.current += 0.004
       velocityRef.current *= 0.95
     } else {
       angleRef.current += velocityRef.current * 0.01
@@ -69,17 +69,17 @@ function SphereCarousel() {
     if (!isDragging.current) return
     const delta = e.clientX - lastX.current
     velocityRef.current = delta * 0.1
-    angleRef.current   += delta * 0.004
-    lastX.current       = e.clientX
+    angleRef.current += delta * 0.004
+    lastX.current = e.clientX
   }
-  const handleMouseUp   = () => { isDragging.current = false }
+  const handleMouseUp = () => { isDragging.current = false }
   const handleTouchStart = (e: React.TouchEvent) => { isDragging.current = true; lastX.current = e.touches[0].clientX }
-  const handleTouchMove  = (e: React.TouchEvent) => {
+  const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging.current) return
     const delta = e.touches[0].clientX - lastX.current
     velocityRef.current = delta * 0.1
-    angleRef.current   += delta * 0.004
-    lastX.current       = e.touches[0].clientX
+    angleRef.current += delta * 0.004
+    lastX.current = e.touches[0].clientX
   }
   const handleTouchEnd = () => { isDragging.current = false }
 
@@ -88,7 +88,7 @@ function SphereCarousel() {
       ref={containerRef}
       className="relative w-full h-[520px] flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
       onMouseDown={handleMouseDown} onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}    onMouseLeave={handleMouseUp}
+      onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
       onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}
       style={{ perspective: "1200px" }}
     >
@@ -136,7 +136,7 @@ function SphereCarousel() {
 }
 
 // ─── Marquee Strip ────────────────────────────────────────────────────────────
-const marqueeItems = ["Arduino Kits","Lab Manuals","Study Notes","IoT Sensors","Video Courses","Raspberry Pi","Textbooks","Mentorship","Project Files","Lab Equipment"]
+const marqueeItems = ["Arduino Kits", "Lab Manuals", "Study Notes", "IoT Sensors", "Video Courses", "Raspberry Pi", "Textbooks", "Mentorship", "Project Files", "Lab Equipment"]
 
 function MarqueeStrip() {
   return (
@@ -228,7 +228,7 @@ function ThemeToggle() {
 
 // ─── Main Landing Page ────────────────────────────────────────────────────────
 export default function Landing() {
-  const navigate  = useNavigate()
+  const navigate = useNavigate()
   const { isDark } = useTheme()
 
   return (
@@ -390,12 +390,12 @@ export default function Landing() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <FeatureCard icon={BookOpen}      title="Digital & Physical"      desc="PDF notes, textbooks, lab manuals, Arduino kits, sensors — list anything academic."           color="#E8611C" delay={0}   />
-          <FeatureCard icon={Shield}        title="Verified Students Only"  desc="College email verification ensures you only deal with real students from real campuses."     color="#ff7b3a" delay={0.1} />
-          <FeatureCard icon={Zap}           title="Lightning Fast"          desc="List items in under 60 seconds. Browse, message, and close deals — all in one place."        color={isDark ? "#e8e8e8" : "#555555"} delay={0.2} />
-          <FeatureCard icon={ShoppingCart}  title="Fair Pricing"            desc="Set your own price. No platform fee gouging. Buyers and sellers both win."                  color="#ffa06d" delay={0.3} />
-          <FeatureCard icon={MessageCircle} title="Mentorship Hub"          desc="Connect with seniors who've aced what you're studying. Get guidance that matters."           color="#E8611C" delay={0.4} />
-          <FeatureCard icon={Star}          title="Reputation System"       desc="Star ratings and reviews so you always know who you're dealing with before you transact."    color="#ff7b3a" delay={0.5} />
+          <FeatureCard icon={BookOpen} title="Digital & Physical" desc="PDF notes, textbooks, lab manuals, Arduino kits, sensors — list anything academic." color="#E8611C" delay={0} />
+          <FeatureCard icon={Shield} title="Verified Students Only" desc="College email verification ensures you only deal with real students from real campuses." color="#ff7b3a" delay={0.1} />
+          <FeatureCard icon={Zap} title="Lightning Fast" desc="List items in under 60 seconds. Browse, message, and close deals — all in one place." color={isDark ? "#e8e8e8" : "#555555"} delay={0.2} />
+          <FeatureCard icon={ShoppingCart} title="Fair Pricing" desc="Set your own price. No platform fee gouging. Buyers and sellers both win." color="#ffa06d" delay={0.3} />
+          <FeatureCard icon={MessageCircle} title="Mentorship Hub" desc="Connect with seniors who've aced what you're studying. Get guidance that matters." color="#E8611C" delay={0.4} />
+          <FeatureCard icon={Star} title="Reputation System" desc="Star ratings and reviews so you always know who you're dealing with before you transact." color="#ff7b3a" delay={0.5} />
         </div>
       </section>
 
@@ -447,7 +447,7 @@ export default function Landing() {
             <div className="flex gap-3 mt-1">
               {[
                 { label: "Twitter / X", svg: <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.002 2.25h6.976l4.263 5.633 5.003-5.633Zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="rgba(255,255,255,0.7)" /> },
-                { label: "Instagram", svg: <><rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2"/><circle cx="17.5" cy="6.5" r="1" fill="rgba(255,255,255,0.7)"/></> },
+                { label: "Instagram", svg: <><rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" /><circle cx="12" cy="12" r="4" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" /><circle cx="17.5" cy="6.5" r="1" fill="rgba(255,255,255,0.7)" /></> },
                 { label: "LinkedIn", svg: <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z M4 6a2 2 0 100-4 2 2 0 000 4z" fill="rgba(255,255,255,0.7)" /> },
               ].map(({ label, svg }) => (
                 <button key={label} title={label}
@@ -464,10 +464,10 @@ export default function Landing() {
             <h4 className="text-xs font-mono uppercase tracking-widest font-semibold" style={{ color: "#E8611C" }}>Marketplace</h4>
             <ul className="flex flex-col gap-2.5">
               {[
-                { label: "Browse Listings",   action: () => navigate("/browse") },
-                { label: "Sell Resources",     action: () => navigate("/login?role=seller") },
-                { label: "Mentorship Hub",     action: () => navigate("/mentorship") },
-                { label: "Become a Seller",    action: () => navigate("/login?role=seller") },
+                { label: "Browse Listings", action: () => navigate("/browse") },
+                { label: "Sell Resources", action: () => navigate("/login?role=seller") },
+                { label: "Mentorship Hub", action: () => navigate("/mentorship") },
+                { label: "Become a Seller", action: () => navigate("/login?role=seller") },
               ].map(({ label, action }) => (
                 <li key={label}>
                   <button onClick={action}

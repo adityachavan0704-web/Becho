@@ -6,6 +6,7 @@ import { useAuth } from "../contexts/AuthContext"
  * Landing page after Google OAuth redirect.
  * Reads ?token=ACCESS_TOKEN&refresh=REFRESH_TOKEN from URL,
  * stores both, then navigates to the app.
+ * Supports redirect-back via `becho_redirect_after_login` localStorage key.
  */
 export default function AuthCallback() {
   const [searchParams] = useSearchParams()
@@ -23,7 +24,10 @@ export default function AuthCallback() {
     }
 
     void login(token, refresh).then(() => {
-      navigate("/browse", { replace: true })
+      // Redirect back to where the user was trying to go (set before OAuth redirect)
+      const redirectTo = localStorage.getItem("becho_redirect_after_login") ?? "/browse"
+      localStorage.removeItem("becho_redirect_after_login")
+      navigate(redirectTo, { replace: true })
     })
   }, [login, navigate, searchParams])
 

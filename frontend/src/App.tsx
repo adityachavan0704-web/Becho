@@ -25,7 +25,14 @@ function App() {
               <Route path="/mentorship" element={<Mentorship />} />
 
               {/* Protected routes — require login */}
-              <Route path="/browse" element={<Browse />} />
+              <Route
+                path="/browse"
+                element={
+                  <ProtectedRoute>
+                    <Browse />
+                  </ProtectedRoute>
+                }
+              />
 
               <Route
                 path="/listings/:id"
