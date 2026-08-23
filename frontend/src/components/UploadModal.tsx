@@ -1,4 +1,4 @@
-﻿import { useState, useCallback, useRef } from "react"
+import { useState, useCallback, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   X, Package, FileText, Upload, ChevronRight, ChevronLeft,
@@ -319,11 +319,12 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                         </button>
                       ))}
                     </div>
-                  </div>
-                  {/* Row: subject + semester */}
+                                {/* Row: subject + semester */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Subject</label>
+                      <label className="text-xs font-medium text-zinc-400 mb-1.5 block">
+                        Subject <span className="text-zinc-600 font-normal">(optional)</span>
+                      </label>
                       <input
                         className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#E8611C]/50 transition-all"
                         placeholder="e.g. Physics"
@@ -332,18 +333,21 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Semester</label>
+                      <label className="text-xs font-medium text-zinc-400 mb-1.5 block">
+                        Semester <span className="text-zinc-600 font-normal">(optional)</span>
+                      </label>
                       <input
                         type="number"
                         min="1"
                         max="8"
                         className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#E8611C]/50 transition-all"
-                        placeholder="1â€“8"
+                        placeholder="1 – 8"
                         value={form.semester}
                         onChange={(e) => set("semester", e.target.value)}
                       />
                     </div>
                   </div>
+         </div>
                   {/* Price */}
                   <div>
                     <div className="flex items-center justify-between mb-1.5">

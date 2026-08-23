@@ -12,6 +12,7 @@ import authRouter from "./routes/auth";
 import listingsRouter from "./routes/listings";
 import mentorshipRouter from "./routes/mentorship";
 import chatRouter, { setSocketIO } from "./routes/chat";
+import purchaseRouter, { setPurchaseSocketIO } from "./routes/purchase";
 
 // ─── App setup ─────────────────────────────────────────────────
 const app = express();
@@ -31,6 +32,8 @@ const io = new SocketServer(httpServer, {
 
 // Inject Socket.io into chat route so it can emit events
 setSocketIO(io);
+// Inject Socket.io into purchase route for real-time inbox notifications
+setPurchaseSocketIO(io);
 
 io.on("connection", (socket) => {
   console.log(`🔌 Socket connected: ${socket.id}`);
@@ -39,6 +42,12 @@ io.on("connection", (socket) => {
   socket.on("join_room", (listingId: string) => {
     void socket.join(`listing:${listingId}`);
     console.log(`   └─ ${socket.id} joined listing:${listingId}`);
+  });
+
+  // Client joins their personal user room for inbox notifications
+  socket.on("join_user", (userId: string) => {
+    void socket.join(`user:${userId}`);
+    console.log(`   └─ ${socket.id} joined user:${userId}`);
   });
 
   socket.on("leave_room", (listingId: string) => {
@@ -66,6 +75,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/listings", listingsRouter);
 app.use("/api/mentorship", mentorshipRouter);
 app.use("/api/chat", chatRouter);
+app.use("/api/purchase", purchaseRouter);
 
 // ─── Health check ──────────────────────────────────────────────
 app.get("/health", (_req, res) => {

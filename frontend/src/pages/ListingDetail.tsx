@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import {
   ArrowLeft, Package, FileText, Star, Download, MessageSquare,
-  Loader2, AlertCircle, Calendar, Tag, Zap, User
+  Loader2, AlertCircle, Calendar, Tag, Zap, User, ShoppingBag
 } from "lucide-react"
 import { Button } from "../components/ui/Button"
 import { useAuth } from "../contexts/AuthContext"
@@ -235,7 +235,33 @@ export default function ListingDetail() {
                     {listing.isFree ? "Download Free" : "Download"}
                   </Button>
                 </a>
-              ) : !isOwner ? (
+              ) : !isOwner && listing.type === "OFFLINE" ? (
+                /* Offline listing — Buy Now + Chat */
+                <>
+                  <Button
+                    className="flex-1"
+                    disabled={listing.status !== "ACTIVE"}
+                    onClick={() => navigate(`/listings/${listing.id}/buy`)}
+                    id="buy-now-btn"
+                  >
+                    <ShoppingBag className="h-4 w-4 mr-2" />
+                    {listing.status === "ACTIVE" ? "Buy Now" : "Sold Out"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      navigate(
+                        `/chat/${listing.id}?receiverId=${listing.seller.id}&name=${encodeURIComponent(listing.title)}`
+                      )
+                    }
+                    id="chat-seller-btn"
+                  >
+                    <MessageSquare className="h-4 w-4 mr-1.5" />
+                    Chat
+                  </Button>
+                </>
+              ) : !isOwner && listing.type === "ONLINE" ? (
                 <Button
                   className="flex-1"
                   onClick={() =>

@@ -6,8 +6,9 @@ import {
   User, Plus, Upload, TrendingUp, Star, Eye, Bell,
   ChevronRight, Loader2, PackagePlus, FileText, Search,
   MoreHorizontal, ArrowUpRight, Lock, X, ArrowRight,
-  Moon, Sun, Heart, Sparkles
+  Moon, Sun, Heart, Sparkles, Inbox
 } from "lucide-react"
+import { io } from "socket.io-client"
 import { useAuth } from "../contexts/AuthContext"
 import { useTheme } from "../contexts/ThemeContext"
 import { Button } from "../components/ui/Button"
@@ -323,6 +324,7 @@ export default function Dashboard() {
   const [loginPrompt, setLoginPrompt] = useState<{ open: boolean; action: "buy" | "sell" }>({ open: false, action: "buy" })
   const [purchaseItem, setPurchaseItem] = useState<PurchaseItem | null>(null)
   const [globalWishlist, setGlobalWishlist] = useState<Set<string>>(new Set())
+  const [inboxUnread, setInboxUnread] = useState(0)
 
   const toggleGlobalWishlist = (id: string) => {
     setGlobalWishlist((prev) => {
@@ -354,6 +356,32 @@ export default function Dashboard() {
   }, [getAccessToken, user])
 
   useEffect(() => { void fetchMyListings() }, [fetchMyListings])
+
+  // Fetch inbox unread count + real-time updates
+  useEffect(() => {
+    if (!user) return
+    const API_URL_SOCK = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
+    void (async () => {
+      try {
+        const token = getAccessToken()
+        const res = await fetch(`${API_URL_SOCK}/api/purchase/inbox`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        })
+        if (res.ok) {
+          const data = await res.json() as { unread: number }
+          setInboxUnread(data.unread)
+        }
+      } catch { /* silent */ }
+    })()
+
+    const socket = io(API_URL_SOCK, {
+      transports: ["websocket"],
+      auth: { token: getAccessToken() },
+    })
+    socket.on("connect", () => socket.emit("join_user", user.id))
+    socket.on("new_notification", () => setInboxUnread((n) => n + 1))
+    return () => { socket.disconnect() }
+  }, [user, getAccessToken])
 
   useEffect(() => {
     if (location.hash === "#listings") setActiveSection("listings")
@@ -398,6 +426,23 @@ export default function Dashboard() {
               )}
             </button>
           ))}
+
+          {/* Inbox link */}
+          <button
+            id="dashboard-inbox-btn"
+            onClick={() => navigate("/inbox")}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
+            style={navInactive}
+          >
+            <Inbox className="h-4 w-4 flex-shrink-0" />
+            Inbox
+            {inboxUnread > 0 && (
+              <span className="ml-auto text-[10px] font-bold rounded-full px-1.5 py-0.5"
+                style={{ background: "rgba(232,97,28,0.85)", color: "#fff" }}>
+                {inboxUnread > 9 ? "9+" : inboxUnread}
+              </span>
+            )}
+          </button>
 
           {/* Quick upload */}
           <div className="pt-3 mt-2" style={{ borderTop: `1px solid ${T.border}` }}>

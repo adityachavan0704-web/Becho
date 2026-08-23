@@ -10,6 +10,8 @@ import AuthCallback from "./pages/AuthCallback"
 import ListingDetail from "./pages/ListingDetail"
 import Mentorship from "./pages/Mentorship"
 import Chat from "./pages/Chat"
+import PurchasePage from "./pages/PurchasePage"
+import InboxPage from "./pages/Inbox"
 
 function App() {
   return (
@@ -42,7 +44,23 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/listings/:id/buy"
+                element={
+                  <ProtectedRoute>
+                    <PurchasePage />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route
+                path="/inbox"
+                element={
+                  <ProtectedRoute>
+                    <InboxPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/chat/:listingId"
                 element={
