@@ -13,7 +13,7 @@ import { cn } from "../lib/utils"
 
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
 
-const CATEGORIES = ["All", "Notes", "Books", "Hardware", "Cycles", "Equipment", "Software", "Tutorials", "Lab Tools"]
+const CATEGORIES = ["All", "Notes", "Books", "Hardware", "Cycles", "Equipment", "Software", "Tutorials", "Lab Tools", "Furniture", "Mock Tests", "Projects"]
 const TYPES = [
   { label: "All", value: "" },
   { label: "Online", value: "ONLINE" },

@@ -7,8 +7,6 @@ import {
 } from "lucide-react"
 import { Button } from "../components/ui/Button"
 import { useAuth } from "../contexts/AuthContext"
-import { ListingCard } from "../components/ListingCard"
-import type { Listing } from "../components/ListingCard"
 import { cn } from "../lib/utils"
 
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
@@ -30,7 +28,6 @@ export default function ListingDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [activeImg, setActiveImg] = useState(0)
-  const [similar, setSimilar] = useState<Listing[]>([])
 
   useEffect(() => {
     if (!id) return
@@ -41,12 +38,6 @@ export default function ListingDetail() {
         if (!res.ok) { setError(true); return }
         const data = await res.json() as { listing: FullListing }
         setListing(data.listing)
-        // Fetch similar listings
-        const simRes = await fetch(`${API_URL}/api/listings/${id}/similar`)
-        if (simRes.ok) {
-          const simData = await simRes.json() as { listings: Listing[] }
-          setSimilar(simData.listings)
-        }
       } catch {
         setError(true)
       } finally {
@@ -287,18 +278,6 @@ export default function ListingDetail() {
             </div>
           </div>
         </motion.div>
-
-        {/* Similar Listings */}
-        {similar.length > 0 && (
-          <div className="mt-12">
-            <h2 className="text-lg font-semibold mb-4">Similar Listings</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {similar.map((s) => (
-                <ListingCard key={s.id} listing={s} />
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )

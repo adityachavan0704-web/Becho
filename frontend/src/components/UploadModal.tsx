@@ -319,7 +319,8 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                         </button>
                       ))}
                     </div>
-                                {/* Row: subject + semester */}
+                  </div>
+                  {/* Row: subject + semester */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="text-xs font-medium text-zinc-400 mb-1.5 block">
@@ -347,7 +348,6 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                       />
                     </div>
                   </div>
-         </div>
                   {/* Price */}
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
