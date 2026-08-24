@@ -952,7 +952,17 @@ function MarketplaceSection({ onLoginPrompt: _onLoginPrompt, wishlist, onToggleW
 }
 
 
-// â”€â”€ Wishlist Section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Wishlist Section ─────────────────────────────────────────────────────────
+
+const CARD_IMAGES: Record<string, string> = {
+  Notes: "https://images.unsplash.com/photo-1517842645767-c639042777db?w=400&q=80",
+  Books: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=400&q=80",
+  Hardware: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+  Cycles: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=400&q=80",
+  Equipment: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&q=80",
+  Software: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&q=80",
+  "Lab Tools": "https://images.unsplash.com/photo-1581092328149-c2b1897c5553?w=400&q=80"
+}
 
 function WishlistSection({ wishlist, onToggleWishlist, }: {
   wishlist: Set<string>
