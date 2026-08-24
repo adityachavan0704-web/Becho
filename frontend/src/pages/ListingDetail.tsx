@@ -8,6 +8,7 @@ import {
 import { Button } from "../components/ui/Button"
 import { useAuth } from "../contexts/AuthContext"
 import { cn } from "../lib/utils"
+import type { Listing } from "../components/ListingCard"
 
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
 

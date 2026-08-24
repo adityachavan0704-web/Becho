@@ -1,4 +1,4 @@
-﻿// src/pages/PurchasePage.tsx — Purchase flow for offline listings
+// src/pages/PurchasePage.tsx — Purchase flow for offline listings
 
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
@@ -22,6 +22,7 @@ interface FullListing {
   condition?: string
   images: string[]
   status: string
+  type: string
   seller: { id: string; name: string; reputation: number; email: string }
 }
 

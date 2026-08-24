@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -6,7 +6,7 @@ import {
   User, Plus, Upload, TrendingUp, Star, Eye, Bell,
   ChevronRight, Loader2, PackagePlus, FileText, Search,
   MoreHorizontal, ArrowUpRight, Lock, X, ArrowRight,
-  Moon, Sun, Heart, Sparkles, Inbox
+  Moon, Sun, Heart, Inbox
 } from "lucide-react"
 import { io } from "socket.io-client"
 import { useAuth } from "../contexts/AuthContext"
@@ -786,7 +786,7 @@ function MarketplaceSection({ onLoginPrompt: _onLoginPrompt, wishlist, onToggleW
   const [category, setCategory] = useState("All")
   const [listings, setListings] = useState<ApiListing[]>([])
   const [loading, setLoading] = useState(true)
-  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const debounce = useRef<any>(null)
 
   // Debounce search input
   useEffect(() => {
