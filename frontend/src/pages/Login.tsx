@@ -91,9 +91,9 @@ export default function Login() {
       style={{ backgroundColor: "var(--bg)" }}>
       {/* Background glow orbs */}
       <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full opacity-10 blur-3xl"
-        style={{ background: "radial-gradient(circle, #E8611C, transparent)" }} />
+        style={{ background: "radial-gradient(circle, #FF6B1A, transparent)" }} />
       <div className="absolute bottom-1/4 -right-32 w-96 h-96 rounded-full opacity-10 blur-3xl"
-        style={{ background: "radial-gradient(circle, #E8611C, transparent)" }} />
+        style={{ background: "radial-gradient(circle, #FF6B1A, transparent)" }} />
 
       {/* Back button */}
       <Button
@@ -109,7 +109,7 @@ export default function Login() {
       <button
         onClick={toggleTheme}
         className="absolute top-4 right-4 h-9 w-9 rounded-xl flex items-center justify-center transition-all"
-        style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
+        style={{ background: "var(--surface-2)", border: "var(--border-width) solid var(--border)", color: "var(--text-muted)" }}
         title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
       >
         {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -123,8 +123,8 @@ export default function Login() {
           </div>
           <h1 className="text-2xl font-bold" style={{ letterSpacing: "-0.03em", color: "var(--text)" }}>
             {tab === "register"
-              ? <>Join <span style={{ color: "#E8611C" }}>Becho</span> — it's free</>
-              : <>Welcome <span style={{ color: "#E8611C" }}>back</span></>}
+              ? <>Join <span style={{ color: "#FF6B1A" }}>Becho</span> — it's free</>
+              : <>Welcome <span style={{ color: "#FF6B1A" }}>back</span></>}
           </h1>
           <p className="mt-2 text-sm" style={{ color: "var(--text-muted)" }}>
             {role === "seller"
@@ -133,7 +133,7 @@ export default function Login() {
           </p>
         </div>
 
-        <div className="rounded-2xl p-8 shadow-2xl" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+        <div className="rounded-2xl p-8 shadow-2xl" style={{ background: "var(--surface)", border: "var(--border-width) solid var(--border)" }}>
           {/* Tab toggle */}
           <div className="flex gap-1 p-1 rounded-xl mb-6" style={{ background: "var(--surface-2)" }}>
             <button
@@ -164,7 +164,7 @@ export default function Login() {
           <button
             onClick={handleGoogleLogin}
             className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 mb-4 group"
-            style={{ border: "1px solid var(--border)", color: "var(--text-muted)" }}
+            style={{ border: "var(--border-width) solid var(--border)", color: "var(--text-muted)" }}
           >
             {/* Google "G" icon using SVG */}
             <svg className="w-5 h-5" viewBox="0 0 24 24">

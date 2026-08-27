@@ -87,7 +87,7 @@ export default function Browse() {
       {/* Top Nav */}
       <nav className="sticky top-0 z-40 bg-[#080808]/90 backdrop-blur border-b border-white/[0.05] px-6 py-3.5 flex items-center gap-4">
         <div className="flex items-center gap-2.5 mr-4">
-          <div className="w-7 h-7 rounded-lg bg-[#E8611C] flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg bg-[#FF6B1A] flex items-center justify-center">
             <Zap className="h-4 w-4 text-white" />
           </div>
           <span className="text-base font-bold text-white tracking-tight">Becho</span>
@@ -97,7 +97,7 @@ export default function Browse() {
         <div className="flex-1 relative max-w-xl">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
           <input
-            className="w-full bg-zinc-900/80 border border-zinc-800 hover:border-zinc-700 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#E8611C]/50 focus:ring-1 focus:ring-[#E8611C]/20 transition-all"
+            className="w-full bg-zinc-900/80 border border-zinc-800 hover:border-zinc-700 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF6B1A]/50 focus:ring-1 focus:ring-[#FF6B1A]/20 transition-all"
             placeholder="Search notes, books, hardware, cycles…"
             value={liveQuery}
             onChange={(e) => setLiveQuery(e.target.value)}
@@ -133,8 +133,8 @@ export default function Browse() {
           </Button>
           {user && (
             <div className="flex items-center gap-2 pl-2 border-l border-white/[0.06] ml-1">
-              <div className="w-7 h-7 rounded-full bg-[#E8611C]/20 flex items-center justify-center">
-                <span className="text-xs font-bold text-[#E8611C]">{user.name[0]?.toUpperCase()}</span>
+              <div className="w-7 h-7 rounded-full bg-[#FF6B1A]/20 flex items-center justify-center">
+                <span className="text-xs font-bold text-[#FF6B1A]">{user.name[0]?.toUpperCase()}</span>
               </div>
               <button onClick={handleLogout} className="text-zinc-600 hover:text-red-400 transition-colors">
                 <LogOut className="h-3.5 w-3.5" />
@@ -156,7 +156,7 @@ export default function Browse() {
                 className={cn(
                   "px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
                   type === t.value
-                    ? "bg-[#E8611C] text-white"
+                    ? "bg-[#FF6B1A] text-white"
                     : "text-zinc-500 hover:text-zinc-200"
                 )}
               >
@@ -208,7 +208,7 @@ export default function Browse() {
             {loading ? "Loading…" : (
               <>
                 <span className="text-zinc-300 font-semibold">{meta.total}</span> results
-                {query && <> for "<span className="text-[#E8611C]">{query}</span>"</>}
+                {query && <> for "<span className="text-[#FF6B1A]">{query}</span>"</>}
               </>
             )}
           </p>
@@ -248,7 +248,7 @@ export default function Browse() {
                 className={cn(
                   "w-8 h-8 rounded-lg text-xs font-semibold transition-all",
                   p === meta.page
-                    ? "bg-[#E8611C] text-white"
+                    ? "bg-[#FF6B1A] text-white"
                     : "bg-zinc-900 text-zinc-500 hover:bg-zinc-800"
                 )}
               >

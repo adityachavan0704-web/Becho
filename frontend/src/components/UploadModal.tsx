@@ -203,20 +203,20 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                   <div
                     className={cn(
                       "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all",
-                      active && "bg-[#E8611C]/15 text-[#E8611C]",
+                      active && "bg-[#FF6B1A]/15 text-[#FF6B1A]",
                       done && "text-zinc-400",
                       !active && !done && "text-zinc-600"
                     )}
                   >
                     {done ? (
-                      <Check className="h-3 w-3 text-[#E8611C]" />
+                      <Check className="h-3 w-3 text-[#FF6B1A]" />
                     ) : (
                       <s.icon className="h-3 w-3" />
                     )}
                     {s.label}
                   </div>
                   {i < STEPS.length - 1 && (
-                    <div className={cn("w-6 h-px mx-0.5", step > num ? "bg-[#E8611C]/40" : "bg-zinc-800")} />
+                    <div className={cn("w-6 h-px mx-0.5", step > num ? "bg-[#FF6B1A]/40" : "bg-zinc-800")} />
                   )}
                 </div>
               )
@@ -233,8 +233,8 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                   animate={{ opacity: 1, scale: 1 }}
                   className="flex flex-col items-center justify-center h-64 gap-4"
                 >
-                  <div className="w-16 h-16 rounded-full bg-[#E8611C]/15 flex items-center justify-center">
-                    <Check className="h-8 w-8 text-[#E8611C]" />
+                  <div className="w-16 h-16 rounded-full bg-[#FF6B1A]/15 flex items-center justify-center">
+                    <Check className="h-8 w-8 text-[#FF6B1A]" />
                   </div>
                   <p className="text-lg font-semibold text-white">Listing Published!</p>
                   <p className="text-sm text-zinc-500">Your listing is now live on the marketplace.</p>
@@ -250,26 +250,26 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                         className={cn(
                           "flex flex-col items-center gap-3 p-6 rounded-xl border-2 transition-all duration-200",
                           form.type === t
-                            ? "border-[#E8611C]/60 bg-[#E8611C]/[0.06] shadow-[0_0_20px_rgba(232,97,28,0.1)]"
+                            ? "border-[#FF6B1A]/60 bg-[#FF6B1A]/[0.06] shadow-[0_0_20px_rgba(255,107,26,0.1)]"
                             : "border-zinc-800 bg-zinc-900/40 hover:border-zinc-700"
                         )}
                       >
                         <div className={cn(
                           "w-12 h-12 rounded-xl flex items-center justify-center",
-                          form.type === t ? "bg-[#E8611C]/20" : "bg-zinc-800"
+                          form.type === t ? "bg-[#FF6B1A]/20" : "bg-zinc-800"
                         )}>
                           {t === "OFFLINE" ? (
-                            <Package className={cn("h-6 w-6", form.type === t ? "text-[#E8611C]" : "text-zinc-500")} />
+                            <Package className={cn("h-6 w-6", form.type === t ? "text-[#FF6B1A]" : "text-zinc-500")} />
                           ) : (
-                            <FileText className={cn("h-6 w-6", form.type === t ? "text-[#E8611C]" : "text-zinc-500")} />
+                            <FileText className={cn("h-6 w-6", form.type === t ? "text-[#FF6B1A]" : "text-zinc-500")} />
                           )}
                         </div>
                         <div>
-                          <p className={cn("font-semibold text-sm", form.type === t ? "text-[#E8611C]" : "text-zinc-300")}>
+                          <p className={cn("font-semibold text-sm", form.type === t ? "text-[#FF6B1A]" : "text-zinc-300")}>
                             {t === "OFFLINE" ? "Hardware Item" : "Online Resource"}
                           </p>
                           <p className="text-xs text-zinc-600 mt-0.5">
-                            {t === "OFFLINE" ? "Books, cycles, equipmentâ€¦" : "Notes, PDFs, softwareâ€¦"}
+                            {t === "OFFLINE" ? "Books, cycles, equipment…" : "Notes, PDFs, software…"}
                           </p>
                         </div>
                       </button>
@@ -283,7 +283,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                   <div>
                     <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Title *</label>
                     <input
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#E8611C]/50 focus:ring-1 focus:ring-[#E8611C]/30 transition-all"
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF6B1A]/50 focus:ring-1 focus:ring-[#FF6B1A]/30 transition-all"
                       placeholder="e.g. Engineering Physics Notes Sem 3"
                       value={form.title}
                       onChange={(e) => set("title", e.target.value)}
@@ -294,8 +294,8 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                     <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Description *</label>
                     <textarea
                       rows={3}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#E8611C]/50 focus:ring-1 focus:ring-[#E8611C]/30 transition-all resize-none"
-                      placeholder="Describe the item, condition, contentsâ€¦"
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF6B1A]/50 focus:ring-1 focus:ring-[#FF6B1A]/30 transition-all resize-none"
+                      placeholder="Describe the item, condition, contents…"
                       value={form.description}
                       onChange={(e) => set("description", e.target.value)}
                     />
@@ -311,7 +311,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                           className={cn(
                             "px-3 py-1 rounded-full text-xs font-medium border transition-all",
                             form.category === cat
-                              ? "bg-[#E8611C]/15 border-[#E8611C]/50 text-[#E8611C]"
+                              ? "bg-[#FF6B1A]/15 border-[#FF6B1A]/50 text-[#FF6B1A]"
                               : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600"
                           )}
                         >
@@ -327,7 +327,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                         Subject <span className="text-zinc-600 font-normal">(optional)</span>
                       </label>
                       <input
-                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#E8611C]/50 transition-all"
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF6B1A]/50 transition-all"
                         placeholder="e.g. Physics"
                         value={form.subject}
                         onChange={(e) => set("subject", e.target.value)}
@@ -341,7 +341,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                         type="number"
                         min="1"
                         max="8"
-                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#E8611C]/50 transition-all"
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF6B1A]/50 transition-all"
                         placeholder="1 – 8"
                         value={form.semester}
                         onChange={(e) => set("semester", e.target.value)}
@@ -357,7 +357,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                           onClick={() => set("isFree", !form.isFree)}
                           className={cn(
                             "relative w-9 h-5 rounded-full transition-colors",
-                            form.isFree ? "bg-[#E8611C]" : "bg-zinc-700"
+                            form.isFree ? "bg-[#FF6B1A]" : "bg-zinc-700"
                           )}
                         >
                           <div className={cn(
@@ -374,7 +374,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                         <input
                           type="number"
                           min="0"
-                          className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-8 pr-3 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#E8611C]/50 transition-all"
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-8 pr-3 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-[#FF6B1A]/50 transition-all"
                           placeholder="0.00"
                           value={form.price}
                           onChange={(e) => set("price", e.target.value)}
@@ -394,7 +394,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                             className={cn(
                               "px-3 py-1 rounded-full text-xs font-medium border transition-all",
                               form.condition === c
-                                ? "bg-[#E8611C]/15 border-[#E8611C]/50 text-[#E8611C]"
+                                ? "bg-[#FF6B1A]/15 border-[#FF6B1A]/50 text-[#FF6B1A]"
                                 : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600"
                             )}
                           >
@@ -420,7 +420,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                       onDrop={(e) => handleDrop(e, "images")}
                       className={cn(
                         "border-2 border-dashed rounded-xl p-4 text-center transition-all cursor-pointer",
-                        isDragging ? "border-[#E8611C]/60 bg-[#E8611C]/[0.04]" : "border-zinc-800 hover:border-zinc-700"
+                        isDragging ? "border-[#FF6B1A]/60 bg-[#FF6B1A]/[0.04]" : "border-zinc-800 hover:border-zinc-700"
                       )}
                       onClick={() => document.getElementById("img-upload")?.click()}
                     >
@@ -463,7 +463,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                   {form.type === "ONLINE" && (
                     <div>
                       <label className="text-xs font-medium text-zinc-400 mb-2 block flex items-center gap-1.5">
-                        <FilePlus className="h-3.5 w-3.5" /> Resource File (PDF, ZIPâ€¦)
+                        <FilePlus className="h-3.5 w-3.5" /> Resource File (PDF, ZIP…)
                       </label>
                       <div
                         ref={fileDrop}
@@ -481,7 +481,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                         />
                         {form.file ? (
                           <div className="flex items-center justify-center gap-2">
-                            <FileText className="h-4 w-4 text-[#E8611C]" />
+                            <FileText className="h-4 w-4 text-[#FF6B1A]" />
                             <span className="text-xs text-zinc-300 truncate max-w-[200px]">{form.file.name}</span>
                             <button onClick={(e) => { e.stopPropagation(); set("file", null) }}>
                               <X className="h-3.5 w-3.5 text-zinc-500 hover:text-red-400" />
@@ -498,7 +498,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                   )}
                 </motion.div>
               ) : (
-                /* Step 4 â€” Review */
+                /* Step 4 — Review */
                 <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20}}
                   className="space-y-4">
                   <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 space-y-3">
@@ -506,24 +506,24 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                       <span className={cn(
                         "text-[10px] font-semibold px-2 py-0.5 rounded-full border",
                         form.type === "ONLINE"
-                          ? "bg-[#E8611C]/15 text-[#E8611C] border-[#E8611C]/20"
+                          ? "bg-[#FF6B1A]/15 text-[#FF6B1A] border-[#FF6B1A]/20"
                           : "bg-amber-500/15 text-amber-400 border-amber-500/20"
                       )}>
                         {form.type}
                       </span>
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#E8611C]/15 text-[#E8611C]">
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FF6B1A]/15 text-[#FF6B1A]">
                         {form.category}
                       </span>
                     </div>
                     <h3 className="font-semibold text-white">{form.title}</h3>
                     <p className="text-xs text-zinc-500 line-clamp-3">{form.description}</p>
                     <div className="flex items-center gap-4 text-xs text-zinc-500 pt-1 border-t border-zinc-800">
-                      <span>ðŸ’° {form.isFree ? "Free" : `â‚¹${form.price}`}</span>
-                      {form.subject && <span>ðŸ“š {form.subject}</span>}
-                      {form.semester && <span>ðŸ“… Sem {form.semester}</span>}
-                      {form.condition && form.type === "OFFLINE" && <span>ðŸ·ï¸ {form.condition}</span>}
-                      <span>ðŸ–¼ï¸ {form.images.length} image{form.images.length !== 1 ? "s" : ""}</span>
-                      {form.file && <span>ðŸ“Ž 1 file</span>}
+                      <span>💰 {form.isFree ? "Free" : `₹${form.price}`}</span>
+                      {form.subject && <span>📚 {form.subject}</span>}
+                      {form.semester && <span>📅 Sem {form.semester}</span>}
+                      {form.condition && form.type === "OFFLINE" && <span>🏷️ {form.condition}</span>}
+                      <span>🖼️ {form.images.length} image{form.images.length !== 1 ? "s" : ""}</span>
+                      {form.file && <span>📎 1 file</span>}
                     </div>
                   </div>
                   {error && (

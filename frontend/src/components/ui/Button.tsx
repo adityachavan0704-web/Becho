@@ -11,27 +11,27 @@ export interface ButtonProps extends HTMLMotionProps<"button"> {
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "default", size = "default", ...props }, ref) => {
     const baseStyles =
-      "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
+      "inline-flex items-center justify-center whitespace-nowrap rounded-none text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
 
     const variants = {
       default:
-        "bg-[#E8611C] text-white hover:bg-[#ff7b3a] shadow-[0_0_20px_rgba(232,97,28,0.25)] hover:shadow-[0_0_35px_rgba(232,97,28,0.45)] font-semibold",
+        "bg-[#FF6B1A] text-white hover:bg-[#ff7b3a] shadow-[0_0_20px_rgba(255,107,26,0.25)] hover:shadow-[0_0_35px_rgba(255,107,26,0.45)] font-semibold border-[length:var(--border-width)] border-[color:var(--border-orange)]",
       destructive:
-        "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm",
+        "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm border-[length:var(--border-width)] border-[color:var(--border)]",
       outline:
-        "border border-white/15 bg-transparent text-white hover:border-[#E8611C]/60 hover:text-[#E8611C] hover:shadow-[0_0_20px_rgba(232,97,28,0.12)]",
+        "bg-transparent hover:border-[#FF6B1A]/60 hover:text-[#FF6B1A] hover:shadow-[0_0_20px_rgba(255,107,26,0.12)] border-[length:var(--border-width)] border-[color:var(--border)]",
       secondary:
-        "bg-zinc-800 text-zinc-100 hover:bg-zinc-700",
+        "bg-zinc-800 text-zinc-100 hover:bg-zinc-700 border-[length:var(--border-width)] border-[color:var(--border)]",
       ghost:
         "hover:bg-zinc-800/70 text-zinc-300 hover:text-white",
       link:
-        "text-[#E8611C] underline-offset-4 hover:underline",
+        "text-[#FF6B1A] underline-offset-4 hover:underline",
     }
 
     const sizes = {
       default: "h-11 px-5 py-2",
-      sm: "h-9 rounded-lg px-4 text-xs",
-      lg: "h-12 rounded-xl px-8 text-sm",
+      sm: "h-9 rounded-none px-4 text-xs",
+      lg: "h-12 rounded-none px-8 text-sm",
       icon: "h-11 w-11",
     }
 

@@ -94,7 +94,7 @@ export default function PurchasePage() {
         <p className="text-zinc-400 font-medium">{error ?? "Listing not found"}</p>
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-sm text-[#E8611C] hover:underline"
+          className="flex items-center gap-2 text-sm text-[#FF6B1A] hover:underline"
         >
           <ArrowLeft className="h-4 w-4" /> Go back
         </button>
@@ -107,7 +107,7 @@ export default function PurchasePage() {
       {/* Nav */}
       <nav className="sticky top-0 z-40 bg-[#080808]/90 backdrop-blur border-b border-white/[0.05] px-6 py-3.5 flex items-center gap-3">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#E8611C] flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg bg-[#FF6B1A] flex items-center justify-center">
             <Zap className="h-4 w-4 text-white" />
           </div>
           <span className="text-base font-bold text-white tracking-tight">Becho</span>
@@ -132,14 +132,14 @@ export default function PurchasePage() {
               className="flex flex-col items-center text-center gap-6 py-16"
             >
               <div className="relative">
-                <div className="w-24 h-24 rounded-full bg-[#E8611C]/10 flex items-center justify-center">
-                  <CheckCircle2 className="h-12 w-12 text-[#E8611C]" />
+                <div className="w-24 h-24 rounded-full bg-[#FF6B1A]/10 flex items-center justify-center">
+                  <CheckCircle2 className="h-12 w-12 text-[#FF6B1A]" />
                 </div>
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.2, type: "spring" }}
-                  className="absolute -top-1 -right-1 w-6 h-6 bg-[#E8611C] rounded-full flex items-center justify-center"
+                  className="absolute -top-1 -right-1 w-6 h-6 bg-[#FF6B1A] rounded-full flex items-center justify-center"
                 >
                   <span className="text-white text-xs font-bold">✓</span>
                 </motion.div>
@@ -154,7 +154,7 @@ export default function PurchasePage() {
               <div className="flex flex-col sm:flex-row gap-3 w-full max-w-sm">
                 <button
                   onClick={() => navigate("/inbox")}
-                  className="flex-1 flex items-center justify-center gap-2 bg-[#E8611C] hover:bg-[#E8611C]/90 text-white text-sm font-semibold px-5 py-3 rounded-xl transition-all"
+                  className="flex-1 flex items-center justify-center gap-2 bg-[#FF6B1A] hover:bg-[#FF6B1A]/90 text-white text-sm font-semibold px-5 py-3 rounded-xl transition-all"
                 >
                   <MessageSquare className="h-4 w-4" />
                   View Inbox
@@ -178,8 +178,8 @@ export default function PurchasePage() {
               {/* Header */}
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <ShoppingBag className="h-4 w-4 text-[#E8611C]" />
-                  <span className="text-xs font-semibold text-[#E8611C] uppercase tracking-widest">Purchase Request</span>
+                  <ShoppingBag className="h-4 w-4 text-[#FF6B1A]" />
+                  <span className="text-xs font-semibold text-[#FF6B1A] uppercase tracking-widest">Purchase Request</span>
                 </div>
                 <h1 className="text-2xl font-bold text-white">Contact Seller</h1>
                 <p className="text-zinc-500 text-sm mt-1">
@@ -208,7 +208,7 @@ export default function PurchasePage() {
                     )}
                     <div className="mt-2">
                       {listing.isFree ? (
-                        <span className="text-lg font-bold text-[#E8611C]">Free</span>
+                        <span className="text-lg font-bold text-[#FF6B1A]">Free</span>
                       ) : (
                         <span className="text-lg font-bold text-white">₹{listing.price.toLocaleString("en-IN")}</span>
                       )}
@@ -221,8 +221,8 @@ export default function PurchasePage() {
               <div className="rounded-2xl bg-zinc-900/40 border border-white/[0.06] p-4">
                 <p className="text-xs text-zinc-500 font-medium uppercase tracking-wide mb-3">Seller</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#E8611C]/15 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-bold text-[#E8611C]">{listing.seller.name[0]?.toUpperCase()}</span>
+                  <div className="w-10 h-10 rounded-full bg-[#FF6B1A]/15 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-bold text-[#FF6B1A]">{listing.seller.name[0]?.toUpperCase()}</span>
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-white">{listing.seller.name}</p>
@@ -240,8 +240,8 @@ export default function PurchasePage() {
               </div>
 
               {/* How it works */}
-              <div className="rounded-2xl bg-[#E8611C]/5 border border-[#E8611C]/15 p-4">
-                <p className="text-xs font-semibold text-[#E8611C] mb-3 flex items-center gap-1.5">
+              <div className="rounded-2xl bg-[#FF6B1A]/5 border border-[#FF6B1A]/15 p-4">
+                <p className="text-xs font-semibold text-[#FF6B1A] mb-3 flex items-center gap-1.5">
                   <MapPin className="h-3.5 w-3.5" /> How this works
                 </p>
                 <div className="space-y-2.5">
@@ -251,8 +251,8 @@ export default function PurchasePage() {
                     { step: "3", text: "Coordinate pickup/meetup directly" },
                   ].map(({ step, text }) => (
                     <div key={step} className="flex items-center gap-3">
-                      <div className="w-5 h-5 rounded-full bg-[#E8611C]/20 flex items-center justify-center flex-shrink-0">
-                        <span className="text-[10px] font-bold text-[#E8611C]">{step}</span>
+                      <div className="w-5 h-5 rounded-full bg-[#FF6B1A]/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-[10px] font-bold text-[#FF6B1A]">{step}</span>
                       </div>
                       <span className="text-xs text-zinc-400">{text}</span>
                     </div>
@@ -272,7 +272,7 @@ export default function PurchasePage() {
                     placeholder="Hi! I'm interested in buying this. When can we meet?"
                     rows={3}
                     maxLength={500}
-                    className="w-full bg-zinc-900/60 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#E8611C]/50 transition-colors resize-none"
+                    className="w-full bg-zinc-900/60 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#FF6B1A]/50 transition-colors resize-none"
                   />
                   <p className="text-xs text-zinc-600 text-right mt-1">{note.length}/500</p>
                 </div>
@@ -297,7 +297,7 @@ export default function PurchasePage() {
                     type="submit"
                     disabled={submitting || listing.status !== "ACTIVE" || user?.id === listing.seller.id}
                     id="send-purchase-request-btn"
-                    className="flex-1 flex items-center justify-center gap-2 bg-[#E8611C] hover:bg-[#E8611C]/90 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold px-5 py-3 rounded-xl transition-all"
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#FF6B1A] hover:bg-[#FF6B1A]/90 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold px-5 py-3 rounded-xl transition-all"
                   >
                     {submitting ? (
                       <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</>

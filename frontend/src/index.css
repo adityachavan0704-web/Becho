@@ -21,16 +21,18 @@
   /* Borders */
   --border: rgba(255, 255, 255, 0.07);
   --border-strong: rgba(255, 255, 255, 0.12);
+  --border-width: 1px;
+  --border-orange: rgba(255, 107, 26, 0.30);
 
   /* Text */
   --text: #f4f4f5;
   --text-muted: #71717a;
   --text-subtle: #3f3f46;
 
-  /* Primary orange */
-  --primary: #E8611C;
-  --primary-dim: rgba(232, 97, 28, 0.12);
-  --primary-glow: rgba(232, 97, 28, 0.20);
+  /* Primary orange — bright fresh shade */
+  --primary: #FF6B1A;
+  --primary-dim: rgba(255, 107, 26, 0.12);
+  --primary-glow: rgba(255, 107, 26, 0.20);
 
   /* Semantic */
   --amber: #f59e0b;
@@ -42,14 +44,14 @@
   --color-muted: #181818;
   --color-muted-foreground: #71717a;
   --color-border: #222222;
-  --color-primary-500: #E8611C;
+  --color-primary-500: #FF6B1A;
   --background: #080808;
   --foreground: #f4f4f5;
   --card: #111111;
   --card-foreground: #f4f4f5;
   --popover: #111111;
   --popover-foreground: #f4f4f5;
-  --primary-tw: #E8611C;
+  --primary-tw: #FF6B1A;
   --primary-foreground: #ffffff;
   --secondary: #181818;
   --secondary-foreground: #f4f4f5;
@@ -61,7 +63,7 @@
   --destructive-foreground: #ffffff;
   --border-tw: #222222;
   --input: #181818;
-  --ring: #E8611C;
+  --ring: #FF6B1A;
   --radius: 0.75rem;
 }
 
@@ -73,19 +75,21 @@
   --surface-2: #ede7dc;
   --surface-3: #e2dbcf;
 
-  /* Borders */
-  --border: rgba(80, 60, 40, 0.11);
-  --border-strong: rgba(80, 60, 40, 0.20);
+  /* Borders — dark outlines for light mode */
+  --border: rgba(30, 20, 10, 0.38);
+  --border-strong: rgba(30, 20, 10, 0.55);
+  --border-width: 2px;
+  --border-orange: rgba(30, 20, 10, 0.45);
 
   /* Text */
   --text: #1a1310;
   --text-muted: #6b5d52;
   --text-subtle: #a8998e;
 
-  /* Primary orange stays the same */
-  --primary: #E8611C;
-  --primary-dim: rgba(232, 97, 28, 0.10);
-  --primary-glow: rgba(232, 97, 28, 0.18);
+  /* Primary orange — bright fresh shade */
+  --primary: #FF6B1A;
+  --primary-dim: rgba(255, 107, 26, 0.10);
+  --primary-glow: rgba(255, 107, 26, 0.18);
 
   /* Semantic */
   --amber: #d97706;
@@ -96,15 +100,15 @@
   --color-foreground: #1a1310;
   --color-muted: #ede7dc;
   --color-muted-foreground: #6b5d52;
-  --color-border: #d8cfc4;
-  --color-primary-500: #E8611C;
+  --color-border: #b8a898;
+  --color-primary-500: #FF6B1A;
   --background: #f5efe6;
   --foreground: #1a1310;
   --card: #fdf8f2;
   --card-foreground: #1a1310;
   --popover: #fdf8f2;
   --popover-foreground: #1a1310;
-  --primary-tw: #E8611C;
+  --primary-tw: #FF6B1A;
   --primary-foreground: #ffffff;
   --secondary: #ede7dc;
   --secondary-foreground: #1a1310;
@@ -114,9 +118,9 @@
   --accent-foreground: #1a1310;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border-tw: #d8cfc4;
+  --border-tw: #b8a898;
   --input: #ede7dc;
-  --ring: #E8611C;
+  --ring: #FF6B1A;
   --radius: 0.75rem;
 }
 

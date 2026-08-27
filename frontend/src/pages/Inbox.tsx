@@ -1,4 +1,4 @@
-﻿// src/pages/Inbox.tsx — Inbox for purchase requests (seller & buyer views)
+// src/pages/Inbox.tsx � Inbox for purchase requests (seller & buyer views)
 
 import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
@@ -158,7 +158,7 @@ export default function InboxPage() {
       {/* Nav */}
       <nav className="sticky top-0 z-40 bg-[#080808]/90 backdrop-blur border-b border-white/[0.05] px-6 py-3.5 flex items-center gap-3">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#E8611C] flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg bg-[#FF6B1A] flex items-center justify-center">
             <Zap className="h-4 w-4 text-white" />
           </div>
           <span className="text-base font-bold text-white tracking-tight">Becho</span>
@@ -177,9 +177,9 @@ export default function InboxPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <InboxIcon className="h-6 w-6 text-[#E8611C]" />
+              <InboxIcon className="h-6 w-6 text-[#FF6B1A]" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#E8611C] rounded-full text-[9px] font-bold text-white flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#FF6B1A] rounded-full text-[9px] font-bold text-white flex items-center justify-center">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
@@ -210,7 +210,7 @@ export default function InboxPage() {
               className={cn(
                 "flex-1 flex items-center justify-center gap-2 text-sm font-medium py-2.5 rounded-lg transition-all",
                 tab === t
-                  ? "bg-[#E8611C] text-white shadow"
+                  ? "bg-[#FF6B1A] text-white shadow"
                   : "text-zinc-500 hover:text-zinc-300"
               )}
             >
@@ -219,7 +219,7 @@ export default function InboxPage() {
               {t === "received" && unreadCount > 0 && (
                 <span className={cn(
                   "text-[10px] font-bold px-1.5 py-0.5 rounded-full",
-                  tab === "received" ? "bg-white/20 text-white" : "bg-[#E8611C]/20 text-[#E8611C]"
+                  tab === "received" ? "bg-white/20 text-white" : "bg-[#FF6B1A]/20 text-[#FF6B1A]"
                 )}>
                   {unreadCount}
                 </span>
@@ -292,7 +292,7 @@ export default function InboxPage() {
   )
 }
 
-// ── Sub-components ────────────────────────────────────────────────
+// -- Sub-components ------------------------------------------------
 
 function EmptyState({
   icon, title, desc, action,
@@ -310,7 +310,7 @@ function EmptyState({
       {action && (
         <button
           onClick={action.onClick}
-          className="mt-2 text-sm text-[#E8611C] hover:underline"
+          className="mt-2 text-sm text-[#FF6B1A] hover:underline"
         >
           {action.label}
         </button>
@@ -344,14 +344,14 @@ function ReceivedCard({
         "rounded-2xl border p-4 space-y-3 transition-all",
         notif.isRead
           ? "bg-zinc-900/40 border-white/[0.06]"
-          : "bg-zinc-900/70 border-[#E8611C]/20 shadow-[0_0_0_1px_rgba(232,97,28,0.08)]"
+          : "bg-zinc-900/70 border-[#FF6B1A]/20 shadow-[0_0_0_1px_rgba(255,107,26,0.08)]"
       )}
     >
       {/* Top row: type label + unread dot + timestamp */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {!notif.isRead && (
-            <div className="w-2 h-2 rounded-full bg-[#E8611C] flex-shrink-0" />
+            <div className="w-2 h-2 rounded-full bg-[#FF6B1A] flex-shrink-0" />
           )}
           <span className="text-xs text-zinc-500">
             {notif.type === "PURCHASE_REQUEST" ? (
@@ -389,7 +389,7 @@ function ReceivedCard({
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-white truncate">{pr.listing.title}</p>
           <p className="text-xs text-zinc-500 mt-0.5">
-            {pr.listing.isFree ? "Free" : `₹${pr.listing.price.toLocaleString("en-IN")}`}
+            {pr.listing.isFree ? "Free" : `?${pr.listing.price.toLocaleString("en-IN")}`}
           </p>
           {pr.note && (
             <p className="text-xs text-zinc-400 mt-1 italic line-clamp-1">"{pr.note}"</p>
@@ -401,8 +401,8 @@ function ReceivedCard({
       {/* Buyer info (seller view) */}
       {isSellerView && notif.type === "PURCHASE_REQUEST" && (
         <div className="flex items-center gap-2 bg-zinc-800/50 rounded-xl px-3 py-2">
-          <div className="w-6 h-6 rounded-full bg-[#E8611C]/15 flex items-center justify-center flex-shrink-0">
-            <span className="text-[10px] font-bold text-[#E8611C]">{pr.buyer.name[0]?.toUpperCase()}</span>
+          <div className="w-6 h-6 rounded-full bg-[#FF6B1A]/15 flex items-center justify-center flex-shrink-0">
+            <span className="text-[10px] font-bold text-[#FF6B1A]">{pr.buyer.name[0]?.toUpperCase()}</span>
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-medium text-white">{pr.buyer.name}</p>
@@ -422,7 +422,7 @@ function ReceivedCard({
           {sc.label}
         </span>
 
-        {/* Actions — only seller sees action buttons on PENDING */}
+        {/* Actions � only seller sees action buttons on PENDING */}
         {isSellerView && status === "PENDING" && (
           <div className="flex items-center gap-2">
             <button
@@ -454,7 +454,7 @@ function ReceivedCard({
             <button
               id={`chat-btn-${pr.id}`}
               onClick={() => onChat(pr.listing.id, pr.buyer.id, pr.listing.title)}
-              className="flex items-center gap-1.5 text-xs text-[#E8611C] hover:text-[#E8611C]/80 bg-[#E8611C]/10 hover:bg-[#E8611C]/20 border border-[#E8611C]/20 px-3 py-1.5 rounded-lg transition-all"
+              className="flex items-center gap-1.5 text-xs text-[#FF6B1A] hover:text-[#FF6B1A]/80 bg-[#FF6B1A]/10 hover:bg-[#FF6B1A]/20 border border-[#FF6B1A]/20 px-3 py-1.5 rounded-lg transition-all"
             >
               <MessageSquare className="h-3 w-3" />
               Chat
@@ -466,7 +466,7 @@ function ReceivedCard({
         {isSellerView && status === "ACCEPTED" && (
           <button
             onClick={() => onChat(pr.listing.id, pr.buyer.id, pr.listing.title)}
-            className="flex items-center gap-1.5 text-xs text-[#E8611C] hover:underline"
+            className="flex items-center gap-1.5 text-xs text-[#FF6B1A] hover:underline"
           >
             <MessageSquare className="h-3 w-3" />
             Chat with buyer
@@ -509,7 +509,7 @@ function SentCard({
             Seller: <span className="text-zinc-300">{req.seller.name}</span>
           </p>
           <p className="text-xs text-zinc-500 mt-0.5">
-            {req.listing.isFree ? "Free" : `₹${req.listing.price.toLocaleString("en-IN")}`}
+            {req.listing.isFree ? "Free" : `?${req.listing.price.toLocaleString("en-IN")}`}
           </p>
           {req.note && (
             <p className="text-xs text-zinc-500 italic mt-1 line-clamp-1">"{req.note}"</p>
@@ -534,7 +534,7 @@ function SentCard({
           {req.status === "ACCEPTED" && (
             <button
               onClick={() => onChat(req.listing.id, req.seller.id, req.listing.title)}
-              className="flex items-center gap-1.5 text-xs text-[#E8611C] hover:underline"
+              className="flex items-center gap-1.5 text-xs text-[#FF6B1A] hover:underline"
             >
               <MessageSquare className="h-3 w-3" />
               Chat with seller

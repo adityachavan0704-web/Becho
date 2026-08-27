@@ -5,13 +5,8 @@ import { Button } from "../components/ui/Button"
 import BechoLogo from "../components/BechoLogo"
 import { useTheme } from "../contexts/ThemeContext"
 import {
-  BookOpen,
-  ShoppingCart,
-  MessageCircle,
   ArrowRight,
   Star,
-  Shield,
-  Zap,
   Sun,
   Moon,
 } from "lucide-react"
@@ -109,9 +104,9 @@ function SphereCarousel() {
           }}
         >
           <div
-            className="relative w-[160px] h-[210px] rounded-2xl overflow-hidden shadow-2xl"
+            className="relative w-[160px] h-[210px] rounded-none overflow-hidden shadow-2xl"
             style={{
-              border: "1px solid rgba(255,255,255,0.10)",
+              border: "var(--border-width) solid rgba(255,255,255,0.10)",
               boxShadow: card.z > 0
                 ? `0 20px 60px rgba(0,0,0,0.5), 0 0 20px ${card.item.color}22`
                 : "0 10px 30px rgba(0,0,0,0.35)",
@@ -120,7 +115,7 @@ function SphereCarousel() {
             <img src={card.item.img} alt={card.item.label} className="w-full h-full object-cover" draggable={false} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
             <div
-              className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest"
+              className="absolute top-3 left-3 px-2 py-0.5 rounded-none text-[10px] font-mono font-bold uppercase tracking-widest"
               style={{ background: card.item.color + "22", color: card.item.color, border: `1px solid ${card.item.color}44` }}
             >
               {card.item.tag}
@@ -140,7 +135,7 @@ const marqueeItems = ["Arduino Kits", "Lab Manuals", "Study Notes", "IoT Sensors
 
 function MarqueeStrip() {
   return (
-    <div className="w-full overflow-hidden py-4" style={{ borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", backgroundColor: "var(--surface)" }}>
+    <div className="w-full overflow-hidden py-4" style={{ borderTop: "var(--border-width) solid var(--border)", borderBottom: "var(--border-width) solid var(--border)", backgroundColor: "var(--surface)" }}>
       <motion.div
         className="flex gap-12 whitespace-nowrap"
         animate={{ x: ["0%", "-50%"] }}
@@ -157,36 +152,6 @@ function MarqueeStrip() {
   )
 }
 
-// ─── Feature Card ─────────────────────────────────────────────────────────────
-function FeatureCard({ icon: Icon, title, desc, color, delay }: {
-  icon: React.ElementType; title: string; desc: string; color: string; delay: number
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ delay, duration: 0.6, type: "spring", stiffness: 60 }}
-      whileHover={{ y: -4 }}
-      className="group relative p-8 rounded-2xl backdrop-blur-sm transition-all duration-500 overflow-hidden"
-      style={{
-        background: "var(--surface)",
-        border: "1px solid var(--border)",
-      }}
-    >
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-        style={{ background: `radial-gradient(circle at top left, ${color}10, transparent 60%)` }}
-      />
-      <div className="h-14 w-14 rounded-xl flex items-center justify-center mb-6 transition-all duration-500"
-        style={{ background: color + "18", color }}>
-        <Icon className="h-6 w-6" />
-      </div>
-      <h3 className="text-xl font-semibold mb-3" style={{ color: "var(--text)" }}>{title}</h3>
-      <p className="leading-relaxed text-sm" style={{ color: "var(--text-muted)" }}>{desc}</p>
-    </motion.div>
-  )
-}
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 function StatCard({ value, label }: { value: string; label: string }) {
@@ -195,8 +160,8 @@ function StatCard({ value, label }: { value: string; label: string }) {
       initial={{ opacity: 0, scale: 0.9 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
-      className="text-center p-8 rounded-2xl backdrop-blur-sm"
-      style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+      className="text-center p-8 rounded-none backdrop-blur-sm"
+      style={{ background: "var(--surface)", border: "var(--border-width) solid var(--border)" }}
     >
       <div className="text-4xl font-bold mb-2" style={{ color: "var(--primary)" }}>{value}</div>
       <div className="text-sm font-mono uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>{label}</div>
@@ -211,10 +176,10 @@ function ThemeToggle() {
     <button
       onClick={toggleTheme}
       title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-      className="h-9 w-9 rounded-xl flex items-center justify-center transition-all duration-200"
+      className="h-9 w-9 rounded-none flex items-center justify-center transition-all duration-200"
       style={{
         background: "var(--surface-2)",
-        border: "1px solid var(--border)",
+        border: "var(--border-width) solid var(--border)",
         color: "var(--text-muted)",
       }}
     >
@@ -244,7 +209,7 @@ export default function Landing() {
       {/* ── Navbar ── */}
       <nav
         className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl"
-        style={{ borderBottom: "1px solid var(--border)", background: isDark ? "rgba(4,4,4,0.92)" : "rgba(220,210,196,0.95)" }}
+        style={{ borderBottom: "var(--border-width) solid var(--border)", background: isDark ? "rgba(4,4,4,0.92)" : "rgba(220,210,196,0.95)" }}
       >
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -277,12 +242,12 @@ export default function Landing() {
       <section className="relative pt-28 pb-8 flex flex-col items-center text-center px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 text-xs font-mono uppercase tracking-widest"
-          style={{ border: "1px solid rgba(232,97,28,0.30)", background: "rgba(232,97,28,0.06)", color: "var(--primary)" }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-none mb-6 text-xs font-mono uppercase tracking-widest"
+          style={{ border: "var(--border-width) solid rgba(255,107,26,0.30)", background: "rgba(255,107,26,0.06)", color: "var(--primary)" }}
         >
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-none bg-primary opacity-75" />
+            <span className="relative inline-flex rounded-none h-2 w-2 bg-primary" />
           </span>
           Marketplace for college students
         </motion.div>
@@ -332,8 +297,8 @@ export default function Landing() {
           style={{ color: "var(--text-muted)" }}
         >
           <div className="flex -space-x-2">
-            {["#E8611C", "#ff7b3a", "#ffa06d", "#ffffff", "#c94e12"].map((c, i) => (
-              <div key={i} className="w-7 h-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold"
+            {["#FF6B1A", "#ff7b3a", "#ffa06d", "#ffffff", "#c94e12"].map((c, i) => (
+              <div key={i} className="w-7 h-7 rounded-none border-2 flex items-center justify-center text-[10px] font-bold"
                 style={{ background: c + "33", color: c, borderColor: "var(--bg)", zIndex: 5 - i }}>
                 {String.fromCharCode(65 + i)}
               </div>
@@ -372,47 +337,101 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Features ── */}
+      {/* ── Fresh Recommendations ── */}
       <section className="max-w-6xl mx-auto px-6 pb-24">
         <motion.div
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-center mb-16"
         >
           <span className="text-xs font-mono uppercase tracking-widest mb-4 block" style={{ color: "var(--primary)" }}>
-            Why Becho?
+            Fresh Picks
           </span>
           <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: "var(--text)" }}>
-            Everything a student needs
+            Trending right now
           </h2>
           <p className="max-w-xl mx-auto" style={{ color: "var(--text-muted)" }}>
-            From lab equipment to lecture notes — trade safely, quickly, and only within your campus community.
+            Handpicked listings from verified students — grab them before they're gone.
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <FeatureCard icon={BookOpen} title="Digital & Physical" desc="PDF notes, textbooks, lab manuals, Arduino kits, sensors — list anything academic." color="#E8611C" delay={0} />
-          <FeatureCard icon={Shield} title="Verified Students Only" desc="College email verification ensures you only deal with real students from real campuses." color="#ff7b3a" delay={0.1} />
-          <FeatureCard icon={Zap} title="Lightning Fast" desc="List items in under 60 seconds. Browse, message, and close deals — all in one place." color={isDark ? "#e8e8e8" : "#555555"} delay={0.2} />
-          <FeatureCard icon={ShoppingCart} title="Fair Pricing" desc="Set your own price. No platform fee gouging. Buyers and sellers both win." color="#ffa06d" delay={0.3} />
-          <FeatureCard icon={MessageCircle} title="Mentorship Hub" desc="Connect with seniors who've aced what you're studying. Get guidance that matters." color="#E8611C" delay={0.4} />
-          <FeatureCard icon={Star} title="Reputation System" desc="Star ratings and reviews so you always know who you're dealing with before you transact." color="#ff7b3a" delay={0.5} />
+          {[
+            { title: "Data Structures & Algorithms – GATE Notes", desc: "Comprehensive handwritten notes covering arrays, trees, graphs, dynamic programming, and sorting algorithms. Perfect for GATE & placements.", price: "₹149", category: "Notes", seller: "Rahul Sharma", rating: "4.8" },
+            { title: "Arduino Uno R3 Starter Kit", desc: "Complete Arduino starter kit with breadboard, LEDs, resistors, jumper wires, and 30+ components. Barely used, great for IoT projects.", price: "₹850", category: "Hardware", seller: "Priya Singh", rating: "4.9" },
+            { title: "Engineering Mathematics – S.K. Mondal", desc: "Full solution set for SK Mondal Engineering Mathematics, topic-wise with shortcuts. Great for GATE 2026 prep.", price: "Free", category: "Notes", seller: "Aryan Mehta", rating: "4.7" },
+          ].map((item, idx) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ delay: idx * 0.12, duration: 0.6, type: "spring", stiffness: 60 }}
+              whileHover={{ y: -4 }}
+              className="group relative p-6 rounded-none backdrop-blur-sm transition-all duration-500 overflow-hidden cursor-pointer"
+              style={{
+                background: "var(--surface)",
+                border: "var(--border-width) solid var(--border)",
+              }}
+              onClick={() => navigate("/dashboard#browse")}
+            >
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                style={{ background: `radial-gradient(circle at top left, rgba(255,107,26,0.10), transparent 60%)` }}
+              />
+              {/* Category + Price Row */}
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-widest px-2.5 py-1 rounded-none"
+                  style={{ background: "rgba(255,107,26,0.12)", color: "var(--primary)", border: "var(--border-width) solid rgba(255,107,26,0.25)" }}>
+                  {item.category}
+                </span>
+                <span className="text-xl font-black" style={{ color: item.price === "Free" ? "var(--primary)" : "var(--text)" }}>
+                  {item.price}
+                </span>
+              </div>
+              {/* Title */}
+              <h3 className="text-lg font-bold leading-snug mb-2" style={{ color: "var(--text)" }}>{item.title}</h3>
+              {/* Description */}
+              <p className="leading-relaxed text-sm mb-4 line-clamp-3" style={{ color: "var(--text-muted)" }}>{item.desc}</p>
+              {/* Seller Row */}
+              <div className="flex items-center gap-2 mt-auto pt-3" style={{ borderTop: "var(--border-width) solid var(--border)" }}>
+                <div className="w-7 h-7 rounded-none flex items-center justify-center flex-shrink-0"
+                  style={{ background: "rgba(255,107,26,0.15)" }}>
+                  <span className="text-xs font-bold" style={{ color: "var(--primary)" }}>{item.seller[0]}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold" style={{ color: "var(--text)" }}>{item.seller}</p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Star className="h-3 w-3" style={{ color: "#f59e0b" }} fill="#f59e0b" />
+                  <span className="text-xs font-bold" style={{ color: "var(--text)" }}>{item.rating}</span>
+                </div>
+              </div>
+              {/* Hover CTA */}
+              <div className="absolute inset-x-0 bottom-0 flex items-center justify-center pb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <span className="text-xs font-bold px-4 py-1.5 rounded-none" style={{ background: "rgba(255,107,26,0.90)", color: "#fff" }}>
+                  View Listing →
+                </span>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
+
 
       {/* ── CTA Banner ── */}
       <section className="px-6 pb-24">
         <motion.div
           initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="max-w-4xl mx-auto relative rounded-3xl overflow-hidden p-12 text-center"
+          className="max-w-4xl mx-auto relative rounded-none overflow-hidden p-12 text-center"
           style={{
-            border: "1px solid var(--border)",
+            border: "var(--border-width) solid var(--border)",
             background: isDark
-              ? "linear-gradient(135deg, rgba(232,97,28,0.08) 0%, rgba(255,123,58,0.04) 50%, transparent 100%)"
-              : "linear-gradient(135deg, rgba(232,97,28,0.06) 0%, rgba(245,239,230,1) 100%)",
+              ? "linear-gradient(135deg, rgba(255,107,26,0.08) 0%, rgba(255,123,58,0.04) 50%, transparent 100%)"
+              : "linear-gradient(135deg, rgba(255,107,26,0.06) 0%, rgba(245,239,230,1) 100%)",
           }}
         >
           <div className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse at top, rgba(232,97,28,0.10) 0%, transparent 60%)" }} />
+            style={{ background: "radial-gradient(ellipse at top, rgba(255,107,26,0.10) 0%, transparent 60%)" }} />
           <span className="text-xs font-mono uppercase tracking-widest mb-4 block" style={{ color: "var(--primary)" }}>
             Get started today
           </span>
@@ -432,7 +451,7 @@ export default function Landing() {
       </section>
 
       {/* ── Footer ── */}
-      <footer style={{ backgroundColor: "#0a1628", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <footer style={{ backgroundColor: "#0a1628", borderTop: "var(--border-width) solid rgba(255,255,255,0.06)" }}>
         {/* Top section */}
         <div className="max-w-7xl mx-auto px-6 pt-16 pb-12 grid grid-cols-1 md:grid-cols-4 gap-10">
 
@@ -451,8 +470,8 @@ export default function Landing() {
                 { label: "LinkedIn", svg: <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z M4 6a2 2 0 100-4 2 2 0 000 4z" fill="rgba(255,255,255,0.7)" /> },
               ].map(({ label, svg }) => (
                 <button key={label} title={label}
-                  className="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-white/10"
-                  style={{ border: "1px solid rgba(255,255,255,0.12)" }}>
+                  className="w-9 h-9 rounded-none flex items-center justify-center transition-all duration-200 hover:bg-white/10"
+                  style={{ border: "var(--border-width) solid rgba(255,255,255,0.12)" }}>
                   <svg viewBox="0 0 24 24" className="w-4 h-4">{svg}</svg>
                 </button>
               ))}
@@ -471,7 +490,7 @@ export default function Landing() {
               ].map(({ label, action }) => (
                 <li key={label}>
                   <button onClick={action}
-                    className="text-sm transition-colors duration-200 hover:text-[#E8611C] text-left"
+                    className="text-sm transition-colors duration-200 hover:text-[#FF6B1A] text-left"
                     style={{ color: "rgba(255,255,255,0.55)" }}>
                     {label}
                   </button>
@@ -487,7 +506,7 @@ export default function Landing() {
               {["Study Notes & PDFs", "Textbooks", "Electronics & Kits", "Lab Equipment", "Video Courses", "Project Files"].map((item) => (
                 <li key={item}>
                   <button onClick={() => navigate("/browse")}
-                    className="text-sm transition-colors duration-200 hover:text-[#E8611C] text-left"
+                    className="text-sm transition-colors duration-200 hover:text-[#FF6B1A] text-left"
                     style={{ color: "rgba(255,255,255,0.55)" }}>
                     {item}
                   </button>
@@ -513,16 +532,16 @@ export default function Landing() {
             </ul>
 
             {/* Mission callout */}
-            <div className="mt-4 p-4 rounded-xl" style={{ background: "rgba(232,97,28,0.10)", border: "1px solid rgba(232,97,28,0.20)" }}>
+            <div className="mt-4 p-4 rounded-none" style={{ background: "rgba(255,107,26,0.10)", border: "var(--border-width) solid rgba(255,107,26,0.20)" }}>
               <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.60)" }}>
-                <span style={{ color: "#E8611C", fontWeight: 600 }}>Our mission:</span> To empower every student with affordable access to academic resources — and a fair way to earn from what they already own.
+                <span style={{ color: "#FF6B1A", fontWeight: 600 }}>Our mission:</span> To empower every student with affordable access to academic resources — and a fair way to earn from what they already own.
               </p>
             </div>
           </div>
         </div>
 
         {/* Divider */}
-        <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }} />
+        <div style={{ borderTop: "var(--border-width) solid rgba(255,255,255,0.07)" }} />
 
         {/* Bottom bar */}
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">

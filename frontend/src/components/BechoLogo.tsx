@@ -13,7 +13,7 @@ interface BechoLogoProps {
  * Becho brand logo — orange rounded square with "b" + play arrow icon,
  * optionally with the "Becho" wordmark beside it.
  *
- * Matches the official Becho brand: #E8611C orange, white letterform.
+ * Matches the official Becho brand: #FF6B1A orange, white letterform.
  */
 export default function BechoLogo({ size = 40, showWordmark = true, className = "", wordmarkColor }: BechoLogoProps) {
   return (
@@ -27,7 +27,7 @@ export default function BechoLogo({ size = 40, showWordmark = true, className = 
         style={{ flexShrink: 0, borderRadius: `${size * 0.18}px` }}
       >
         {/* Orange background */}
-        <rect width="100" height="100" rx="20" ry="20" fill="#E8611C" />
+        <rect width="100" height="100" rx="20" ry="20" fill="#FF6B1A" />
 
         {/* White "b" letterform: vertical stem + bowl */}
         <path
@@ -43,7 +43,7 @@ export default function BechoLogo({ size = 40, showWordmark = true, className = 
           fill="white"
         />
         {/* Counter (inner hole of the bowl) */}
-        <circle cx="56" cy="64" r="13" fill="#E8611C" />
+        <circle cx="56" cy="64" r="13" fill="#FF6B1A" />
 
         {/* Play/arrow triangle — small, top-right of the b */}
         <polygon points="62,18 77,27 62,36" fill="white" />
@@ -62,7 +62,7 @@ export default function BechoLogo({ size = 40, showWordmark = true, className = 
           }}
         >
           Becho
-          <span style={{ color: "#E8611C" }}>.</span>
+          <span style={{ color: "#FF6B1A" }}>.</span>
         </span>
       )}
     </div>
