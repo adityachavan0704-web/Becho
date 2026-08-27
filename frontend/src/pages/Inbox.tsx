@@ -1,4 +1,4 @@
-// src/pages/Inbox.tsx — Inbox for purchase requests (seller & buyer views)
+// src/pages/Inbox.tsx Â— Inbox for purchase requests (seller & buyer views)
 
 import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
@@ -422,7 +422,7 @@ function ReceivedCard({
           {sc.label}
         </span>
 
-        {/* Actions — only seller sees action buttons on PENDING */}
+        {/* Actions Â— only seller sees action buttons on PENDING */}
         {isSellerView && status === "PENDING" && (
           <div className="flex items-center gap-2">
             <button
