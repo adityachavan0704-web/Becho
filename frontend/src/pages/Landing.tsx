@@ -291,23 +291,6 @@ export default function Landing() {
           </Button>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-          className="flex items-center gap-3 text-sm mb-2"
-          style={{ color: "var(--text-muted)" }}
-        >
-          <div className="flex -space-x-2">
-            {["#FF6B1A", "#ff7b3a", "#ffa06d", "#ffffff", "#c94e12"].map((c, i) => (
-              <div key={i} className="w-7 h-7 rounded-none border-2 flex items-center justify-center text-[10px] font-bold"
-                style={{ background: c + "33", color: c, borderColor: "var(--bg)", zIndex: 5 - i }}>
-                {String.fromCharCode(65 + i)}
-              </div>
-            ))}
-          </div>
-          <span>
-            <span className="font-semibold" style={{ color: "var(--text)" }}>2,400+</span> students already trading
-          </span>
-        </motion.div>
       </section>
 
       {/* ── 3D Sphere Carousel ── */}
@@ -354,11 +337,14 @@ export default function Landing() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
             { title: "Data Structures & Algorithms – GATE Notes", desc: "Comprehensive handwritten notes covering arrays, trees, graphs, dynamic programming, and sorting algorithms. Perfect for GATE & placements.", price: "₹149", category: "Notes", seller: "Rahul Sharma", rating: "4.8" },
             { title: "Arduino Uno R3 Starter Kit", desc: "Complete Arduino starter kit with breadboard, LEDs, resistors, jumper wires, and 30+ components. Barely used, great for IoT projects.", price: "₹850", category: "Hardware", seller: "Priya Singh", rating: "4.9" },
             { title: "Engineering Mathematics – S.K. Mondal", desc: "Full solution set for SK Mondal Engineering Mathematics, topic-wise with shortcuts. Great for GATE 2026 prep.", price: "Free", category: "Notes", seller: "Aryan Mehta", rating: "4.7" },
+            { title: "Raspberry Pi 4 Model B (4GB RAM)", desc: "Complete Raspberry Pi 4 kit with case, power supply, and 32GB SD preloaded with Raspberry Pi OS. Ideal for ML & IoT projects.", price: "₹3,800", category: "Hardware", seller: "Sneha Patel", rating: "4.6" },
+            { title: "GATE CS 2026 Mock Test Series", desc: "Full-length mock tests with detailed solutions covering all GATE CS topics. 25 tests included, previous year PYQ sets.", price: "₹249", category: "Mock Tests", seller: "Harish Kumar", rating: "4.9" },
+            { title: "React + Node.js Full Stack Source Code", desc: "Complete e-commerce project with JWT auth, REST API, MongoDB. Well-documented, great for final-year project submissions.", price: "₹499", category: "Projects", seller: "Nisha Agarwal", rating: "4.8" },
           ].map((item, idx) => (
             <motion.div
               key={item.title}

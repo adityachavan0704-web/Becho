@@ -75,11 +75,11 @@
   --surface-2: #ede7dc;
   --surface-3: #e2dbcf;
 
-  /* Borders — dark outlines for light mode */
-  --border: rgba(30, 20, 10, 0.38);
-  --border-strong: rgba(30, 20, 10, 0.55);
-  --border-width: 2px;
-  --border-orange: rgba(30, 20, 10, 0.45);
+  /* Borders — darkest black outlines for light mode */
+  --border: rgba(0, 0, 0, 0.75);
+  --border-strong: rgba(0, 0, 0, 0.92);
+  --border-width: 1.5px;
+  --border-orange: rgba(0, 0, 0, 0.65);
 
   /* Text */
   --text: #1a1310;

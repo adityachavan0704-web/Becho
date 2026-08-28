@@ -1,4 +1,4 @@
-// src/pages/Inbox.tsx  Inbox for purchase requests (seller & buyer views)
+// src/pages/Inbox.tsx — Inbox for purchase requests (seller & buyer views)
 
 import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import { io } from "socket.io-client"
 import { useAuth } from "../contexts/AuthContext"
+import { useTheme } from "../contexts/ThemeContext"
 import { apiFetch } from "../lib/api"
 import { cn } from "../lib/utils"
 
@@ -77,6 +78,7 @@ const notifTypeLabel: Record<NotifType, string> = {
 export default function InboxPage() {
   const { user, getAccessToken } = useAuth()
   const navigate = useNavigate()
+  const { isDark } = useTheme()
   const [tab, setTab] = useState<"received" | "sent">("received")
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [sentRequests, setSentRequests] = useState<SentRequest[]>([])
@@ -154,19 +156,21 @@ export default function InboxPage() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen bg-[#080808]">
+    <div className="min-h-screen" style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}>
       {/* Nav */}
-      <nav className="sticky top-0 z-40 bg-[#080808]/90 backdrop-blur border-b border-white/[0.05] px-6 py-3.5 flex items-center gap-3">
+      <nav className="sticky top-0 z-40 backdrop-blur px-6 py-3.5 flex items-center gap-3"
+        style={{ backgroundColor: isDark ? "rgba(8,8,8,0.92)" : "rgba(220,210,196,0.96)", borderBottom: "var(--border-width) solid var(--border)" }}>
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-[#FF6B1A] flex items-center justify-center">
             <Zap className="h-4 w-4 text-white" />
           </div>
-          <span className="text-base font-bold text-white tracking-tight">Becho</span>
+          <span className="text-base font-bold tracking-tight" style={{ color: "var(--text)" }}>Becho</span>
         </div>
-        <div className="h-4 w-px bg-zinc-800 mx-2" />
+        <div className="h-4 w-px mx-2" style={{ backgroundColor: "var(--border)" }} />
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-200 transition-colors"
+          className="flex items-center gap-1.5 text-xs transition-colors"
+          style={{ color: "var(--text-muted)" }}
         >
           <ArrowLeft className="h-4 w-4" /> Back
         </button>
@@ -177,7 +181,7 @@ export default function InboxPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <InboxIcon className="h-6 w-6 text-[#FF6B1A]" />
+              <InboxIcon className="h-6 w-6" style={{ color: "var(--primary)" }} />
               {unreadCount > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#FF6B1A] rounded-full text-[9px] font-bold text-white flex items-center justify-center">
                   {unreadCount > 9 ? "9+" : unreadCount}
@@ -185,14 +189,15 @@ export default function InboxPage() {
               )}
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">Inbox</h1>
-              <p className="text-xs text-zinc-500">Purchase requests & updates</p>
+              <h1 className="text-xl font-bold" style={{ color: "var(--text)" }}>Inbox</h1>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>Purchase requests & updates</p>
             </div>
           </div>
           {unreadCount > 0 && (
             <button
               onClick={() => void markAllRead()}
-              className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-200 transition-colors"
+              className="flex items-center gap-1.5 text-xs transition-colors"
+              style={{ color: "var(--text-muted)" }}
             >
               <CheckCheck className="h-3.5 w-3.5" />
               Mark all read
@@ -201,18 +206,16 @@ export default function InboxPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-zinc-900/60 border border-white/[0.06] rounded-xl p-1 mb-6">
+        <div className="flex gap-1 rounded-xl p-1 mb-6" style={{ backgroundColor: "var(--surface-2)", border: "var(--border-width) solid var(--border)" }}>
           {(["received", "sent"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
               id={`inbox-tab-${t}`}
-              className={cn(
-                "flex-1 flex items-center justify-center gap-2 text-sm font-medium py-2.5 rounded-lg transition-all",
-                tab === t
-                  ? "bg-[#FF6B1A] text-white shadow"
-                  : "text-zinc-500 hover:text-zinc-300"
-              )}
+              className="flex-1 flex items-center justify-center gap-2 text-sm font-medium py-2.5 rounded-lg transition-all"
+              style={tab === t
+                ? { backgroundColor: "var(--primary)", color: "#fff" }
+                : { color: "var(--text-muted)" }}
             >
               {t === "received" ? <Bell className="h-3.5 w-3.5" /> : <ShoppingBag className="h-3.5 w-3.5" />}
               {t === "received" ? "Received" : "Sent"}
@@ -230,7 +233,7 @@ export default function InboxPage() {
 
         {loading ? (
           <div className="flex justify-center py-16">
-            <Loader2 className="h-5 w-5 animate-spin text-zinc-600" />
+            <Loader2 className="h-5 w-5 animate-spin" style={{ color: "var(--text-subtle)" }} />
           </div>
         ) : (
           <AnimatePresence mode="wait">
@@ -238,7 +241,7 @@ export default function InboxPage() {
               <motion.div key="received" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 {notifications.length === 0 ? (
                   <EmptyState
-                    icon={<Bell className="h-10 w-10 text-zinc-700" />}
+                    icon={<Bell className="h-10 w-10" style={{ color: "var(--text-subtle)" }} />}
                     title="No notifications yet"
                     desc="When buyers request to purchase your listings, you'll see them here."
                   />
@@ -264,7 +267,7 @@ export default function InboxPage() {
               <motion.div key="sent" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 {sentRequests.length === 0 ? (
                   <EmptyState
-                    icon={<ShoppingBag className="h-10 w-10 text-zinc-700" />}
+                    icon={<ShoppingBag className="h-10 w-10" style={{ color: "var(--text-subtle)" }} />}
                     title="No purchase requests sent"
                     desc="Browse listings and send a purchase request to get started."
                     action={{ label: "Browse Listings", onClick: () => navigate("/browse") }}
@@ -305,12 +308,13 @@ function EmptyState({
   return (
     <div className="flex flex-col items-center text-center py-16 gap-3">
       {icon}
-      <p className="text-white font-semibold">{title}</p>
-      <p className="text-sm text-zinc-500 max-w-xs">{desc}</p>
+      <p className="font-semibold" style={{ color: "var(--text)" }}>{title}</p>
+      <p className="text-sm max-w-xs" style={{ color: "var(--text-muted)" }}>{desc}</p>
       {action && (
         <button
           onClick={action.onClick}
-          className="mt-2 text-sm text-[#FF6B1A] hover:underline"
+          className="mt-2 text-sm hover:underline"
+          style={{ color: "var(--primary)" }}
         >
           {action.label}
         </button>
@@ -335,17 +339,14 @@ function ReceivedCard({
   const isSellerView = pr.sellerId === currentUserId
   const status = pr.status
   const sc = statusConfig[status]
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className={cn(
-        "rounded-2xl border p-4 space-y-3 transition-all",
-        notif.isRead
-          ? "bg-zinc-900/40 border-white/[0.06]"
-          : "bg-zinc-900/70 border-[#FF6B1A]/20 shadow-[0_0_0_1px_rgba(255,107,26,0.08)]"
-      )}
+      className="rounded-2xl p-4 space-y-3 transition-all"
+      style={notif.isRead
+        ? { backgroundColor: "var(--surface)", border: "var(--border-width) solid var(--border)" }
+        : { backgroundColor: "var(--surface)", border: "var(--border-width) solid rgba(255,107,26,0.30)", boxShadow: "0 0 0 1px rgba(255,107,26,0.08)" }}
     >
       {/* Top row: type label + unread dot + timestamp */}
       <div className="flex items-center justify-between">
@@ -353,23 +354,23 @@ function ReceivedCard({
           {!notif.isRead && (
             <div className="w-2 h-2 rounded-full bg-[#FF6B1A] flex-shrink-0" />
           )}
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs" style={{ color: "var(--text-muted)" }}>
             {notif.type === "PURCHASE_REQUEST" ? (
               <>
-                <span className="text-white font-medium">{pr.buyer.name}</span>
+                <span className="font-medium" style={{ color: "var(--text)" }}>{pr.buyer.name}</span>
                 {" "}{notifTypeLabel[notif.type]}{" "}
-                <span className="text-zinc-300">your listing</span>
+                <span style={{ color: "var(--text-muted)" }}>your listing</span>
               </>
             ) : (
               <>
-                <span className="text-white font-medium">{pr.seller.name}</span>
+                <span className="font-medium" style={{ color: "var(--text)" }}>{pr.seller.name}</span>
                 {" "}{notifTypeLabel[notif.type]}{" "}
-                <span className="text-zinc-300">{pr.listing.title}</span>
+                <span style={{ color: "var(--text-muted)" }}>{pr.listing.title}</span>
               </>
             )}
           </span>
         </div>
-        <span className="text-xs text-zinc-600 flex-shrink-0 ml-2">
+        <span className="text-xs flex-shrink-0 ml-2" style={{ color: "var(--text-subtle)" }}>
           {new Date(notif.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
         </span>
       </div>
@@ -379,36 +380,38 @@ function ReceivedCard({
         onClick={() => onListingClick(pr.listing.id)}
         className="w-full flex items-center gap-3 text-left"
       >
-        <div className="w-14 h-14 rounded-xl bg-zinc-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
+        <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
+          style={{ backgroundColor: "var(--surface-2)" }}>
           {pr.listing.images[0] ? (
             <img src={pr.listing.images[0]} alt={pr.listing.title} className="w-full h-full object-cover" />
           ) : (
-            <Package className="h-6 w-6 text-zinc-600" />
+            <Package className="h-6 w-6" style={{ color: "var(--text-subtle)" }} />
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-white truncate">{pr.listing.title}</p>
-          <p className="text-xs text-zinc-500 mt-0.5">
-            {pr.listing.isFree ? "Free" : `?${pr.listing.price.toLocaleString("en-IN")}`}
+          <p className="text-sm font-semibold truncate" style={{ color: "var(--text)" }}>{pr.listing.title}</p>
+          <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+            {pr.listing.isFree ? "Free" : `₹${pr.listing.price.toLocaleString("en-IN")}`}
           </p>
           {pr.note && (
-            <p className="text-xs text-zinc-400 mt-1 italic line-clamp-1">"{pr.note}"</p>
+            <p className="text-xs mt-1 italic line-clamp-1" style={{ color: "var(--text-muted)" }}>&#34;{pr.note}&#34;</p>
           )}
         </div>
-        <ChevronRight className="h-4 w-4 text-zinc-700 flex-shrink-0" />
+        <ChevronRight className="h-4 w-4 flex-shrink-0" style={{ color: "var(--text-subtle)" }} />
       </button>
 
       {/* Buyer info (seller view) */}
       {isSellerView && notif.type === "PURCHASE_REQUEST" && (
-        <div className="flex items-center gap-2 bg-zinc-800/50 rounded-xl px-3 py-2">
-          <div className="w-6 h-6 rounded-full bg-[#FF6B1A]/15 flex items-center justify-center flex-shrink-0">
-            <span className="text-[10px] font-bold text-[#FF6B1A]">{pr.buyer.name[0]?.toUpperCase()}</span>
+        <div className="flex items-center gap-2 rounded-xl px-3 py-2" style={{ backgroundColor: "var(--surface-2)" }}>
+          <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ background: "rgba(255,107,26,0.15)" }}>
+            <span className="text-[10px] font-bold" style={{ color: "var(--primary)" }}>{pr.buyer.name[0]?.toUpperCase()}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-white">{pr.buyer.name}</p>
-            <p className="text-[11px] text-zinc-500 truncate">{pr.buyer.email}</p>
+            <p className="text-xs font-medium" style={{ color: "var(--text)" }}>{pr.buyer.name}</p>
+            <p className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{pr.buyer.email}</p>
           </div>
-          <User className="h-3.5 w-3.5 text-zinc-700" />
+          <User className="h-3.5 w-3.5" style={{ color: "var(--text-subtle)" }} />
         </div>
       )}
 
@@ -422,7 +425,7 @@ function ReceivedCard({
           {sc.label}
         </span>
 
-        {/* Actions  only seller sees action buttons on PENDING */}
+        {/* Actions  only seller sees action buttons on PENDING */}
         {isSellerView && status === "PENDING" && (
           <div className="flex items-center gap-2">
             <button
@@ -466,7 +469,8 @@ function ReceivedCard({
         {isSellerView && status === "ACCEPTED" && (
           <button
             onClick={() => onChat(pr.listing.id, pr.buyer.id, pr.listing.title)}
-            className="flex items-center gap-1.5 text-xs text-[#FF6B1A] hover:underline"
+            className="flex items-center gap-1.5 text-xs hover:underline"
+            style={{ color: "var(--primary)" }}
           >
             <MessageSquare className="h-3 w-3" />
             Chat with buyer
@@ -490,32 +494,34 @@ function SentCard({
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl bg-zinc-900/40 border border-white/[0.06] p-4 space-y-3"
+      className="rounded-2xl p-4 space-y-3"
+      style={{ backgroundColor: "var(--surface)", border: "var(--border-width) solid var(--border)" }}
     >
       <button
         onClick={() => onListingClick(req.listing.id)}
         className="w-full flex items-center gap-3 text-left"
       >
-        <div className="w-14 h-14 rounded-xl bg-zinc-800 overflow-hidden flex-shrink-0 flex items-center justify-center">
+        <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
+          style={{ backgroundColor: "var(--surface-2)" }}>
           {req.listing.images[0] ? (
             <img src={req.listing.images[0]} alt={req.listing.title} className="w-full h-full object-cover" />
           ) : (
-            <Package className="h-6 w-6 text-zinc-600" />
+            <Package className="h-6 w-6" style={{ color: "var(--text-subtle)" }} />
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-white truncate">{req.listing.title}</p>
-          <p className="text-xs text-zinc-500 mt-0.5">
-            Seller: <span className="text-zinc-300">{req.seller.name}</span>
+          <p className="text-sm font-semibold truncate" style={{ color: "var(--text)" }}>{req.listing.title}</p>
+          <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+            Seller: <span style={{ color: "var(--text)" }}>{req.seller.name}</span>
           </p>
-          <p className="text-xs text-zinc-500 mt-0.5">
-            {req.listing.isFree ? "Free" : `?${req.listing.price.toLocaleString("en-IN")}`}
+          <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+            {req.listing.isFree ? "Free" : `₹${req.listing.price.toLocaleString("en-IN")}`}
           </p>
           {req.note && (
-            <p className="text-xs text-zinc-500 italic mt-1 line-clamp-1">"{req.note}"</p>
+            <p className="text-xs italic mt-1 line-clamp-1" style={{ color: "var(--text-muted)" }}>&#34;{req.note}&#34;</p>
           )}
         </div>
-        <ChevronRight className="h-4 w-4 text-zinc-700 flex-shrink-0" />
+        <ChevronRight className="h-4 w-4 flex-shrink-0" style={{ color: "var(--text-subtle)" }} />
       </button>
 
       <div className="flex items-center justify-between">
@@ -528,13 +534,14 @@ function SentCard({
         </span>
 
         <div className="flex items-center gap-3">
-          <span className="text-xs text-zinc-600">
+          <span className="text-xs" style={{ color: "var(--text-subtle)" }}>
             {new Date(req.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
           </span>
           {req.status === "ACCEPTED" && (
             <button
               onClick={() => onChat(req.listing.id, req.seller.id, req.listing.title)}
-              className="flex items-center gap-1.5 text-xs text-[#FF6B1A] hover:underline"
+              className="flex items-center gap-1.5 text-xs hover:underline"
+              style={{ color: "var(--primary)" }}
             >
               <MessageSquare className="h-3 w-3" />
               Chat with seller

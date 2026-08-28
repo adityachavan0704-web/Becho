@@ -1,11 +1,10 @@
-// src/pages/Chat.tsx — Real-time chat per listing using Socket.io
-
 import { useState, useEffect, useRef, useCallback } from "react"
 import { useParams, useNavigate, useSearchParams } from "react-router-dom"
 import { motion } from "framer-motion"
 import { ArrowLeft, Send, Loader2, MessageSquare } from "lucide-react"
 import { io, Socket } from "socket.io-client"
 import { useAuth } from "../contexts/AuthContext"
+import { useTheme } from "../contexts/ThemeContext"
 import { apiFetch } from "../lib/api"
 import { cn } from "../lib/utils"
 
@@ -28,6 +27,7 @@ export default function Chat() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { user, getAccessToken } = useAuth()
+  const { isDark } = useTheme()
 
   // receiverId comes from URL: ?receiverId=xxx (seller) or ?mentorId=xxx (mentor)
   const receiverId = searchParams.get("receiverId") ?? searchParams.get("mentorId") ?? ""
@@ -129,19 +129,23 @@ export default function Chat() {
   }, [])
 
   return (
-    <div className="h-screen bg-[#080808] flex flex-col">
+    <div className="h-screen flex flex-col" style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}>
       {/* Nav */}
-      <nav className="shrink-0 bg-[#0a0a0a] border-b border-white/[0.05] px-4 py-3 flex items-center gap-3">
+      <nav className="shrink-0 px-4 py-3 flex items-center gap-3"
+        style={{ backgroundColor: isDark ? "#0a0a0a" : "var(--surface)", borderBottom: "var(--border-width) solid var(--border)" }}>
         <button
           onClick={() => navigate(-1)}
-          className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-white/5 transition-all"
+          className="p-1.5 rounded-lg transition-all"
+          style={{ color: "var(--text-muted)" }}
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
         <div className="flex-1 min-w-0">
-          <div className="font-medium text-sm truncate">{chatTitle}</div>
-          <div className={cn("text-xs flex items-center gap-1", socketConnected ? "text-orange-400" : "text-zinc-600")}>
-            <div className={cn("w-1.5 h-1.5 rounded-full", socketConnected ? "bg-orange-400" : "bg-zinc-600")} />
+          <div className="font-medium text-sm truncate" style={{ color: "var(--text)" }}>{chatTitle}</div>
+          <div className={cn("text-xs flex items-center gap-1", socketConnected ? "text-orange-400" : undefined)}
+            style={!socketConnected ? { color: "var(--text-subtle)" } : {}}>
+            <div className={cn("w-1.5 h-1.5 rounded-full", socketConnected ? "bg-orange-400" : undefined)}
+              style={!socketConnected ? { backgroundColor: "var(--text-subtle)" } : {}} />
             {socketConnected ? "Connected" : "Connecting…"}
           </div>
         </div>
@@ -151,22 +155,22 @@ export default function Chat() {
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
         {loading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="h-5 w-5 animate-spin text-zinc-600" />
+            <Loader2 className="h-5 w-5 animate-spin" style={{ color: "var(--text-subtle)" }} />
           </div>
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <MessageSquare className="h-10 w-10 text-zinc-700 mb-3" />
-            <p className="text-zinc-500 text-sm">No messages yet</p>
-            <p className="text-zinc-600 text-xs mt-1">Send the first message to start the conversation</p>
+            <MessageSquare className="h-10 w-10 mb-3" style={{ color: "var(--text-subtle)" }} />
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>No messages yet</p>
+            <p className="text-xs mt-1" style={{ color: "var(--text-subtle)" }}>Send the first message to start the conversation</p>
           </div>
         ) : (
           groupedMessages.map(({ date, msgs }) => (
             <div key={date}>
               {/* Date divider */}
               <div className="flex items-center gap-3 my-4">
-                <div className="flex-1 h-px bg-white/5" />
-                <span className="text-xs text-zinc-600">{date}</span>
-                <div className="flex-1 h-px bg-white/5" />
+                <div className="flex-1 h-px" style={{ backgroundColor: "var(--border)" }} />
+                <span className="text-xs" style={{ color: "var(--text-subtle)" }}>{date}</span>
+                <div className="flex-1 h-px" style={{ backgroundColor: "var(--border)" }} />
               </div>
 
               {msgs.map((msg) => {
@@ -180,17 +184,18 @@ export default function Chat() {
                   >
                     <div className={cn("max-w-[72%] space-y-0.5")}>
                       {!isMe && (
-                        <p className="text-xs text-zinc-500 px-1">{msg.sender.name}</p>
+                        <p className="text-xs px-1" style={{ color: "var(--text-muted)" }}>{msg.sender.name}</p>
                       )}
-                      <div className={cn(
-                        "px-4 py-2.5 rounded-2xl text-sm leading-relaxed",
-                        isMe
-                          ? "bg-primary text-black rounded-tr-sm"
-                          : "bg-white/[0.07] text-white rounded-tl-sm"
-                      )}>
+                      <div
+                        className="px-4 py-2.5 rounded-2xl text-sm leading-relaxed"
+                        style={isMe
+                          ? { backgroundColor: "var(--primary)", color: "#fff", borderRadius: "1rem 1rem 0.25rem 1rem" }
+                          : { backgroundColor: "var(--surface-2)", color: "var(--text)", border: "var(--border-width) solid var(--border)", borderRadius: "1rem 1rem 1rem 0.25rem" }}
+                      >
                         {msg.content}
                       </div>
-                      <p className={cn("text-xs text-zinc-600 px-1", isMe ? "text-right" : "text-left")}>
+                      <p className={cn("text-xs px-1", isMe ? "text-right" : "text-left")}
+                        style={{ color: "var(--text-subtle)" }}>
                         {new Date(msg.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
                       </p>
                     </div>
@@ -204,9 +209,9 @@ export default function Chat() {
       </div>
 
       {/* Input */}
-      <div className="shrink-0 border-t border-white/[0.05] bg-[#0a0a0a] px-4 py-3">
+      <div className="shrink-0 px-4 py-3" style={{ borderTop: "var(--border-width) solid var(--border)", backgroundColor: isDark ? "#0a0a0a" : "var(--surface)" }}>
         {!receiverId ? (
-          <p className="text-center text-xs text-zinc-600 py-2">
+          <p className="text-center text-xs py-2" style={{ color: "var(--text-subtle)" }}>
             Cannot send message — no recipient specified
           </p>
         ) : (
@@ -215,7 +220,8 @@ export default function Chat() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type a message…"
-              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-primary/50 transition-colors"
+              className="flex-1 rounded-xl px-4 py-2.5 text-sm focus:outline-none transition-colors"
+              style={{ backgroundColor: "var(--surface-2)", border: "var(--border-width) solid var(--border)", color: "var(--text)" }}
               disabled={sending}
             />
             <button
@@ -224,9 +230,10 @@ export default function Chat() {
               className={cn(
                 "p-2.5 rounded-xl transition-all",
                 input.trim() && !sending
-                  ? "bg-primary text-black hover:bg-primary/90"
-                  : "bg-white/5 text-zinc-600 cursor-not-allowed"
+                  ? "bg-primary text-white hover:bg-primary/90"
+                  : "cursor-not-allowed"
               )}
+              style={!(input.trim() && !sending) ? { backgroundColor: "var(--surface-2)", color: "var(--text-subtle)" } : {}}
             >
               {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </button>
