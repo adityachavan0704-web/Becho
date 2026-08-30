@@ -313,7 +313,7 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user, getAccessToken, logout, isAuthenticated } = useAuth()
-  const { isDark, toggleTheme } = useTheme()
+  const { isDark } = useTheme()
 
   const [activeSection, setActiveSection] = useState<ActiveSection>("browse")
   const [uploadOpen, setUploadOpen] = useState(false)
@@ -508,15 +508,7 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {/* Theme toggle */}
-            <button
-              onClick={toggleTheme}
-              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-              className="h-10 w-10 rounded-xl flex items-center justify-center transition-all"
-              style={{ background: T.surface2, border: `1px solid ${T.border}`, color: T.muted }}
-            >
-              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
+
             <button className="h-10 w-10 rounded-xl flex items-center justify-center transition-all"
               style={{ background: T.surface2, border: `1px solid ${T.border}`, color: T.muted }}>
               <Bell className="h-4 w-4" />

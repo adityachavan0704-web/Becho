@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Button } from "../components/ui/Button"
 import { Input } from "../components/ui/Input"
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom"
-import { ArrowLeft, Mail, Lock, User, AlertCircle, Sun, Moon } from "lucide-react"
+import { ArrowLeft, Mail, Lock, User, AlertCircle } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
 import { useTheme } from "../contexts/ThemeContext"
 import BechoLogo from "../components/BechoLogo"
@@ -105,15 +105,7 @@ export default function Login() {
         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
       </Button>
 
-      {/* Theme toggle */}
-      <button
-        onClick={toggleTheme}
-        className="absolute top-4 right-4 h-9 w-9 rounded-xl flex items-center justify-center transition-all"
-        style={{ background: "var(--surface-2)", border: "var(--border-width) solid var(--border)", color: "var(--text-muted)" }}
-        title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-      >
-        {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-      </button>
+
 
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}

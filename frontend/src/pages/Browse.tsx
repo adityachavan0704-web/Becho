@@ -2,9 +2,10 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  Search, X, LogOut, Bell, LayoutDashboard, Sun, Moon
+  Search, X, LogOut, Bell, LayoutDashboard
 } from "lucide-react"
 import BechoLogo from "../components/BechoLogo"
+import SecondaryNav from "../components/SecondaryNav"
 import { useAuth } from "../contexts/AuthContext"
 import { useTheme } from "../contexts/ThemeContext"
 import { ListingCard } from "../components/ListingCard"
@@ -87,10 +88,11 @@ export default function Browse() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}>
-      {/* Top Nav */}
-      <nav className="sticky top-0 z-40 backdrop-blur px-6 py-3.5 flex items-center gap-4"
-        style={{ backgroundColor: isDark ? "rgba(8,8,8,0.92)" : "rgba(220,210,196,0.96)", borderBottom: "var(--border-width) solid var(--border)" }}>
-        <div className="flex items-center gap-2.5 mr-4">
+      {/* Top Nav Wrapper */}
+      <div className="sticky top-0 z-40 flex flex-col">
+        <nav className="backdrop-blur px-6 py-3.5 flex items-center gap-4"
+          style={{ backgroundColor: isDark ? "rgba(8,8,8,0.92)" : "rgba(220,210,196,0.96)", borderBottom: "var(--border-width) solid var(--border)" }}>
+          <div className="flex items-center gap-2.5 mr-4">
           <BechoLogo size={30} showWordmark={true} />
         </div>
 
@@ -129,15 +131,6 @@ export default function Browse() {
           >
             <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
           </button>
-          {/* Theme toggle */}
-          <button
-            onClick={toggleTheme}
-            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-            className="h-9 w-9 rounded-xl flex items-center justify-center transition-all"
-            style={{ background: "var(--surface-2)", border: "var(--border-width) solid var(--border)", color: "var(--text-muted)" }}
-          >
-            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </button>
           <button className="h-9 w-9 rounded-xl flex items-center justify-center transition-all"
             style={{ border: "var(--border-width) solid var(--border)", backgroundColor: "var(--surface-2)", color: "var(--text-muted)" }}>
             <Bell className="h-4 w-4" />
@@ -156,7 +149,9 @@ export default function Browse() {
             </div>
           )}
         </div>
-      </nav>
+        </nav>
+        <SecondaryNav />
+      </div>
 
       <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-6">
         {/* Filters row */}

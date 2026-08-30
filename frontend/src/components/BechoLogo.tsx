@@ -1,3 +1,5 @@
+import { useTheme } from "../contexts/ThemeContext"
+
 interface BechoLogoProps {
   /** Icon size in pixels (the square icon only) */
   size?: number
@@ -16,8 +18,15 @@ interface BechoLogoProps {
  * Matches the official Becho brand: #FF6B1A orange, white letterform.
  */
 export default function BechoLogo({ size = 40, showWordmark = true, className = "", wordmarkColor }: BechoLogoProps) {
+  const { toggleTheme } = useTheme()
+
   return (
-    <div className={`flex items-center gap-3 ${className}`} style={{ lineHeight: 1 }}>
+    <div 
+      className={`flex items-center gap-3 cursor-pointer ${className}`} 
+      style={{ lineHeight: 1 }}
+      onClick={toggleTheme}
+      title="Toggle Theme"
+    >
       {/* Icon */}
       <svg
         width={size}

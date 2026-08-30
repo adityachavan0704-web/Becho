@@ -3,6 +3,7 @@ import { motion, useAnimationFrame } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import { Button } from "../components/ui/Button"
 import BechoLogo from "../components/BechoLogo"
+import SecondaryNav from "../components/SecondaryNav"
 import { useTheme } from "../contexts/ThemeContext"
 import {
   ArrowRight,
@@ -169,28 +170,6 @@ function StatCard({ value, label }: { value: string; label: string }) {
   )
 }
 
-// ─── Theme Toggle Button ──────────────────────────────────────────────────────
-function ThemeToggle() {
-  const { isDark, toggleTheme } = useTheme()
-  return (
-    <button
-      onClick={toggleTheme}
-      title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-      className="h-9 w-9 rounded-none flex items-center justify-center transition-all duration-200"
-      style={{
-        background: "var(--surface-2)",
-        border: "var(--border-width) solid var(--border)",
-        color: "var(--text-muted)",
-      }}
-    >
-      {isDark
-        ? <Sun className="h-4 w-4" />
-        : <Moon className="h-4 w-4" />
-      }
-    </button>
-  )
-}
-
 // ─── Main Landing Page ────────────────────────────────────────────────────────
 export default function Landing() {
   const navigate = useNavigate()
@@ -223,7 +202,6 @@ export default function Landing() {
                 onClick={() => navigate("/login")}>Sell</button>
               <span style={{ color: "var(--text-subtle)" }}>|</span>
             </div>
-            <ThemeToggle />
             <Button className="text-xs uppercase tracking-widest font-mono h-9 px-5"
               onClick={() => navigate("/login")}>Log In</Button>
             <Button className="text-xs uppercase tracking-widest font-mono h-9 px-5"
@@ -231,15 +209,15 @@ export default function Landing() {
           </div>
           {/* Mobile */}
           <div className="flex md:hidden items-center gap-2">
-            <ThemeToggle />
             <Button className="text-xs" onClick={() => navigate("/login")}>Log In</Button>
             <Button className="text-xs" onClick={() => navigate("/login?role=buyer")}>Join</Button>
           </div>
         </div>
+        <SecondaryNav />
       </nav>
 
       {/* ── Hero ── */}
-      <section className="relative pt-28 flex flex-col items-center text-center px-6" style={{ minHeight: "100vh" }}>
+      <section className="relative pt-36 flex flex-col items-center text-center px-6" style={{ minHeight: "100vh" }}>
 
         {/* Top tagline */}
         <motion.p
