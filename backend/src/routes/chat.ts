@@ -20,7 +20,7 @@ export function setSocketIO(instance: SocketServer) {
 // Returns last 50 messages for a listing chat, ordered oldest first
 router.get("/:listingId", requireAuth, async (req: Request, res: Response) => {
   try {
-    const { listingId } = req.params;
+    const listingId = req.params.listingId as string;
     const userId = req.authUser?.userId;
 
     // Verify the listing exists
@@ -59,7 +59,7 @@ router.get("/:listingId", requireAuth, async (req: Request, res: Response) => {
 // Send a message — saves to DB, emits via Socket.io to the room
 router.post("/:listingId", requireAuth, async (req: Request, res: Response) => {
   try {
-    const { listingId } = req.params;
+    const listingId = req.params.listingId as string;
     const senderId = req.authUser?.userId;
     const { content, receiverId } = req.body as { content?: string; receiverId?: string };
 

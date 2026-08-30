@@ -2,8 +2,9 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  Search, X, Zap, LogOut, Bell, LayoutDashboard, Sun, Moon
+  Search, X, LogOut, Bell, LayoutDashboard, Sun, Moon
 } from "lucide-react"
+import BechoLogo from "../components/BechoLogo"
 import { useAuth } from "../contexts/AuthContext"
 import { useTheme } from "../contexts/ThemeContext"
 import { ListingCard } from "../components/ListingCard"
@@ -90,10 +91,7 @@ export default function Browse() {
       <nav className="sticky top-0 z-40 backdrop-blur px-6 py-3.5 flex items-center gap-4"
         style={{ backgroundColor: isDark ? "rgba(8,8,8,0.92)" : "rgba(220,210,196,0.96)", borderBottom: "var(--border-width) solid var(--border)" }}>
         <div className="flex items-center gap-2.5 mr-4">
-          <div className="w-7 h-7 rounded-lg bg-[#FF6B1A] flex items-center justify-center">
-            <Zap className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-base font-bold tracking-tight" style={{ color: "var(--text)" }}>Becho</span>
+          <BechoLogo size={30} showWordmark={true} />
         </div>
 
         {/* Search bar */}

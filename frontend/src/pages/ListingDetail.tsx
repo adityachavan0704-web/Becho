@@ -3,12 +3,13 @@ import { useParams, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import {
   ArrowLeft, Package, FileText, Star, Download, MessageSquare,
-  Loader2, AlertCircle, Calendar, Tag, Zap, User, ShoppingBag
+  Loader2, AlertCircle, Calendar, Tag, User, ShoppingBag
 } from "lucide-react"
 import { Button } from "../components/ui/Button"
 import { useAuth } from "../contexts/AuthContext"
 import { cn } from "../lib/utils"
 import type { Listing } from "../components/ListingCard"
+import BechoLogo from "../components/BechoLogo"
 
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
 
@@ -24,7 +25,7 @@ interface FullListing extends Listing {
 export default function ListingDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, isAuthenticated } = useAuth()
   const [listing, setListing] = useState<FullListing | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -78,10 +79,7 @@ export default function ListingDetail() {
       {/* Nav */}
       <nav className="sticky top-0 z-40 bg-[#080808]/90 backdrop-blur border-b border-white/[0.05] px-6 py-3.5 flex items-center gap-3">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#FF6B1A] flex items-center justify-center">
-            <Zap className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-base font-bold text-white tracking-tight">Becho</span>
+          <BechoLogo size={28} showWordmark={true} wordmarkColor="white" />
         </div>
         <div className="h-4 w-px bg-zinc-800 mx-2" />
         <button
@@ -233,7 +231,13 @@ export default function ListingDetail() {
                   <Button
                     className="flex-1"
                     disabled={listing.status !== "ACTIVE"}
-                    onClick={() => navigate(`/listings/${listing.id}/buy`)}
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        navigate("/login", { state: { from: { pathname: `/listings/${listing.id}/buy` } } })
+                      } else {
+                        navigate(`/listings/${listing.id}/buy`)
+                      }
+                    }}
                     id="buy-now-btn"
                   >
                     <ShoppingBag className="h-4 w-4 mr-2" />
@@ -242,11 +246,13 @@ export default function ListingDetail() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() =>
-                      navigate(
-                        `/chat/${listing.id}?receiverId=${listing.seller.id}&name=${encodeURIComponent(listing.title)}`
-                      )
-                    }
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        navigate("/login", { state: { from: { pathname: `/chat/${listing.id}` } } })
+                      } else {
+                        navigate(`/chat/${listing.id}?receiverId=${listing.seller.id}&name=${encodeURIComponent(listing.title)}`)
+                      }
+                    }}
                     id="chat-seller-btn"
                   >
                     <MessageSquare className="h-4 w-4 mr-1.5" />
@@ -256,11 +262,13 @@ export default function ListingDetail() {
               ) : !isOwner && listing.type === "ONLINE" ? (
                 <Button
                   className="flex-1"
-                  onClick={() =>
-                    navigate(
-                      `/chat/${listing.id}?receiverId=${listing.seller.id}&name=${encodeURIComponent(listing.title)}`
-                    )
-                  }
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      navigate("/login", { state: { from: { pathname: `/chat/${listing.id}` } } })
+                    } else {
+                      navigate(`/chat/${listing.id}?receiverId=${listing.seller.id}&name=${encodeURIComponent(listing.title)}`)
+                    }
+                  }}
                 >
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Chat with Seller

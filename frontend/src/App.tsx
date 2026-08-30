@@ -26,24 +26,9 @@ function App() {
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/mentorship" element={<Mentorship />} />
 
-              {/* Protected routes — require login */}
-              <Route
-                path="/browse"
-                element={
-                  <ProtectedRoute>
-                    <Browse />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/listings/:id"
-                element={
-                  <ProtectedRoute>
-                    <ListingDetail />
-                  </ProtectedRoute>
-                }
-              />
+              {/* Public — anyone can browse & view listings */}
+              <Route path="/browse" element={<Browse />} />
+              <Route path="/listings/:id" element={<ListingDetail />} />
               <Route
                 path="/listings/:id/buy"
                 element={

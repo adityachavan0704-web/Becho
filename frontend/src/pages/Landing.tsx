@@ -239,68 +239,75 @@ export default function Landing() {
       </nav>
 
       {/* ── Hero ── */}
-      <section className="relative pt-28 pb-8 flex flex-col items-center text-center px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-none mb-6 text-xs font-mono uppercase tracking-widest"
-          style={{ border: "var(--border-width) solid rgba(255,107,26,0.30)", background: "rgba(255,107,26,0.06)", color: "var(--primary)" }}
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-none bg-primary opacity-75" />
-            <span className="relative inline-flex rounded-none h-2 w-2 bg-primary" />
-          </span>
-          Marketplace for college students
-        </motion.div>
+      <section className="relative pt-28 flex flex-col items-center text-center px-6" style={{ minHeight: "100vh" }}>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.7, type: "spring", stiffness: 60 }}
-          className="text-5xl sm:text-6xl lg:text-[5.5rem] font-bold tracking-tight leading-[1.08] max-w-4xl mb-4"
-          style={{ color: "var(--text)" }}
-        >
-          The student market
-          <br />
-          <span style={{ color: "var(--text)" }}>for academic resources</span>
-        </motion.h1>
-
+        {/* Top tagline */}
         <motion.p
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.5 }}
-          className="text-2xl sm:text-3xl font-semibold mb-5 tracking-tight"
+          initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+          className="text-2xl sm:text-3xl font-semibold mt-8 mb-6 tracking-tight"
           style={{ color: "var(--primary)", fontStyle: "italic" }}
         >
           " We sell what you want "
         </motion.p>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }}
-          className="text-lg max-w-xl mb-8 leading-relaxed"
-          style={{ color: "var(--text-muted)" }}
-        >
-          Buy, sell, and share notes, books, electronics &amp; more. Connect with seniors
-          for mentorship. Only verified students — zero noise.
-        </motion.p>
+        {/* Flex-1 column: heading → button → description, equally spaced */}
+        <div className="flex-1 flex flex-col items-center justify-between w-full max-w-4xl pb-16">
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }}
-          className="flex flex-col sm:flex-row gap-4 mb-6"
-        >
-          <Button size="lg" className="h-13 px-8 text-sm font-mono uppercase tracking-widest"
-            onClick={() => navigate("/dashboard")}>
-            Get Started <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </motion.div>
+          {/* Main heading */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.7, type: "spring", stiffness: 60 }}
+            className="text-5xl sm:text-6xl lg:text-[5.5rem] font-bold tracking-tight leading-[1.08]"
+            style={{ color: "var(--text)" }}
+          >
+            The student market
+            <br />
+            <span style={{ color: "var(--text)" }}>for academic resources</span>
+          </motion.h1>
+
+          {/* Kharido button — exactly between heading and description */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }}
+          >
+            <Button size="lg" className="h-13 px-10 text-sm font-mono uppercase tracking-widest"
+              onClick={() => navigate("/dashboard")}>
+              Kharido <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </motion.div>
+
+          {/* Description — at the bottom */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.6 }}
+            className="text-lg max-w-xl leading-relaxed"
+            style={{ color: "var(--text-muted)" }}
+          >
+            Buy, sell, and share notes, books, electronics &amp; more. Connect with seniors
+            for mentorship. Only verified students — zero noise.
+          </motion.p>
+
+        </div>
 
       </section>
 
+
       {/* ── 3D Sphere Carousel ── */}
-      <section className="relative px-6 -mt-4">
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 1 }}>
+      <section className="relative px-6 py-16 flex flex-col items-center justify-center" style={{ minHeight: "100vh" }}>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="text-center mb-4"
+        >
+          <span className="text-xs font-mono uppercase tracking-widest mb-2 block" style={{ color: "var(--primary)" }}>What's on Becho</span>
+          <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "var(--text)" }}>Explore what students are trading</h2>
+        </motion.div>
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.3, duration: 1 }} className="w-full">
           <SphereCarousel />
         </motion.div>
         <motion.p
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1, duration: 0.6 }}
-          className="text-center text-xs font-mono uppercase tracking-widest -mt-4 mb-4"
+          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.6, duration: 0.6 }}
+          className="text-center text-xs font-mono uppercase tracking-widest -mt-4"
           style={{ color: "var(--text-subtle)" }}
         >
           ← drag to explore →
