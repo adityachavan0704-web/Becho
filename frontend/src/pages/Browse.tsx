@@ -12,7 +12,6 @@ import { ListingCard } from "../components/ListingCard"
 import { Button } from "../components/ui/Button"
 import { UploadModal } from "../components/UploadModal"
 import type { Listing } from "../components/ListingCard"
-import { cn } from "../lib/utils"
 
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
 
@@ -33,7 +32,7 @@ interface Meta {
 export default function Browse() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
-  const { isDark, toggleTheme } = useTheme()
+  const { isDark } = useTheme()
 
   const [query, setQuery] = useState("")
   const [liveQuery, setLiveQuery] = useState("")
