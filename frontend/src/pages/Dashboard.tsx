@@ -6,7 +6,7 @@ import {
   User, Plus, Upload, TrendingUp, Star, Eye, Bell,
   ChevronRight, Loader2, PackagePlus, FileText, Search,
   MoreHorizontal, ArrowUpRight, Lock, X, ArrowRight,
-  Heart, Inbox
+  Heart, Inbox, PanelLeftClose, PanelLeftOpen, Menu
 } from "lucide-react"
 import { io } from "socket.io-client"
 import { useAuth } from "../contexts/AuthContext"
@@ -325,6 +325,9 @@ export default function Dashboard() {
   const [purchaseItem, setPurchaseItem] = useState<PurchaseItem | null>(null)
   const [globalWishlist, setGlobalWishlist] = useState<Set<string>>(new Set())
   const [inboxUnread, setInboxUnread] = useState(0)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [sidebarHovered, setSidebarHovered] = useState(false)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
   const toggleGlobalWishlist = (id: string) => {
     setGlobalWishlist((prev) => {
@@ -400,72 +403,115 @@ export default function Dashboard() {
   const navActive = { background: "rgba(232,97,28,0.12)", color: T.primary }
   const navInactive = { color: T.muted }
 
-  return (
-    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: T.bg }}>
-      {/* ── Sidebar ── */}
-      <aside className="w-64 flex-shrink-0 flex flex-col backdrop-blur"
-        style={{ borderRight: `1px solid ${T.border}`, backgroundColor: isDark ? "rgba(3,3,3,0.92)" : "rgba(210,200,186,0.95)" }}>
+  // Sidebar content — shared between desktop and mobile
+  const SidebarContent = ({ compact }: { compact: boolean }) => (
+    <>
+      {/* Logo */}
+      <div className="flex items-center gap-3 px-5 py-5 flex-shrink-0" style={{ borderBottom: `1px solid ${T.border}` }}>
+        <BechoLogo size={36} showWordmark={!compact} />
+      </div>
 
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-5 py-5" style={{ borderBottom: `1px solid ${T.border}` }}>
-          <BechoLogo size={36} showWordmark={true} />
-        </div>
-
-        {/* Nav */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {NAV_ITEMS.map((item) => (
-            <button key={item.id} onClick={() => setActiveSection(item.id)}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
-              style={activeSection === item.id ? navActive : navInactive}
-            >
-              <item.icon className="h-4 w-4 flex-shrink-0" />
-              {item.label}
-              {item.id === "messages" && (
-                <span className="ml-auto text-[10px] font-bold rounded-full px-1.5 py-0.5"
-                  style={{ background: "rgba(232,97,28,0.15)", color: T.primary }}>2</span>
-              )}
-            </button>
-          ))}
-
-          {/* Inbox link */}
-          <button
-            id="dashboard-inbox-btn"
-            onClick={() => navigate("/inbox")}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
-            style={navInactive}
+      {/* Nav */}
+      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        {NAV_ITEMS.map((item) => (
+          <button key={item.id}
+            onClick={() => { setActiveSection(item.id); setMobileSidebarOpen(false) }}
+            title={compact ? item.label : undefined}
+            className="w-full flex items-center gap-3 rounded-xl text-sm font-medium transition-all duration-200"
+            style={{
+              ...(activeSection === item.id ? navActive : navInactive),
+              padding: compact ? "10px" : "10px 16px",
+              justifyContent: compact ? "center" : undefined,
+            }}
           >
-            <Inbox className="h-4 w-4 flex-shrink-0" />
-            Inbox
-            {inboxUnread > 0 && (
-              <span className="ml-auto text-[10px] font-bold rounded-full px-1.5 py-0.5"
-                style={{ background: "rgba(232,97,28,0.85)", color: "#fff" }}>
-                {inboxUnread > 9 ? "9+" : inboxUnread}
-              </span>
+            <item.icon className="h-4 w-4 flex-shrink-0" />
+            {!compact && (
+              <>
+                {item.label}
+                {item.id === "messages" && (
+                  <span className="ml-auto text-[10px] font-bold rounded-full px-1.5 py-0.5"
+                    style={{ background: "rgba(232,97,28,0.15)", color: T.primary }}>2</span>
+                )}
+              </>
+            )}
+            {compact && item.id === "messages" && (
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full"
+                style={{ background: T.primary }} />
             )}
           </button>
+        ))}
 
-          {/* Quick upload */}
+        {/* Inbox link */}
+        <button
+          id="dashboard-inbox-btn"
+          onClick={() => { navigate("/inbox"); setMobileSidebarOpen(false) }}
+          title={compact ? "Inbox" : undefined}
+          className="w-full flex items-center gap-3 rounded-xl text-sm font-medium transition-all duration-200 relative"
+          style={{
+            ...navInactive,
+            padding: compact ? "10px" : "10px 16px",
+            justifyContent: compact ? "center" : undefined,
+          }}
+        >
+          <Inbox className="h-4 w-4 flex-shrink-0" />
+          {!compact && (
+            <>
+              Inbox
+              {inboxUnread > 0 && (
+                <span className="ml-auto text-[10px] font-bold rounded-full px-1.5 py-0.5"
+                  style={{ background: "rgba(232,97,28,0.85)", color: "#fff" }}>
+                  {inboxUnread > 9 ? "9+" : inboxUnread}
+                </span>
+              )}
+            </>
+          )}
+          {compact && inboxUnread > 0 && (
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full"
+              style={{ background: "rgba(232,97,28,0.85)" }} />
+          )}
+        </button>
+
+        {/* Quick upload */}
+        {!compact && (
           <div className="pt-3 mt-2" style={{ borderTop: `1px solid ${T.border}` }}>
             <p className="text-xs font-semibold px-4 pb-2 uppercase tracking-wider" style={{ color: T.subtle }}>
               Quick Upload
             </p>
-            <button onClick={() => openUpload("OFFLINE")}
+            <button onClick={() => { openUpload("OFFLINE"); setMobileSidebarOpen(false) }}
               className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all"
               style={{ color: T.muted }}>
               <Package className="h-4 w-4 flex-shrink-0" /> Hardware Item
             </button>
-            <button onClick={() => openUpload("ONLINE")}
+            <button onClick={() => { openUpload("ONLINE"); setMobileSidebarOpen(false) }}
               className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all"
               style={{ color: T.muted }}>
               <FileText className="h-4 w-4 flex-shrink-0" /> Online Resource
             </button>
           </div>
-        </nav>
+        )}
+        {compact && (
+          <div className="pt-3 mt-2 space-y-1" style={{ borderTop: `1px solid ${T.border}` }}>
+            <button onClick={() => { openUpload("OFFLINE"); setMobileSidebarOpen(false) }}
+              title="Hardware Item"
+              className="w-full flex items-center justify-center py-2.5 rounded-xl text-sm transition-all"
+              style={{ color: T.muted }}>
+              <Package className="h-4 w-4" />
+            </button>
+            <button onClick={() => { openUpload("ONLINE"); setMobileSidebarOpen(false) }}
+              title="Online Resource"
+              className="w-full flex items-center justify-center py-2.5 rounded-xl text-sm transition-all"
+              style={{ color: T.muted }}>
+              <FileText className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+      </nav>
 
-        {/* User footer */}
-        <div className="p-3" style={{ borderTop: `1px solid ${T.border}` }}>
-          {isAuthenticated && user ? (
-            <>
+      {/* User footer */}
+      <div className="p-3 flex-shrink-0" style={{ borderTop: `1px solid ${T.border}` }}>
+        {isAuthenticated && user ? (
+          <>
+            {!compact && (
               <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1"
                 style={{ backgroundColor: T.surface2 }}>
                 <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
@@ -479,36 +525,135 @@ export default function Dashboard() {
                   <p className="text-xs truncate" style={{ color: T.subtle }}>{user?.email ?? ""}</p>
                 </div>
               </div>
-              <button onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-red-400 hover:bg-red-400/5 transition-all">
-                <LogOut className="h-4 w-4" /> Sign Out
-              </button>
-            </>
-          ) : (
-            <button onClick={() => navigate("/login")}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all"
-              style={{ color: T.primary, border: "1px solid rgba(232,97,28,0.20)", background: "rgba(232,97,28,0.05)" }}>
-              <User className="h-4 w-4" /> Log In / Register
+            )}
+            {compact && (
+              <div className="flex items-center justify-center py-1 mb-1">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ background: "rgba(232,97,28,0.20)" }}>
+                  <span className="text-sm font-bold" style={{ color: T.primary }}>
+                    {user?.name?.[0]?.toUpperCase() ?? "?"}
+                  </span>
+                </div>
+              </div>
+            )}
+            <button onClick={handleLogout}
+              title={compact ? "Sign Out" : undefined}
+              className="w-full flex items-center gap-2 rounded-xl text-sm text-red-400 hover:bg-red-400/5 transition-all"
+              style={{ padding: compact ? "8px" : "8px 12px", justifyContent: compact ? "center" : undefined }}>
+              <LogOut className="h-4 w-4" />
+              {!compact && "Sign Out"}
             </button>
-          )}
-        </div>
-      </aside>
+          </>
+        ) : (
+          <button onClick={() => navigate("/login")}
+            title={compact ? "Log In" : undefined}
+            className="w-full flex items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all"
+            style={{ color: T.primary, border: "1px solid rgba(232,97,28,0.20)", background: "rgba(232,97,28,0.05)", padding: compact ? "10px" : "10px 12px" }}>
+            <User className="h-4 w-4" />
+            {!compact && "Log In / Register"}
+          </button>
+        )}
+      </div>
+    </>
+  )
+
+  return (
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: T.bg }}>
+
+      {/* ── Mobile Overlay ── */}
+      <AnimatePresence>
+        {mobileSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 md:hidden"
+            style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(2px)" }}
+            onClick={() => setMobileSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Mobile Sidebar drawer ── */}
+      <motion.aside
+        className="fixed top-0 left-0 h-full z-50 flex flex-col md:hidden"
+        style={{
+          width: 256,
+          borderRight: `1px solid ${T.border}`,
+          backgroundColor: isDark ? "rgba(3,3,3,0.97)" : "rgba(210,200,186,0.98)",
+          backdropFilter: "blur(16px)",
+          boxShadow: mobileSidebarOpen ? "4px 0 24px rgba(0,0,0,0.18)" : "none",
+        }}
+        initial={false}
+        animate={{ x: mobileSidebarOpen ? 0 : -260 }}
+        transition={{ type: "spring", stiffness: 320, damping: 30 }}
+      >
+        <SidebarContent compact={false} />
+      </motion.aside>
+
+      {/* ── Desktop Sidebar ── */}
+      <motion.aside
+        className="hidden md:flex flex-col flex-shrink-0 relative backdrop-blur"
+        style={{
+          borderRight: `1px solid ${T.border}`,
+          backgroundColor: isDark ? "rgba(3,3,3,0.92)" : "rgba(210,200,186,0.95)",
+          overflow: "visible",
+        }}
+        animate={{ width: sidebarCollapsed ? 64 : 256 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        onMouseEnter={() => setSidebarHovered(true)}
+        onMouseLeave={() => setSidebarHovered(false)}
+      >
+        <SidebarContent compact={sidebarCollapsed} />
+
+        {/* Toggle button — appears on hover at the right edge */}
+        <motion.button
+          onClick={() => setSidebarCollapsed((c) => !c)}
+          title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-8 h-8 rounded-full shadow-lg transition-colors"
+          style={{
+            background: isDark ? "rgba(30,30,30,0.95)" : "rgba(230,220,206,0.95)",
+            border: `1px solid ${T.border}`,
+            color: T.muted,
+          }}
+          initial={{ opacity: 0, scale: 0.7 }}
+          animate={{
+            opacity: sidebarHovered ? 1 : 0,
+            scale: sidebarHovered ? 1 : 0.7,
+          }}
+          transition={{ duration: 0.18 }}
+          whileHover={{ scale: 1.12 }}
+          whileTap={{ scale: 0.92 }}
+        >
+          {sidebarCollapsed
+            ? <PanelLeftOpen className="h-4 w-4" />
+            : <PanelLeftClose className="h-4 w-4" />}
+        </motion.button>
+      </motion.aside>
 
       {/* ── Main ── */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="flex items-center justify-between px-8 py-5 flex-shrink-0 backdrop-blur"
+        <header className="flex items-center justify-between px-4 md:px-8 py-5 flex-shrink-0 backdrop-blur"
           style={{ borderBottom: `1px solid ${T.border}`, backgroundColor: isDark ? "rgba(3,3,3,0.88)" : "rgba(210,200,186,0.95)" }}>
-          <div>
-            <h1 className="text-3xl font-bold" style={{ color: T.text }}>
-              {NAV_ITEMS.find((n) => n.id === activeSection)?.label ?? "Dashboard"}
-            </h1>
-            <p className="text-sm mt-1" style={{ color: T.muted }}>
-              {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}
-            </p>
+          <div className="flex items-center gap-3">
+            {/* Mobile hamburger */}
+            <button
+              className="md:hidden h-9 w-9 rounded-xl flex items-center justify-center transition-all"
+              style={{ background: T.surface2, border: `1px solid ${T.border}`, color: T.muted }}
+              onClick={() => setMobileSidebarOpen((o) => !o)}
+              aria-label="Toggle menu"
+            >
+              <Menu className="h-4 w-4" />
+            </button>
+            <div>
+              <h1 className="text-xl md:text-3xl font-bold" style={{ color: T.text }}>
+                {NAV_ITEMS.find((n) => n.id === activeSection)?.label ?? "Dashboard"}
+              </h1>
+              <p className="text-sm mt-1 hidden sm:block" style={{ color: T.muted }}>
+                {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
-
             <button className="h-10 w-10 rounded-xl flex items-center justify-center transition-all"
               style={{ background: T.surface2, border: `1px solid ${T.border}`, color: T.muted }}>
               <Bell className="h-4 w-4" />
