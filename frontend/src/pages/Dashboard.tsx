@@ -6,7 +6,7 @@ import {
   User, Plus, Upload, TrendingUp, Star, Eye, Bell,
   ChevronRight, Loader2, PackagePlus, FileText, Search,
   MoreHorizontal, ArrowUpRight, Lock, X, ArrowRight,
-  Moon, Sun, Heart, Inbox
+  Heart, Inbox
 } from "lucide-react"
 import { io } from "socket.io-client"
 import { useAuth } from "../contexts/AuthContext"

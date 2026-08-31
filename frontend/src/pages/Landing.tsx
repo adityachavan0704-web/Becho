@@ -8,8 +8,6 @@ import { useTheme } from "../contexts/ThemeContext"
 import {
   ArrowRight,
   Star,
-  Sun,
-  Moon,
 } from "lucide-react"
 
 // ─── 3D Carousel Data ────────────────────────────────────────────────────────
