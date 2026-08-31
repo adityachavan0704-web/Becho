@@ -99,6 +99,7 @@ router.get("/", async (req: Request, res: Response) => {
 router.get("/my", requireAuth, async (req: Request, res: Response) => {
   try {
     const userId = req.authUser?.userId;
+    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
     const listings = await prisma.listing.findMany({
       where: { sellerId: userId },
       orderBy: { createdAt: "desc" },
@@ -114,7 +115,8 @@ router.get("/my", requireAuth, async (req: Request, res: Response) => {
 // ─── GET /api/listings/:id/similar ────────────────────────────
 router.get("/:id/similar", async (req: Request, res: Response) => {
   try {
-    const listing = await prisma.listing.findUnique({ where: { id: req.params.id } });
+    const id = String(req.params["id"]);
+    const listing = await prisma.listing.findUnique({ where: { id } });
     if (!listing) { res.status(404).json({ error: "Not found" }); return; }
 
     const similar = await prisma.listing.findMany({
@@ -141,8 +143,9 @@ router.get("/:id/similar", async (req: Request, res: Response) => {
 // ─── GET /api/listings/:id ────────────────────────────────────
 router.get("/:id", async (req: Request, res: Response) => {
   try {
+    const id = String(req.params["id"]);
     const listing = await prisma.listing.findUnique({
-      where: { id: req.params.id },
+      where: { id },
       include: {
         seller: { select: { id: true, name: true, reputation: true, email: true } },
       },
@@ -166,6 +169,7 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const userId = req.authUser?.userId;
+      if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
       const {
         title, description, price, type, category,
         subject, semester, condition, isFree,
@@ -193,7 +197,7 @@ router.post(
           isFree: isFree === "true" || parseFloat(price ?? "0") === 0,
           images: imageUrls,
           fileUrl: fileUrlValue,
-          sellerId: userId!,
+          sellerId: userId,
         },
         include: { seller: { select: { id: true, name: true, reputation: true } } },
       });
@@ -209,8 +213,10 @@ router.post(
 // ─── PATCH /api/listings/:id ───────────────────────────────────
 router.patch("/:id", requireAuth, async (req: Request, res: Response) => {
   try {
+    const id = String(req.params["id"]);
     const userId = req.authUser?.userId;
-    const existing = await prisma.listing.findUnique({ where: { id: req.params["id"] } });
+    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
+    const existing = await prisma.listing.findUnique({ where: { id } });
     if (!existing) { res.status(404).json({ error: "Not found" }); return; }
     if (existing.sellerId !== userId) { res.status(403).json({ error: "Forbidden" }); return; }
 
@@ -218,7 +224,7 @@ router.patch("/:id", requireAuth, async (req: Request, res: Response) => {
       req.body as Record<string, string>;
 
     const listing = await prisma.listing.update({
-      where: { id: req.params["id"] },
+      where: { id },
       data: {
         ...(title && { title }),
         ...(description && { description }),
@@ -238,8 +244,9 @@ router.patch("/:id", requireAuth, async (req: Request, res: Response) => {
 // ─── DELETE /api/listings/:id (soft-delete → HIDDEN) ──────────
 router.delete("/:id", requireAuth, async (req: Request, res: Response) => {
   try {
-    const id = req.params["id"] as string;
+    const id = String(req.params["id"]);
     const userId = req.authUser?.userId;
+    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
     const existing = await prisma.listing.findUnique({ where: { id } });
     if (!existing) { res.status(404).json({ error: "Not found" }); return; }
     if (existing.sellerId !== userId) { res.status(403).json({ error: "Forbidden" }); return; }

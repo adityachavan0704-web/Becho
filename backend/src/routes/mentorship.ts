@@ -61,6 +61,7 @@ router.get("/", async (req: Request, res: Response) => {
 router.get("/my", requireAuth, async (req: Request, res: Response) => {
   try {
     const userId = req.authUser?.userId;
+    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
     const posts = await prisma.mentorship.findMany({
       where: { mentorId: userId },
       orderBy: { createdAt: "desc" },
@@ -76,8 +77,9 @@ router.get("/my", requireAuth, async (req: Request, res: Response) => {
 // ─── GET /api/mentorship/:id ───────────────────────────────────
 router.get("/:id", async (req: Request, res: Response) => {
   try {
+    const id = String(req.params["id"]);
     const post = await prisma.mentorship.findUnique({
-      where: { id: req.params["id"] },
+      where: { id },
       include: {
         mentor: { select: { id: true, name: true, reputation: true, email: true } },
       },
@@ -94,6 +96,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.post("/", requireAuth, async (req: Request, res: Response) => {
   try {
     const userId = req.authUser?.userId;
+    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
     const { subject, description, hourlyRate, tags } = req.body as {
       subject?: string;
       description?: string;
@@ -112,7 +115,7 @@ router.post("/", requireAuth, async (req: Request, res: Response) => {
         description,
         hourlyRate: typeof hourlyRate === "string" ? parseFloat(hourlyRate) || 0 : (hourlyRate ?? 0),
         tags: Array.isArray(tags) ? tags : [],
-        mentorId: userId!,
+        mentorId: userId,
       },
       include: { mentor: { select: { id: true, name: true, reputation: true } } },
     });
@@ -127,8 +130,10 @@ router.post("/", requireAuth, async (req: Request, res: Response) => {
 // ─── PATCH /api/mentorship/:id ─────────────────────────────────
 router.patch("/:id", requireAuth, async (req: Request, res: Response) => {
   try {
+    const id = String(req.params["id"]);
     const userId = req.authUser?.userId;
-    const existing = await prisma.mentorship.findUnique({ where: { id: req.params["id"] } });
+    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
+    const existing = await prisma.mentorship.findUnique({ where: { id } });
     if (!existing) { res.status(404).json({ error: "Not found" }); return; }
     if (existing.mentorId !== userId) { res.status(403).json({ error: "Forbidden" }); return; }
 
@@ -141,7 +146,7 @@ router.patch("/:id", requireAuth, async (req: Request, res: Response) => {
     };
 
     const post = await prisma.mentorship.update({
-      where: { id: req.params["id"] },
+      where: { id },
       data: {
         ...(subject && { subject }),
         ...(description && { description }),
@@ -162,12 +167,14 @@ router.patch("/:id", requireAuth, async (req: Request, res: Response) => {
 // ─── DELETE /api/mentorship/:id ────────────────────────────────
 router.delete("/:id", requireAuth, async (req: Request, res: Response) => {
   try {
+    const id = String(req.params["id"]);
     const userId = req.authUser?.userId;
-    const existing = await prisma.mentorship.findUnique({ where: { id: req.params["id"] } });
+    if (!userId) { res.status(401).json({ error: "Unauthorized" }); return; }
+    const existing = await prisma.mentorship.findUnique({ where: { id } });
     if (!existing) { res.status(404).json({ error: "Not found" }); return; }
     if (existing.mentorId !== userId) { res.status(403).json({ error: "Forbidden" }); return; }
 
-    await prisma.mentorship.delete({ where: { id: req.params["id"] } });
+    await prisma.mentorship.delete({ where: { id } });
     res.json({ success: true });
   } catch (err) {
     console.error("[mentorship/DELETE]", err);

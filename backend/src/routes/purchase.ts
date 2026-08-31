@@ -1,4 +1,4 @@
-﻿// src/routes/purchase.ts — Purchase request system for offline listings
+// src/routes/purchase.ts — Purchase request system for offline listings
 
 import { Router } from "express";
 import type { Request, Response } from "express";
@@ -122,7 +122,7 @@ router.patch("/:id", requireAuth, async (req: Request, res: Response) => {
   try {
     const sellerId = req.authUser!.userId;
     const { status } = req.body as { status?: string };
-    const { id } = req.params;
+    const id = String(req.params["id"]);
 
     if (!status || !["ACCEPTED", "DECLINED", "COMPLETED"].includes(status)) {
       res.status(400).json({ error: "status must be ACCEPTED, DECLINED, or COMPLETED" });
@@ -186,9 +186,10 @@ router.patch("/read/all", requireAuth, async (req: Request, res: Response) => {
 router.patch("/read/:notifId", requireAuth, async (req: Request, res: Response) => {
   try {
     const userId = req.authUser!.userId;
-    const notif = await prisma.inboxNotification.findUnique({ where: { id: req.params["notifId"] } });
+    const notifId = String(req.params["notifId"]);
+    const notif = await prisma.inboxNotification.findUnique({ where: { id: notifId } });
     if (!notif || notif.userId !== userId) { res.status(403).json({ error: "Forbidden" }); return; }
-    await prisma.inboxNotification.update({ where: { id: req.params["notifId"] }, data: { isRead: true } });
+    await prisma.inboxNotification.update({ where: { id: notifId }, data: { isRead: true } });
     res.json({ success: true });
   } catch (err) {
     console.error("[purchase/read/:id]", err);
