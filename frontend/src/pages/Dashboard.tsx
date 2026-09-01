@@ -1064,29 +1064,25 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
         <div className="grid grid-cols-2 gap-3">
           <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => onUpload("OFFLINE")}
             className="flex items-center gap-3 p-5 rounded-xl transition-all text-left group"
-            style={{ border: "1px solid rgba(245,158,11,0.25)", background: "rgba(245,158,11,0.04)" }}>
+            style={{ border: "1.5px solid #111", background: "rgba(245,158,11,0.12)" }}>
             <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: "rgba(245,158,11,0.15)" }}>
+              style={{ background: "rgba(245,158,11,0.30)" }}>
               <Package className="h-5 w-5 text-amber-400" />
             </div>
             <div>
               <p className="text-sm font-semibold" style={{ color: T.text }}>Upload Hardware</p>
-              <p className="text-xs mt-0.5" style={{ color: T.muted }}>Books, cycles, equipment…</p>
             </div>
-            <ArrowUpRight className="h-4 w-4 ml-auto" style={{ color: T.subtle }} />
           </motion.button>
           <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => onUpload("ONLINE")}
             className="flex items-center gap-3 p-5 rounded-xl transition-all text-left group"
-            style={{ border: "1px solid rgba(232,97,28,0.25)", background: "rgba(232,97,28,0.04)" }}>
+            style={{ border: "1.5px solid #111", background: "rgba(232,97,28,0.12)" }}>
             <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: "rgba(232,97,28,0.15)" }}>
+              style={{ background: "rgba(232,97,28,0.30)" }}>
               <Upload className="h-5 w-5" style={{ color: T.primary }} />
             </div>
             <div>
               <p className="text-sm font-semibold" style={{ color: T.text }}>Upload Online Resource</p>
-              <p className="text-xs mt-0.5" style={{ color: T.muted }}>Notes, PDFs, software…</p>
             </div>
-            <ArrowUpRight className="h-4 w-4 ml-auto" style={{ color: T.subtle }} />
           </motion.button>
         </div>
       </div>
