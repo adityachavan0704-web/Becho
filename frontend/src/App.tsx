@@ -12,6 +12,7 @@ import Mentorship from "./pages/Mentorship"
 import Chat from "./pages/Chat"
 import PurchasePage from "./pages/PurchasePage"
 import InboxPage from "./pages/Inbox"
+import CreateListingPage from "./pages/CreateListingPage"
 
 function App() {
   return (
@@ -43,6 +44,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <InboxPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/sell"
+                element={
+                  <ProtectedRoute>
+                    <CreateListingPage />
                   </ProtectedRoute>
                 }
               />

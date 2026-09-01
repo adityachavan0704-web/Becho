@@ -10,7 +10,6 @@ import { useAuth } from "../contexts/AuthContext"
 import { useTheme } from "../contexts/ThemeContext"
 import { ListingCard } from "../components/ListingCard"
 import { Button } from "../components/ui/Button"
-import { UploadModal } from "../components/UploadModal"
 import type { Listing } from "../components/ListingCard"
 
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
@@ -41,7 +40,7 @@ export default function Browse() {
   const [listings, setListings] = useState<Listing[]>([])
   const [meta, setMeta] = useState<Meta>({ total: 0, page: 1, pages: 1, limit: 20 })
   const [loading, setLoading] = useState(true)
-  const [uploadOpen, setUploadOpen] = useState(false)
+
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -134,7 +133,7 @@ export default function Browse() {
             style={{ border: "var(--border-width) solid var(--border)", backgroundColor: "var(--surface-2)", color: "var(--text-muted)" }}>
             <Bell className="h-4 w-4" />
           </button>
-          <Button size="sm" onClick={() => setUploadOpen(true)}>
+          <Button size="sm" onClick={() => navigate("/sell")}>
             Upload
           </Button>
           {user && (
@@ -262,11 +261,6 @@ export default function Browse() {
         )}
       </div>
 
-      <UploadModal
-        isOpen={uploadOpen}
-        onClose={() => setUploadOpen(false)}
-        onSuccess={() => void fetchListings(query, type, category)}
-      />
     </div>
   )
 }

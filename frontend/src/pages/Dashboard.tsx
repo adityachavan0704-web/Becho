@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Package, ShoppingBag, MessageSquare, LogOut,
   User, Plus, Upload, TrendingUp, Star, Eye, Bell,
   ChevronRight, Loader2, PackagePlus, FileText, Search,
-  MoreHorizontal, ArrowUpRight, Lock, X, ArrowRight,
+  MoreHorizontal, Lock, X, ArrowRight,
   Heart, Inbox, PanelLeftClose, PanelLeftOpen, Menu,
   CheckCircle2, XCircle, Clock, CheckCheck, ShoppingCart, IndianRupee
 } from "lucide-react"
@@ -13,7 +13,6 @@ import { io } from "socket.io-client"
 import { useAuth } from "../contexts/AuthContext"
 import { useTheme } from "../contexts/ThemeContext"
 import { Button } from "../components/ui/Button"
-import { UploadModal } from "../components/UploadModal"
 import type { Listing } from "../components/ListingCard"
 import BechoLogo from "../components/BechoLogo"
 
@@ -340,8 +339,6 @@ export default function Dashboard() {
   const { isDark } = useTheme()
 
   const [activeSection, setActiveSection] = useState<ActiveSection>("browse")
-  const [uploadOpen, setUploadOpen] = useState(false)
-  const [uploadType, setUploadType] = useState<"ONLINE" | "OFFLINE" | undefined>()
   const [myListings, setMyListings] = useState<Listing[]>([])
   const [loadingListings, setLoadingListings] = useState(false)
   const [stats, setStats] = useState({ active: 0, earned: 0, reputation: 0 })
@@ -471,8 +468,7 @@ export default function Dashboard() {
 
   const openUpload = (type?: "ONLINE" | "OFFLINE") => {
     if (!isAuthenticated) { setLoginPrompt({ open: true, action: "sell" }); return }
-    setUploadType(type)
-    setUploadOpen(true)
+    navigate(type ? `/sell?type=${type}` : "/sell")
   }
 
   // Sidebar active style helpers
@@ -772,7 +768,6 @@ export default function Dashboard() {
         </div>
       </main>
 
-      <UploadModal isOpen={uploadOpen} onClose={() => setUploadOpen(false)} defaultType={uploadType} onSuccess={() => { void fetchMyListings() }} />
       <LoginPromptModal open={loginPrompt.open} onClose={() => setLoginPrompt({ open: false, action: "buy" })} action={loginPrompt.action} />
       <PurchaseModal
         item={purchaseItem}
@@ -887,8 +882,8 @@ export default function Dashboard() {
                                 {isRequest
                                   ? `wants to buy your listing`
                                   : notif.type === "PURCHASE_ACCEPTED"
-                                  ? `accepted your request`
-                                  : `declined your request`}
+                                    ? `accepted your request`
+                                    : `declined your request`}
                               </p>
                             </div>
                             <span className="text-[10px] flex-shrink-0" style={{ color: T.subtle }}>
@@ -911,12 +906,11 @@ export default function Dashboard() {
                               </p>
                             </div>
                             {/* Status badge */}
-                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border flex items-center gap-1 ${
-                              pr.status === "PENDING" ? "text-amber-400 bg-amber-400/10 border-amber-400/20" :
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border flex items-center gap-1 ${pr.status === "PENDING" ? "text-amber-400 bg-amber-400/10 border-amber-400/20" :
                               pr.status === "ACCEPTED" ? "text-green-400 bg-green-400/10 border-green-400/20" :
-                              pr.status === "DECLINED" ? "text-red-400 bg-red-400/10 border-red-400/20" :
-                              "text-zinc-400 bg-zinc-400/10 border-zinc-400/20"
-                            }`}>
+                                pr.status === "DECLINED" ? "text-red-400 bg-red-400/10 border-red-400/20" :
+                                  "text-zinc-400 bg-zinc-400/10 border-zinc-400/20"
+                              }`}>
                               {pr.status === "PENDING" && <Clock className="h-2.5 w-2.5" />}
                               {pr.status === "ACCEPTED" && <CheckCircle2 className="h-2.5 w-2.5" />}
                               {pr.status === "DECLINED" && <XCircle className="h-2.5 w-2.5" />}
