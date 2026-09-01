@@ -1017,9 +1017,7 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
         <p className="text-base mt-1" style={{ color: T.primary, fontWeight: 600, fontStyle: "italic" }}>
           We sell what you want
         </p>
-        <p className="text-sm mt-1" style={{ color: T.muted }}>
-          {isAuthenticated ? "Here's what's happening with your account." : "Browse 25+ academic listings or log in to buy, sell, and more."}
-        </p>
+
       </div>
 
       {!isAuthenticated ? (

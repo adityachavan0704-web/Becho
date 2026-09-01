@@ -165,6 +165,7 @@ router.post(
   upload.fields([
     { name: "images", maxCount: 5 },
     { name: "file", maxCount: 1 },
+    { name: "qrCode", maxCount: 1 },
   ]),
   async (req: Request, res: Response) => {
     try {
@@ -183,6 +184,7 @@ router.post(
       const files = req.files as Record<string, Express.Multer.File[]> | undefined;
       const imageUrls: string[] = (files?.["images"] ?? []).map((f) => fileUrl(f.filename));
       const fileUrlValue = files?.["file"]?.[0] ? fileUrl(files["file"][0].filename) : null;
+      const qrCodeUrlValue = files?.["qrCode"]?.[0] ? fileUrl(files["qrCode"][0].filename) : null;
 
       const listing = await prisma.listing.create({
         data: {
@@ -197,6 +199,7 @@ router.post(
           isFree: isFree === "true" || parseFloat(price ?? "0") === 0,
           images: imageUrls,
           fileUrl: fileUrlValue,
+          qrCodeUrl: qrCodeUrlValue,
           sellerId: userId,
         },
         include: { seller: { select: { id: true, name: true, reputation: true } } },

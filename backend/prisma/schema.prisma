@@ -88,6 +88,7 @@ model Listing {
   status           ListingStatus     @default(ACTIVE)
   images           String[]          // Postgres native array of image URLs
   fileUrl          String?           // for digital downloads (ONLINE type)
+  qrCodeUrl        String?           // optional payment QR (UPI / bank) for offline listings
 
   sellerId         String
   seller           User              @relation(fields: [sellerId], references: [id])

@@ -2,11 +2,12 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import {
-  ArrowLeft, Package, FileText, Star, Download, MessageSquare,
+  ArrowLeft, Package, FileText, Star, Download,
   Loader2, AlertCircle, Calendar, Tag, User, ShoppingBag
 } from "lucide-react"
 import { Button } from "../components/ui/Button"
 import { useAuth } from "../contexts/AuthContext"
+import { useTheme } from "../contexts/ThemeContext"
 import { cn } from "../lib/utils"
 import type { Listing } from "../components/ListingCard"
 import BechoLogo from "../components/BechoLogo"
@@ -26,6 +27,7 @@ export default function ListingDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { user, isAuthenticated } = useAuth()
+  const { isDark } = useTheme()
   const [listing, setListing] = useState<FullListing | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -48,19 +50,45 @@ export default function ListingDetail() {
     })()
   }, [id])
 
+  // ── Theme tokens ─────────────────────────────────────────────────────────────
+  const bg        = isDark ? "#080808" : "#f5f0e8"
+  const navBg     = isDark ? "rgba(8,8,8,0.92)"      : "rgba(245,240,232,0.95)"
+  const navBorder = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.08)"
+
+  // Card boxes — bright white borders on dark, clean dark borders on light
+  const cardBg     = isDark ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.85)"
+  const cardBorder = isDark ? "rgba(255,255,255,0.60)" : "rgba(0,0,0,0.15)"
+
+  // Seller card — slightly more prominent
+  const sellerBg     = isDark ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.92)"
+  const sellerBorder = isDark ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.18)"
+
+  // Primary action button ring
+  const btnRing = isDark ? "0 0 0 2px rgba(255,255,255,0.75), 0 4px 24px rgba(255,255,255,0.08)" : "none"
+
+  // Image placeholder
+  const placeholderBg = isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.05)"
+  const iconColor     = isDark ? "#444" : "#bbb"
+
+  // Text
+  const textPrimary = isDark ? "#ffffff" : "#111111"
+  const textMuted   = isDark ? "#71717a" : "#6b7280"
+  const textSub     = isDark ? "#52525b" : "#9ca3af"
+  const dividerColor = isDark ? "#27272a" : "#d1d5db"
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#080808] flex items-center justify-center">
-        <Loader2 className="h-6 w-6 text-zinc-600 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: bg }}>
+        <Loader2 className="h-6 w-6 animate-spin" style={{ color: textMuted }} />
       </div>
     )
   }
 
   if (error || !listing) {
     return (
-      <div className="min-h-screen bg-[#080808] flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ backgroundColor: bg }}>
         <AlertCircle className="h-10 w-10 text-red-400" />
-        <p className="text-zinc-400 font-medium">Listing not found</p>
+        <p className="font-medium" style={{ color: textMuted }}>Listing not found</p>
         <Button variant="outline" size="sm" onClick={() => navigate("/browse")}>
           <ArrowLeft className="h-4 w-4 mr-1.5" /> Back to Browse
         </Button>
@@ -75,16 +103,20 @@ export default function ListingDetail() {
   const isOwner = user?.id === listing.seller.id
 
   return (
-    <div className="min-h-screen bg-[#080808]">
+    <div className="min-h-screen" style={{ backgroundColor: bg }}>
       {/* Nav */}
-      <nav className="sticky top-0 z-40 bg-[#080808]/90 backdrop-blur border-b border-white/[0.05] px-6 py-3.5 flex items-center gap-3">
+      <nav
+        className="sticky top-0 z-40 backdrop-blur px-6 py-3.5 flex items-center gap-3"
+        style={{ backgroundColor: navBg, borderBottom: `1px solid ${navBorder}` }}
+      >
         <div className="flex items-center gap-2.5">
-          <BechoLogo size={28} showWordmark={true} wordmarkColor="white" />
+          <BechoLogo size={28} showWordmark={true} wordmarkColor={isDark ? "white" : undefined} />
         </div>
-        <div className="h-4 w-px bg-zinc-800 mx-2" />
+        <div className="h-4 w-px mx-2" style={{ backgroundColor: dividerColor }} />
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-200 transition-colors"
+          className="flex items-center gap-1.5 text-xs transition-colors"
+          style={{ color: textMuted }}
         >
           <ArrowLeft className="h-4 w-4" /> Back
         </button>
@@ -98,7 +130,10 @@ export default function ListingDetail() {
         >
           {/* Left — images */}
           <div className="space-y-3">
-            <div className="aspect-[4/3] rounded-2xl bg-zinc-900 border border-white/[0.06] overflow-hidden flex items-center justify-center">
+            <div
+              className="aspect-[4/3] rounded-2xl overflow-hidden flex items-center justify-center"
+              style={{ backgroundColor: placeholderBg, border: `1.5px solid ${cardBorder}` }}
+            >
               {listing.images.length > 0 ? (
                 <img
                   src={listing.images[activeImg]}
@@ -108,9 +143,9 @@ export default function ListingDetail() {
               ) : (
                 <div className="flex flex-col items-center gap-3">
                   {listing.type === "ONLINE"
-                    ? <FileText className="h-16 w-16 text-zinc-700" />
-                    : <Package className="h-16 w-16 text-zinc-700" />}
-                  <p className="text-xs text-zinc-600">No images</p>
+                    ? <FileText className="h-16 w-16" style={{ color: iconColor }} />
+                    : <Package className="h-16 w-16" style={{ color: iconColor }} />}
+                  <p className="text-xs" style={{ color: textSub }}>No images</p>
                 </div>
               )}
             </div>
@@ -139,7 +174,10 @@ export default function ListingDetail() {
               <span className={cn("text-[11px] font-semibold px-2.5 py-1 rounded-full border", typeColor)}>
                 {listing.type}
               </span>
-              <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-300">
+              <span
+                className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+                style={{ backgroundColor: cardBg, border: `1px solid ${cardBorder}`, color: textMuted }}
+              >
                 {listing.category}
               </span>
               {listing.isFree && (
@@ -158,9 +196,13 @@ export default function ListingDetail() {
 
             {/* Title */}
             <div>
-              <h1 className="text-2xl font-bold text-white leading-tight">{listing.title}</h1>
+              <h1 className="text-2xl font-bold leading-tight" style={{ color: textPrimary }}>
+                {listing.title}
+              </h1>
               {listing.subject && (
-                <p className="text-sm text-zinc-500 mt-1">{listing.subject}{listing.semester ? ` · Semester ${listing.semester}` : ""}</p>
+                <p className="text-sm mt-1" style={{ color: textMuted }}>
+                  {listing.subject}{listing.semester ? ` · Semester ${listing.semester}` : ""}
+                </p>
               )}
             </div>
 
@@ -169,109 +211,101 @@ export default function ListingDetail() {
               {listing.isFree ? (
                 <p className="text-3xl font-bold text-[#FF6B1A]">Free</p>
               ) : (
-                <p className="text-3xl font-bold text-white">₹{listing.price.toLocaleString("en-IN")}</p>
+                <p className="text-3xl font-bold" style={{ color: textPrimary }}>
+                  ₹{listing.price.toLocaleString("en-IN")}
+                </p>
               )}
             </div>
 
             {/* Description */}
-            <p className="text-sm text-zinc-400 leading-relaxed">{listing.description}</p>
+            <p className="text-sm leading-relaxed" style={{ color: textMuted }}>
+              {listing.description}
+            </p>
 
-            {/* Meta */}
+            {/* Meta boxes */}
             <div className="grid grid-cols-2 gap-2.5 text-xs">
               {listing.condition && (
-                <div className="flex items-center gap-2 bg-zinc-900/60 border border-white/[0.05] rounded-xl px-3 py-2.5">
-                  <Tag className="h-3.5 w-3.5 text-zinc-600" />
-                  <span className="text-zinc-500">Condition:</span>
-                  <span className="text-zinc-300 font-medium">{listing.condition}</span>
+                <div
+                  className="flex items-center gap-2 rounded-xl px-3 py-2.5"
+                  style={{ backgroundColor: cardBg, border: `1.5px solid ${cardBorder}` }}
+                >
+                  <Tag className="h-3.5 w-3.5 flex-shrink-0" style={{ color: textSub }} />
+                  <span style={{ color: textMuted }}>Condition:</span>
+                  <span className="font-semibold" style={{ color: textPrimary }}>{listing.condition}</span>
                 </div>
               )}
-              <div className="flex items-center gap-2 bg-zinc-900/60 border border-white/[0.05] rounded-xl px-3 py-2.5">
-                <Calendar className="h-3.5 w-3.5 text-zinc-600" />
-                <span className="text-zinc-500">Listed:</span>
-                <span className="text-zinc-300 font-medium">
+              <div
+                className="flex items-center gap-2 rounded-xl px-3 py-2.5"
+                style={{ backgroundColor: cardBg, border: `1.5px solid ${cardBorder}` }}
+              >
+                <Calendar className="h-3.5 w-3.5 flex-shrink-0" style={{ color: textSub }} />
+                <span style={{ color: textMuted }}>Listed:</span>
+                <span className="font-semibold" style={{ color: textPrimary }}>
                   {new Date(listing.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
                 </span>
               </div>
             </div>
 
-            {/* Seller */}
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-zinc-900/40 border border-white/[0.05]">
+            {/* Seller card */}
+            <div
+              className="flex items-center gap-3 p-4 rounded-xl"
+              style={{ backgroundColor: sellerBg, border: `1.5px solid ${sellerBorder}` }}
+            >
               <div className="w-10 h-10 rounded-full bg-[#FF6B1A]/15 flex items-center justify-center flex-shrink-0">
                 <span className="text-sm font-bold text-[#FF6B1A]">{listing.seller.name[0]?.toUpperCase()}</span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white">{listing.seller.name}</p>
+                <p className="text-sm font-semibold" style={{ color: textPrimary }}>{listing.seller.name}</p>
                 {listing.seller.reputation > 0 && (
                   <div className="flex items-center gap-1 mt-0.5">
                     <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                    <span className="text-xs text-amber-400 font-medium">{listing.seller.reputation.toFixed(1)}</span>
+                    <span className="text-xs font-medium text-amber-400">{listing.seller.reputation.toFixed(1)}</span>
                   </div>
                 )}
               </div>
-              <User className="h-4 w-4 text-zinc-700" />
+              <User className="h-4 w-4" style={{ color: textSub }} />
             </div>
 
-            {/* Actions */}
+            {/* Actions — Chat and back-arrow removed */}
             <div className="flex gap-3 pt-1">
               {listing.type === "ONLINE" && listing.fileUrl ? (
-                <a
-                  href={listing.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1"
-                >
-                  <Button className="w-full">
+                <a href={listing.fileUrl} target="_blank" rel="noopener noreferrer" className="flex-1">
+                  <Button className="w-full" style={{ boxShadow: btnRing }}>
                     <Download className="h-4 w-4 mr-2" />
                     {listing.isFree ? "Download Free" : "Download"}
                   </Button>
                 </a>
               ) : !isOwner && listing.type === "OFFLINE" ? (
-                /* Offline listing — Buy Now + Chat */
-                <>
-                  <Button
-                    className="flex-1"
-                    disabled={listing.status !== "ACTIVE"}
-                    onClick={() => {
-                      if (!isAuthenticated) {
-                        navigate("/login", { state: { from: { pathname: `/listings/${listing.id}/buy` } } })
-                      } else {
-                        navigate(`/listings/${listing.id}/buy`)
-                      }
-                    }}
-                    id="buy-now-btn"
-                  >
-                    <ShoppingBag className="h-4 w-4 mr-2" />
-                    {listing.status === "ACTIVE" ? "Buy Now" : "Sold Out"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      if (!isAuthenticated) {
-                        navigate("/login", { state: { from: { pathname: `/chat/${listing.id}` } } })
-                      } else {
-                        navigate(`/chat/${listing.id}?receiverId=${listing.seller.id}&name=${encodeURIComponent(listing.title)}`)
-                      }
-                    }}
-                    id="chat-seller-btn"
-                  >
-                    <MessageSquare className="h-4 w-4 mr-1.5" />
-                    Chat
-                  </Button>
-                </>
+                <Button
+                  className="flex-1"
+                  disabled={listing.status !== "ACTIVE"}
+                  style={{ boxShadow: btnRing }}
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      navigate("/login", { state: { from: { pathname: `/listings/${listing.id}/buy` } } })
+                    } else {
+                      navigate(`/listings/${listing.id}/buy`)
+                    }
+                  }}
+                  id="buy-now-btn"
+                >
+                  <ShoppingBag className="h-4 w-4 mr-2" />
+                  {listing.status === "ACTIVE" ? "Buy Now" : "Sold Out"}
+                </Button>
               ) : !isOwner && listing.type === "ONLINE" ? (
                 <Button
                   className="flex-1"
+                  style={{ boxShadow: btnRing }}
                   onClick={() => {
                     if (!isAuthenticated) {
-                      navigate("/login", { state: { from: { pathname: `/chat/${listing.id}` } } })
+                      navigate("/login", { state: { from: { pathname: `/listings/${id}` } } })
                     } else {
-                      navigate(`/chat/${listing.id}?receiverId=${listing.seller.id}&name=${encodeURIComponent(listing.title)}`)
+                      navigate(`/listings/${listing.id}/buy`)
                     }
                   }}
                 >
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Chat with Seller
+                  <ShoppingBag className="h-4 w-4 mr-2" />
+                  Get for Free
                 </Button>
               ) : null}
 
@@ -280,10 +314,6 @@ export default function ListingDetail() {
                   Edit Listing
                 </Button>
               )}
-
-              <Button variant="outline" size="icon" onClick={() => navigate("/browse")}>
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
             </div>
           </div>
         </motion.div>

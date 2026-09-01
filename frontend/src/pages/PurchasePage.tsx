@@ -5,7 +5,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ArrowLeft, Package, MapPin, MessageSquare, CheckCircle2,
-  Loader2, AlertCircle, ShoppingBag, User, Tag, Star, Zap, Send
+  Loader2, AlertCircle, ShoppingBag, User, Tag, Star, Zap, Send, QrCode
 } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
 import { apiFetch, ApiRequestError } from "../lib/api"
@@ -23,6 +23,7 @@ interface FullListing {
   images: string[]
   status: string
   type: string
+  qrCodeUrl?: string
   seller: { id: string; name: string; reputation: number; email: string }
 }
 
@@ -151,6 +152,25 @@ export default function PurchasePage() {
                   They'll review it and respond shortly.
                 </p>
               </div>
+
+              {/* QR Code — if seller provided one */}
+              {listing.qrCodeUrl && (
+                <div className="w-full max-w-xs rounded-2xl overflow-hidden bg-zinc-900/60 border border-white/[0.10] p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <QrCode className="h-4 w-4 text-[#FF6B1A]" />
+                    <p className="text-sm font-semibold text-white">Seller's Payment QR</p>
+                  </div>
+                  <p className="text-xs text-zinc-500 mb-3">Scan this to pay via UPI / GPay / PhonePe once the seller accepts.</p>
+                  <div className="bg-white rounded-xl p-3 flex items-center justify-center">
+                    <img
+                      src={listing.qrCodeUrl}
+                      alt="Payment QR Code"
+                      className="w-48 h-48 object-contain"
+                    />
+                  </div>
+                  <p className="text-[11px] text-zinc-600 text-center mt-2">Only pay after seller accepts your request</p>
+                </div>
+              )}
               <div className="flex flex-col sm:flex-row gap-3 w-full max-w-sm">
                 <button
                   onClick={() => navigate("/inbox")}

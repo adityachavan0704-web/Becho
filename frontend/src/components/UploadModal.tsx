@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   X, Package, FileText, Upload, ChevronRight, ChevronLeft,
-  Check, Loader2, ImagePlus, FilePlus, Tag, DollarSign, Info
+  Check, Loader2, ImagePlus, FilePlus, Tag, DollarSign, Info, QrCode
 } from "lucide-react"
 import { Button } from "./ui/Button"
 import { useAuth } from "../contexts/AuthContext"
@@ -34,6 +34,7 @@ interface FormData {
   condition: string
   images: File[]
   file: File | null
+  qrCode: File | null
 }
 
 const STEPS = [
@@ -58,6 +59,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
     condition: "Good",
     images: [],
     file: null,
+    qrCode: null,
   })
   const [isDragging, setIsDragging] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -104,6 +106,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
       if (form.condition) fd.append("condition", form.condition)
       form.images.forEach((img) => fd.append("images", img))
       if (form.file) fd.append("file", form.file)
+      if (form.qrCode) fd.append("qrCode", form.qrCode)
 
       const res = await fetch(`${API_URL}/api/listings`, {
         method: "POST",
@@ -142,6 +145,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
       condition: "Good",
       images: [],
       file: null,
+      qrCode: null,
     })
     setError(null)
     setSuccess(false)
@@ -496,6 +500,52 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                       </div>
                     </div>
                   )}
+
+                  {/* QR Code upload (offline only) */}
+                  {form.type === "OFFLINE" && (
+                    <div>
+                      <label className="text-xs font-medium text-zinc-400 mb-2 flex items-center gap-1.5">
+                        <QrCode className="h-3.5 w-3.5" /> Payment QR Code
+                        <span className="text-zinc-600 font-normal">(optional — UPI / GPay / PhonePe)</span>
+                      </label>
+                      <div
+                        className="border-2 border-dashed border-zinc-800 hover:border-[#FF6B1A]/50 rounded-xl p-4 text-center transition-all cursor-pointer"
+                        onClick={() => document.getElementById("qr-upload")?.click()}
+                      >
+                        <input
+                          id="qr-upload"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => set("qrCode", e.target.files?.[0] ?? null)}
+                        />
+                        {form.qrCode ? (
+                          <div className="flex items-center justify-center gap-3">
+                            <img
+                              src={URL.createObjectURL(form.qrCode)}
+                              alt="QR Preview"
+                              className="w-20 h-20 object-contain rounded-lg border border-zinc-700"
+                            />
+                            <div className="text-left">
+                              <p className="text-xs text-zinc-300 font-medium truncate max-w-[150px]">{form.qrCode.name}</p>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); set("qrCode", null) }}
+                                className="text-xs text-red-400 hover:text-red-300 mt-1"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <QrCode className="h-5 w-5 text-zinc-600 mx-auto mb-1.5" />
+                            <p className="text-xs text-zinc-500">Upload your UPI / payment QR image</p>
+                            <p className="text-[10px] text-zinc-600 mt-0.5">Buyers will see this after sending a request</p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               ) : (
                 /* Step 4 — Review */
@@ -524,6 +574,7 @@ export function UploadModal({ isOpen, onClose, onSuccess, defaultType }: UploadM
                       {form.condition && form.type === "OFFLINE" && <span>🏷️ {form.condition}</span>}
                       <span>🖼️ {form.images.length} image{form.images.length !== 1 ? "s" : ""}</span>
                       {form.file && <span>📎 1 file</span>}
+                      {form.qrCode && <span>📲 QR attached</span>}
                     </div>
                   </div>
                   {error && (
