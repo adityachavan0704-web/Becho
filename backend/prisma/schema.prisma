@@ -43,26 +43,26 @@ enum NotificationType {
 // ─── Models ─────────────────────────────────────────────────────
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  passwordHash  String?   // null for Google-only accounts
-  googleId      String?   @unique
-  name          String
-  role          UserRole  @default(BUYER)
-  isVerified    Boolean   @default(false)
-  reputation    Float     @default(0)
-  collegeId     String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String? // null for Google-only accounts
+  googleId     String?  @unique
+  name         String
+  role         UserRole @default(BUYER)
+  isVerified   Boolean  @default(false)
+  reputation   Float    @default(0)
+  collegeId    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  listings              Listing[]
-  mentorships           Mentorship[]
-  sentMessages          Message[]           @relation("SentMessages")
-  receivedMessages      Message[]           @relation("ReceivedMessages")
-  refreshTokens         RefreshToken[]
-  buyerRequests         PurchaseRequest[]   @relation("BuyerRequests")
-  sellerRequests        PurchaseRequest[]   @relation("SellerRequests")
-  notifications         InboxNotification[] @relation("UserNotifications")
+  listings         Listing[]
+  mentorships      Mentorship[]
+  sentMessages     Message[]           @relation("SentMessages")
+  receivedMessages Message[]           @relation("ReceivedMessages")
+  refreshTokens    RefreshToken[]
+  buyerRequests    PurchaseRequest[]   @relation("BuyerRequests")
+  sellerRequests   PurchaseRequest[]   @relation("SellerRequests")
+  notifications    InboxNotification[] @relation("UserNotifications")
 }
 
 model RefreshToken {
@@ -75,28 +75,28 @@ model RefreshToken {
 }
 
 model Listing {
-  id               String            @id @default(uuid())
-  title            String
-  description      String
-  price            Float             @default(0)
-  type             ListingType
-  category         String
-  subject          String?
-  semester         Int?
-  condition        String?           // for offline items
-  isFree           Boolean           @default(false)
-  status           ListingStatus     @default(ACTIVE)
-  images           String[]          // Postgres native array of image URLs
-  fileUrl          String?           // for digital downloads (ONLINE type)
-  qrCodeUrl        String?           // optional payment QR (UPI / bank) for offline listings
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  price       Float         @default(0)
+  type        ListingType
+  category    String
+  subject     String?
+  semester    Int?
+  condition   String? // for offline items
+  isFree      Boolean       @default(false)
+  status      ListingStatus @default(ACTIVE)
+  images      String[] // Postgres native array of image URLs
+  fileUrl     String? // for digital downloads (ONLINE type)
+  qrCodeUrl   String? // optional payment QR (UPI / bank) for offline listings
 
   sellerId         String
   seller           User              @relation(fields: [sellerId], references: [id])
   messages         Message[]
   purchaseRequests PurchaseRequest[]
 
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Mentorship {
@@ -117,8 +117,8 @@ model Message {
   content    String
   senderId   String
   receiverId String
-  listingId  String?  // optional: message tied to a specific listing chat
-  sender     User     @relation("SentMessages",    fields: [senderId],   references: [id])
+  listingId  String? // optional: message tied to a specific listing chat
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
   receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
   listing    Listing? @relation(fields: [listingId], references: [id])
   createdAt  DateTime @default(now())
@@ -127,24 +127,24 @@ model Message {
 // ─── Purchase Request System ─────────────────────────────────────
 
 model PurchaseRequest {
-  id         String                @id @default(uuid())
-  listingId  String
-  listing    Listing               @relation(fields: [listingId], references: [id])
-  buyerId    String
-  buyer      User                  @relation("BuyerRequests",  fields: [buyerId],  references: [id])
-  sellerId   String
-  seller     User                  @relation("SellerRequests", fields: [sellerId], references: [id])
-  status     PurchaseRequestStatus @default(PENDING)
-  note       String?               // optional message from buyer
-  createdAt  DateTime              @default(now())
-  updatedAt  DateTime              @updatedAt
+  id        String                @id @default(uuid())
+  listingId String
+  listing   Listing               @relation(fields: [listingId], references: [id])
+  buyerId   String
+  buyer     User                  @relation("BuyerRequests", fields: [buyerId], references: [id])
+  sellerId  String
+  seller    User                  @relation("SellerRequests", fields: [sellerId], references: [id])
+  status    PurchaseRequestStatus @default(PENDING)
+  note      String? // optional message from buyer
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
 
   notifications InboxNotification[]
 }
 
 model InboxNotification {
   id                String           @id @default(uuid())
-  userId            String           // recipient
+  userId            String // recipient
   user              User             @relation("UserNotifications", fields: [userId], references: [id])
   type              NotificationType
   purchaseRequestId String?
