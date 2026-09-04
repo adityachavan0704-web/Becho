@@ -4,9 +4,10 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Package, FileText, Upload, ChevronRight, ChevronLeft,
   Check, Loader2, ImagePlus, FilePlus, Tag, Info, QrCode,
-  DollarSign, X, ArrowLeft, Sparkles
+  DollarSign, X, ArrowLeft
 } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
+import { useTheme } from "../contexts/ThemeContext"
 import { cn } from "../lib/utils"
 import BechoLogo from "../components/BechoLogo"
 
@@ -39,10 +40,28 @@ const STEPS = [
   { label: "Review", icon: Check, desc: "Confirm & publish" },
 ]
 
+// ── Theme-aware style helpers ──────────────────────────────────────────────────
+const T = {
+  bg:         "var(--bg)",
+  bgSubtle:   "var(--bg-subtle)",
+  surface:    "var(--surface)",
+  surface2:   "var(--surface-2)",
+  surface3:   "var(--surface-3)",
+  border:     "var(--border)",
+  borderStrong: "var(--border-strong)",
+  text:       "var(--text)",
+  muted:      "var(--text-muted)",
+  subtle:     "var(--text-subtle)",
+  primary:    "var(--primary)",
+  primaryDim: "var(--primary-dim)",
+  primaryGlow:"var(--primary-glow)",
+}
+
 export default function CreateListingPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { getAccessToken } = useAuth()
+  const { isDark } = useTheme()
 
   const defaultType = searchParams.get("type") === "ONLINE" ? "ONLINE" : "OFFLINE"
   const startStep: Step = searchParams.get("type") ? 2 : 1
@@ -138,10 +157,26 @@ export default function CreateListingPage() {
 
   const categories = form.type === "ONLINE" ? CATEGORIES_ONLINE : CATEGORIES_OFFLINE
 
-  // ── Success Screen ──────────────────────────────────────────────
+  // shared input style – uses CSS vars so it adapts to light/dark
+  const inputStyle: React.CSSProperties = {
+    background: "var(--surface-2)",
+    border: "var(--border-width) solid var(--border)",
+    color: "var(--text)",
+  }
+  const inputFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.currentTarget.style.borderColor = "rgba(255,107,26,0.5)"
+    e.currentTarget.style.boxShadow = "0 0 0 3px var(--primary-glow)"
+  }
+  const inputBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    // Reset to the CSS-variable value by clearing the inline style override
+    e.currentTarget.style.borderColor = ""
+    e.currentTarget.style.boxShadow = "none"
+  }
+
+  // ── Success Screen ───────────────────────────────────────────────────────────
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "#080808" }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: T.bg }}>
         <motion.div
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -161,8 +196,8 @@ export default function CreateListingPage() {
             </div>
           </div>
           <div>
-            <p className="text-3xl font-bold text-white mb-2">Listing Published!</p>
-            <p className="text-zinc-400 text-sm">Your listing is now live on Becho marketplace.</p>
+            <p className="text-3xl font-bold mb-2" style={{ color: T.text }}>Listing Published!</p>
+            <p className="text-sm" style={{ color: T.muted }}>Your listing is now live on Becho marketplace.</p>
           </div>
           <motion.div
             initial={{ width: 0 }}
@@ -171,34 +206,37 @@ export default function CreateListingPage() {
             className="h-0.5 rounded-full"
             style={{ background: "linear-gradient(to right, #FF6B1A, #f59e0b)" }}
           />
-          <p className="text-xs text-zinc-600">Redirecting to dashboard…</p>
+          <p className="text-xs" style={{ color: T.subtle }}>Redirecting to dashboard…</p>
         </motion.div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: "#080808" }}>
+    <div className="min-h-screen flex" style={{ background: T.bg }}>
 
-      {/* ── LEFT PANEL ─────────────────────────────────────────── */}
+      {/* ── LEFT PANEL ─────────────────────────────────────────────────────────── */}
       <div
         className="hidden lg:flex flex-col w-[340px] xl:w-[380px] flex-shrink-0 relative overflow-hidden"
         style={{
-          background: "linear-gradient(160deg, #0f0f0f 0%, #111 60%, #130e08 100%)",
-          borderRight: "1px solid rgba(255,255,255,0.06)",
+          background: T.surface,
+          borderRight: `var(--border-width) solid ${T.border}`,
         }}
       >
         {/* Ambient glows */}
         <div className="absolute top-0 left-0 w-64 h-64 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, rgba(255,107,26,0.08) 0%, transparent 70%)", transform: "translate(-30%,-30%)" }} />
+          style={{ background: "radial-gradient(circle, rgba(255,107,26,0.07) 0%, transparent 70%)", transform: "translate(-30%,-30%)" }} />
         <div className="absolute bottom-0 right-0 w-48 h-48 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, rgba(245,158,11,0.05) 0%, transparent 70%)", transform: "translate(30%,30%)" }} />
+          style={{ background: "radial-gradient(circle, rgba(245,158,11,0.04) 0%, transparent 70%)", transform: "translate(30%,30%)" }} />
 
         {/* Back */}
         <div className="px-8 pt-8">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-300 transition-colors group"
+            className="flex items-center gap-2 text-sm transition-colors group"
+            style={{ color: T.muted }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = T.text)}
+            onMouseLeave={(e) => (e.currentTarget.style.color = T.muted)}
           >
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
             Back
@@ -212,8 +250,8 @@ export default function CreateListingPage() {
 
         {/* Heading */}
         <div className="px-8 pt-6 pb-8">
-          <h1 className="text-2xl font-bold text-white mb-1">Create a Listing</h1>
-          <p className="text-sm text-zinc-500">
+          <h1 className="text-2xl font-bold mb-1" style={{ color: T.text }}>Create a Listing</h1>
+          <p className="text-sm" style={{ color: T.muted }}>
             {form.type === "ONLINE" ? "Online / Digital resource" : "Hardware / Physical item"}
           </p>
         </div>
@@ -221,7 +259,7 @@ export default function CreateListingPage() {
         {/* Vertical stepper */}
         <div className="px-8 flex-1">
           <div className="relative">
-            <div className="absolute left-[18px] top-6 bottom-6 w-px" style={{ background: "rgba(255,255,255,0.06)" }} />
+            <div className="absolute left-[18px] top-6 bottom-6 w-px" style={{ background: T.border }} />
             <motion.div
               className="absolute left-[18px] top-6 w-px origin-top"
               style={{ background: "linear-gradient(to bottom, #FF6B1A, #f59e0b)" }}
@@ -238,8 +276,14 @@ export default function CreateListingPage() {
                     <motion.div
                       className="relative z-10 w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
                       animate={{
-                        background: done ? "rgba(255,107,26,0.25)" : active ? "rgba(255,107,26,0.18)" : "rgba(255,255,255,0.04)",
-                        borderColor: done || active ? "rgba(255,107,26,0.5)" : "rgba(255,255,255,0.08)",
+                        background: done
+                          ? "rgba(255,107,26,0.20)"
+                          : active
+                          ? "rgba(255,107,26,0.14)"
+                          : isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.05)",
+                        borderColor: done || active
+                          ? "rgba(255,107,26,0.5)"
+                          : isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.15)",
                       }}
                       style={{ border: "1px solid" }}
                     >
@@ -250,16 +294,25 @@ export default function CreateListingPage() {
                           </motion.div>
                         ) : (
                           <motion.div key="icon" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-                            <s.icon className={cn("h-4 w-4", active ? "text-[#FF6B1A]" : "text-zinc-600")} />
+                            <s.icon
+                              className="h-4 w-4"
+                              style={{ color: active ? "#FF6B1A" : T.subtle }}
+                            />
                           </motion.div>
                         )}
                       </AnimatePresence>
                     </motion.div>
                     <div className="pt-1.5">
-                      <p className={cn("text-sm font-semibold transition-colors", active ? "text-white" : done ? "text-zinc-400" : "text-zinc-600")}>
+                      <p
+                        className="text-sm font-semibold transition-colors"
+                        style={{ color: active ? T.text : done ? T.muted : T.subtle }}
+                      >
                         {s.label}
                       </p>
-                      <p className={cn("text-xs mt-0.5 transition-colors", active ? "text-zinc-400" : "text-zinc-700")}>
+                      <p
+                        className="text-xs mt-0.5 transition-colors"
+                        style={{ color: active ? T.muted : T.subtle }}
+                      >
                         {s.desc}
                       </p>
                     </div>
@@ -276,49 +329,46 @@ export default function CreateListingPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
               className="mx-8 mb-8 rounded-2xl overflow-hidden"
-              style={{ border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.03)" }}
+              style={{ border: `var(--border-width) solid ${T.border}`, background: T.surface2 }}
             >
               {form.images[0] ? (
                 <img src={URL.createObjectURL(form.images[0])} alt="preview" className="w-full h-28 object-cover" />
               ) : (
-                <div className="w-full h-28 flex items-center justify-center" style={{ background: "rgba(255,107,26,0.04)" }}>
-                  {form.type === "OFFLINE" ? <Package className="h-8 w-8 text-zinc-700" /> : <FileText className="h-8 w-8 text-zinc-700" />}
+                <div className="w-full h-28 flex items-center justify-center" style={{ background: T.surface3 }}>
+                  {form.type === "OFFLINE"
+                    ? <Package className="h-8 w-8" style={{ color: T.subtle }} />
+                    : <FileText className="h-8 w-8" style={{ color: T.subtle }} />}
                 </div>
               )}
               <div className="p-3">
-                <p className="text-xs font-semibold text-white truncate">{form.title}</p>
+                <p className="text-xs font-semibold truncate" style={{ color: T.text }}>{form.title}</p>
                 <div className="flex items-center gap-2 mt-1">
                   {form.category && (
                     <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(255,107,26,0.15)", color: "#FF6B1A" }}>
                       {form.category}
                     </span>
                   )}
-                  <span className="text-[10px] text-zinc-500">{form.isFree ? "Free" : form.price ? `₹${form.price}` : "—"}</span>
+                  <span className="text-[10px]" style={{ color: T.muted }}>{form.isFree ? "Free" : form.price ? `₹${form.price}` : "—"}</span>
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Tip for step 1 */}
-        {step === 1 && (
-          <div className="mx-8 mb-8 flex items-start gap-3 rounded-2xl p-4"
-            style={{ background: "rgba(255,107,26,0.06)", border: "1px solid rgba(255,107,26,0.12)" }}>
-            <Sparkles className="h-4 w-4 text-[#FF6B1A] mt-0.5 flex-shrink-0" />
-            <p className="text-xs text-zinc-500 leading-relaxed">
-              Listings with clear photos and complete descriptions sell <span className="text-zinc-300 font-medium">3× faster</span> on Becho.
-            </p>
-          </div>
-        )}
       </div>
 
-      {/* ── RIGHT PANEL ────────────────────────────────────────── */}
+      {/* ── RIGHT PANEL ─────────────────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-h-screen">
 
         {/* Mobile top bar */}
-        <div className="lg:hidden flex items-center justify-between px-5 py-4"
-          style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors">
+        <div
+          className="lg:hidden flex items-center justify-between px-5 py-4"
+          style={{ borderBottom: `var(--border-width) solid ${T.border}` }}
+        >
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-sm transition-colors"
+            style={{ color: T.muted }}
+          >
             <ArrowLeft className="h-4 w-4" /> Back
           </button>
           <BechoLogo size={28} showWordmark />
@@ -326,19 +376,23 @@ export default function CreateListingPage() {
         </div>
 
         {/* Mobile step pills */}
-        <div className="lg:hidden flex items-center gap-1.5 px-5 py-3 overflow-x-auto"
-          style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+        <div
+          className="lg:hidden flex items-center gap-1.5 px-5 py-3 overflow-x-auto"
+          style={{ borderBottom: `1px solid ${T.border}` }}
+        >
           {STEPS.map((s, i) => {
             const num = (i + 1) as Step
             const active = step === num
             const done = step > num
             return (
-              <div key={s.label} className={cn(
-                "flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all",
-                active && "bg-[#FF6B1A]/15 text-[#FF6B1A]",
-                done && "text-zinc-500",
-                !active && !done && "text-zinc-700"
-              )}>
+              <div
+                key={s.label}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all"
+                style={{
+                  background: active ? "rgba(255,107,26,0.12)" : "transparent",
+                  color: active ? "#FF6B1A" : done ? T.muted : T.subtle,
+                }}
+              >
                 {done ? <Check className="h-3 w-3 text-[#FF6B1A]" /> : <s.icon className="h-3 w-3" />}
                 {s.label}
               </div>
@@ -361,8 +415,8 @@ export default function CreateListingPage() {
                 <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#FF6B1A" }}>
                   Step {step} of {STEPS.length}
                 </p>
-                <h2 className="text-2xl font-bold text-white">{STEPS[step - 1].label}</h2>
-                <p className="text-sm text-zinc-500 mt-1">{STEPS[step - 1].desc}</p>
+                <h2 className="text-2xl font-bold" style={{ color: T.text }}>{STEPS[step - 1].label}</h2>
+                <p className="text-sm mt-1" style={{ color: T.muted }}>{STEPS[step - 1].desc}</p>
               </motion.div>
             </AnimatePresence>
 
@@ -379,33 +433,40 @@ export default function CreateListingPage() {
                       <button
                         key={t}
                         onClick={() => { set("type", t); set("category", "") }}
-                        className={cn(
-                          "flex flex-col items-center gap-4 p-7 rounded-2xl border-2 transition-all duration-200 group",
-                          form.type === t
-                            ? "border-[#FF6B1A]/60 bg-[#FF6B1A]/[0.06] shadow-[0_0_40px_rgba(255,107,26,0.08)]"
-                            : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.04]"
-                        )}
+                        className="flex flex-col items-center gap-4 p-7 rounded-lg border-2 transition-all duration-200 group"
+                        style={{
+                          borderColor: form.type === t ? "rgba(255,107,26,0.7)" : T.border,
+                          background: form.type === t
+                            ? "rgba(255,107,26,0.06)"
+                            : T.surface2,
+                          boxShadow: form.type === t
+                            ? "0 0 0 1px rgba(255,107,26,0.3), 0 0 28px rgba(255,107,26,0.08)"
+                            : "none",
+                        }}
                       >
-                        <div className={cn(
-                          "w-14 h-14 rounded-2xl flex items-center justify-center transition-all",
-                          form.type === t ? "bg-[#FF6B1A]/20" : "bg-white/[0.05] group-hover:bg-white/[0.08]"
-                        )}>
+                        <div
+                          className="w-14 h-14 rounded-lg flex items-center justify-center transition-all"
+                          style={{ background: form.type === t ? "rgba(255,107,26,0.15)" : T.surface3 }}
+                        >
                           {t === "OFFLINE"
-                            ? <Package className={cn("h-7 w-7", form.type === t ? "text-[#FF6B1A]" : "text-zinc-500")} />
-                            : <FileText className={cn("h-7 w-7", form.type === t ? "text-[#FF6B1A]" : "text-zinc-500")} />}
+                            ? <Package className="h-7 w-7" style={{ color: form.type === t ? "#FF6B1A" : T.muted }} />
+                            : <FileText className="h-7 w-7" style={{ color: form.type === t ? "#FF6B1A" : T.muted }} />}
                         </div>
                         <div className="text-center">
-                          <p className={cn("font-semibold text-sm", form.type === t ? "text-[#FF6B1A]" : "text-zinc-300")}>
+                          <p
+                            className="font-semibold text-sm tracking-wide"
+                            style={{ color: form.type === t ? "#FF6B1A" : T.text }}
+                          >
                             {t === "OFFLINE" ? "Hardware Item" : "Online Resource"}
                           </p>
-                          <p className="text-xs text-zinc-600 mt-1">
+                          <p className="text-xs mt-1" style={{ color: T.muted }}>
                             {t === "OFFLINE" ? "Books, cycles, equipment" : "Notes, PDFs, software"}
                           </p>
                         </div>
                         {form.type === t && (
                           <motion.div layoutId="type-check"
-                            className="w-5 h-5 rounded-full flex items-center justify-center"
-                            style={{ background: "rgba(255,107,26,0.25)" }}>
+                            className="w-5 h-5 rounded flex items-center justify-center"
+                            style={{ background: "rgba(255,107,26,0.25)", outline: "1px solid rgba(255,107,26,0.5)" }}>
                             <Check className="h-3 w-3 text-[#FF6B1A]" />
                           </motion.div>
                         )}
@@ -422,41 +483,44 @@ export default function CreateListingPage() {
                   transition={{ duration: 0.28 }} className="space-y-5">
 
                   <div>
-                    <label className="text-xs font-medium text-zinc-400 mb-2 block">Title *</label>
+                    <label className="text-xs font-medium mb-2 block" style={{ color: T.muted }}>Title *</label>
                     <input
-                      className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all"
-                      style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
-                      onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(255,107,26,0.4)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(255,107,26,0.08)" }}
-                      onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none" }}
+                      className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                      style={inputStyle}
+                      onFocus={inputFocus}
+                      onBlur={inputBlur}
                       placeholder="e.g. Engineering Physics Notes Sem 3"
                       value={form.title} onChange={(e) => set("title", e.target.value)}
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs font-medium text-zinc-400 mb-2 block">Description *</label>
+                    <label className="text-xs font-medium mb-2 block" style={{ color: T.muted }}>Description *</label>
                     <textarea
                       rows={4}
-                      className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all resize-none"
-                      style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
-                      onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(255,107,26,0.4)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(255,107,26,0.08)" }}
-                      onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none" }}
+                      className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all resize-none"
+                      style={inputStyle}
+                      onFocus={inputFocus}
+                      onBlur={inputBlur}
                       placeholder="Describe the item, condition, contents…"
                       value={form.description} onChange={(e) => set("description", e.target.value)}
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs font-medium text-zinc-400 mb-2 block">Category *</label>
+                    <label className="text-xs font-medium mb-2 block" style={{ color: T.muted }}>Category *</label>
                     <div className="flex flex-wrap gap-2">
                       {categories.map((cat) => (
-                        <button key={cat} onClick={() => set("category", cat)}
-                          className={cn(
-                            "px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all",
-                            form.category === cat
-                              ? "bg-[#FF6B1A]/15 border-[#FF6B1A]/50 text-[#FF6B1A]"
-                              : "bg-white/[0.03] border-white/[0.08] text-zinc-400 hover:border-white/[0.16] hover:text-zinc-200"
-                          )}>
+                        <button
+                          key={cat}
+                          onClick={() => set("category", cat)}
+                          className="px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all"
+                          style={{
+                            background: form.category === cat ? "rgba(255,107,26,0.12)" : T.surface3,
+                            borderColor: form.category === cat ? "rgba(255,107,26,0.5)" : T.border,
+                            color: form.category === cat ? "#FF6B1A" : T.muted,
+                          }}
+                        >
                           {cat}
                         </button>
                       ))}
@@ -465,28 +529,28 @@ export default function CreateListingPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-medium text-zinc-400 mb-2 block">
-                        Subject <span className="text-zinc-700 font-normal">(optional)</span>
+                      <label className="text-xs font-medium mb-2 block" style={{ color: T.muted }}>
+                        Subject <span className="font-normal" style={{ color: T.subtle }}>(optional)</span>
                       </label>
                       <input
-                        className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all"
-                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
-                        onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(255,107,26,0.4)" }}
-                        onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)" }}
+                        className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                        style={inputStyle}
+                        onFocus={inputFocus}
+                        onBlur={inputBlur}
                         placeholder="e.g. Physics"
                         value={form.subject} onChange={(e) => set("subject", e.target.value)}
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-zinc-400 mb-2 block">
-                        Semester <span className="text-zinc-700 font-normal">(optional)</span>
+                      <label className="text-xs font-medium mb-2 block" style={{ color: T.muted }}>
+                        Semester <span className="font-normal" style={{ color: T.subtle }}>(optional)</span>
                       </label>
                       <input
                         type="number" min="1" max="8"
-                        className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all"
-                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
-                        onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(255,107,26,0.4)" }}
-                        onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)" }}
+                        className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                        style={inputStyle}
+                        onFocus={inputFocus}
+                        onBlur={inputBlur}
                         placeholder="1 – 8"
                         value={form.semester} onChange={(e) => set("semester", e.target.value)}
                       />
@@ -495,26 +559,30 @@ export default function CreateListingPage() {
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs font-medium text-zinc-400">Price</label>
+                      <label className="text-xs font-medium" style={{ color: T.muted }}>Price</label>
                       <label className="flex items-center gap-2 cursor-pointer select-none">
                         <div
                           onClick={() => set("isFree", !form.isFree)}
-                          className={cn("relative w-9 h-5 rounded-full transition-colors cursor-pointer", form.isFree ? "bg-[#FF6B1A]" : "bg-zinc-800")}
+                          className="relative w-9 h-5 rounded-full transition-colors cursor-pointer"
+                          style={{ background: form.isFree ? "#FF6B1A" : T.surface3 }}
                         >
-                          <div className={cn("absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform", form.isFree ? "translate-x-4" : "translate-x-0")} />
+                          <div
+                            className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform"
+                            style={{ transform: form.isFree ? "translateX(16px)" : "translateX(0)" }}
+                          />
                         </div>
-                        <span className="text-xs text-zinc-400">Free</span>
+                        <span className="text-xs" style={{ color: T.muted }}>Free</span>
                       </label>
                     </div>
                     {!form.isFree && (
                       <div className="relative">
-                        <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+                        <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: T.muted }} />
                         <input
                           type="number" min="0"
-                          className="w-full rounded-xl pl-9 pr-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all"
-                          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
-                          onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(255,107,26,0.4)" }}
-                          onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)" }}
+                          className="w-full rounded-xl pl-9 pr-4 py-3 text-sm outline-none transition-all"
+                          style={inputStyle}
+                          onFocus={inputFocus}
+                          onBlur={inputBlur}
                           placeholder="0.00"
                           value={form.price} onChange={(e) => set("price", e.target.value)}
                         />
@@ -524,16 +592,19 @@ export default function CreateListingPage() {
 
                   {form.type === "OFFLINE" && (
                     <div>
-                      <label className="text-xs font-medium text-zinc-400 mb-2 block">Condition</label>
+                      <label className="text-xs font-medium mb-2 block" style={{ color: T.muted }}>Condition</label>
                       <div className="flex gap-2 flex-wrap">
                         {["Like New", "Good", "Fair", "Poor"].map((c) => (
-                          <button key={c} onClick={() => set("condition", c)}
-                            className={cn(
-                              "px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all",
-                              form.condition === c
-                                ? "bg-[#FF6B1A]/15 border-[#FF6B1A]/50 text-[#FF6B1A]"
-                                : "bg-white/[0.03] border-white/[0.08] text-zinc-400 hover:border-white/[0.16]"
-                            )}>
+                          <button
+                            key={c}
+                            onClick={() => set("condition", c)}
+                            className="px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all"
+                            style={{
+                              background: form.condition === c ? "rgba(255,107,26,0.12)" : T.surface3,
+                              borderColor: form.condition === c ? "rgba(255,107,26,0.5)" : T.border,
+                              color: form.condition === c ? "#FF6B1A" : T.muted,
+                            }}
+                          >
                             {c}
                           </button>
                         ))}
@@ -550,8 +621,8 @@ export default function CreateListingPage() {
                   transition={{ duration: 0.28 }} className="space-y-6">
 
                   <div>
-                    <label className="text-xs font-medium text-zinc-400 mb-3 flex items-center gap-1.5">
-                      <ImagePlus className="h-3.5 w-3.5" /> Images <span className="text-zinc-700 font-normal">(up to 5)</span>
+                    <label className="text-xs font-medium mb-3 flex items-center gap-1.5" style={{ color: T.muted }}>
+                      <ImagePlus className="h-3.5 w-3.5" /> Images <span className="font-normal" style={{ color: T.subtle }}>(up to 5)</span>
                     </label>
                     <div
                       ref={imageDrop}
@@ -559,10 +630,11 @@ export default function CreateListingPage() {
                       onDragLeave={() => setIsDragging(false)}
                       onDrop={(e) => handleDrop(e, "images")}
                       onClick={() => document.getElementById("img-upload")?.click()}
-                      className={cn(
-                        "rounded-2xl p-8 text-center transition-all cursor-pointer border-2 border-dashed",
-                        isDragging ? "border-[#FF6B1A]/60 bg-[#FF6B1A]/[0.04]" : "border-white/[0.07] hover:border-white/[0.14] hover:bg-white/[0.02]"
-                      )}
+                      className="rounded-2xl p-8 text-center transition-all cursor-pointer border-2 border-dashed"
+                      style={{
+                        borderColor: isDragging ? "rgba(255,107,26,0.6)" : T.border,
+                        background: isDragging ? "rgba(255,107,26,0.04)" : T.surface2,
+                      }}
                     >
                       <input id="img-upload" type="file" accept="image/*" multiple className="hidden"
                         onChange={(e) => {
@@ -570,9 +642,9 @@ export default function CreateListingPage() {
                           set("images", [...form.images, ...files].slice(0, 5))
                         }}
                       />
-                      <Upload className="h-6 w-6 text-zinc-600 mx-auto mb-3" />
-                      <p className="text-sm text-zinc-400 font-medium">Drag & drop images here</p>
-                      <p className="text-xs text-zinc-600 mt-1">or click to browse</p>
+                      <Upload className="h-6 w-6 mx-auto mb-3" style={{ color: T.subtle }} />
+                      <p className="text-sm font-medium" style={{ color: T.muted }}>Drag & drop images here</p>
+                      <p className="text-xs mt-1" style={{ color: T.subtle }}>or click to browse</p>
                     </div>
                     {form.images.length > 0 && (
                       <div className="flex gap-3 mt-3 flex-wrap">
@@ -581,10 +653,12 @@ export default function CreateListingPage() {
                             <img
                               src={URL.createObjectURL(img)} alt=""
                               className="w-20 h-20 object-cover rounded-xl"
-                              style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+                              style={{ border: `var(--border-width) solid ${T.border}` }}
                             />
-                            <button onClick={() => removeImage(idx)}
-                              className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              onClick={() => removeImage(idx)}
+                              className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
                               <X className="h-3 w-3 text-white" />
                             </button>
                           </div>
@@ -595,18 +669,19 @@ export default function CreateListingPage() {
 
                   {form.type === "ONLINE" && (
                     <div>
-                      <label className="text-xs font-medium text-zinc-400 mb-3 flex items-center gap-1.5">
-                        <FilePlus className="h-3.5 w-3.5" /> Resource File <span className="text-zinc-700 font-normal">(PDF, ZIP, MP4)</span>
+                      <label className="text-xs font-medium mb-3 flex items-center gap-1.5" style={{ color: T.muted }}>
+                        <FilePlus className="h-3.5 w-3.5" /> Resource File <span className="font-normal" style={{ color: T.subtle }}>(PDF, ZIP, MP4)</span>
                       </label>
                       <div
                         onDragOver={(e) => { e.preventDefault(); setIsDraggingFile(true) }}
                         onDragLeave={() => setIsDraggingFile(false)}
                         onDrop={(e) => handleDrop(e, "file")}
                         onClick={() => document.getElementById("file-upload")?.click()}
-                        className={cn(
-                          "rounded-2xl p-6 text-center transition-all cursor-pointer border-2 border-dashed",
-                          isDraggingFile ? "border-[#FF6B1A]/60 bg-[#FF6B1A]/[0.04]" : "border-white/[0.07] hover:border-white/[0.14]"
-                        )}
+                        className="rounded-2xl p-6 text-center transition-all cursor-pointer border-2 border-dashed"
+                        style={{
+                          borderColor: isDraggingFile ? "rgba(255,107,26,0.6)" : T.border,
+                          background: isDraggingFile ? "rgba(255,107,26,0.04)" : T.surface2,
+                        }}
                       >
                         <input id="file-upload" type="file" accept=".pdf,.zip,.mp4" className="hidden"
                           onChange={(e) => set("file", e.target.files?.[0] ?? null)}
@@ -614,15 +689,15 @@ export default function CreateListingPage() {
                         {form.file ? (
                           <div className="flex items-center justify-center gap-3">
                             <FileText className="h-5 w-5 text-[#FF6B1A]" />
-                            <span className="text-sm text-zinc-300 truncate max-w-[220px]">{form.file.name}</span>
+                            <span className="text-sm truncate max-w-[220px]" style={{ color: T.muted }}>{form.file.name}</span>
                             <button onClick={(e) => { e.stopPropagation(); set("file", null) }}>
-                              <X className="h-4 w-4 text-zinc-500 hover:text-red-400" />
+                              <X className="h-4 w-4" style={{ color: T.muted }} />
                             </button>
                           </div>
                         ) : (
                           <>
-                            <Upload className="h-6 w-6 text-zinc-600 mx-auto mb-2" />
-                            <p className="text-sm text-zinc-400">Drag & drop PDF, ZIP, or MP4</p>
+                            <Upload className="h-6 w-6 mx-auto mb-2" style={{ color: T.subtle }} />
+                            <p className="text-sm" style={{ color: T.muted }}>Drag & drop PDF, ZIP, or MP4</p>
                           </>
                         )}
                       </div>
@@ -631,14 +706,20 @@ export default function CreateListingPage() {
 
                   {form.type === "OFFLINE" && (
                     <div>
-                      <label className="text-xs font-medium text-zinc-400 mb-1 flex items-center gap-1.5">
+                      <label className="text-xs font-medium mb-1 flex items-center gap-1.5" style={{ color: T.muted }}>
                         <QrCode className="h-3.5 w-3.5" /> Payment QR Code
-                        <span className="text-zinc-700 font-normal">(optional)</span>
+                        <span className="font-normal" style={{ color: T.subtle }}>(optional)</span>
                       </label>
-                      <p className="text-xs text-zinc-700 mb-3">Buyers will see this after sending a request</p>
+                      <p className="text-xs mb-3" style={{ color: T.subtle }}>Buyers will see this after sending a request</p>
                       <div
-                        className="rounded-2xl p-6 text-center transition-all cursor-pointer border-2 border-dashed border-white/[0.07] hover:border-[#FF6B1A]/30"
+                        className="rounded-2xl p-6 text-center transition-all cursor-pointer border-2 border-dashed"
+                        style={{
+                          borderColor: T.border,
+                          background: T.surface2,
+                        }}
                         onClick={() => document.getElementById("qr-upload")?.click()}
+                        onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(255,107,26,0.35)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.borderColor = T.border)}
                       >
                         <input id="qr-upload" type="file" accept="image/*" className="hidden"
                           onChange={(e) => set("qrCode", e.target.files?.[0] ?? null)}
@@ -647,20 +728,22 @@ export default function CreateListingPage() {
                           <div className="flex items-center justify-center gap-4">
                             <img src={URL.createObjectURL(form.qrCode)} alt="QR Preview"
                               className="w-20 h-20 object-contain rounded-xl"
-                              style={{ border: "1px solid rgba(255,255,255,0.08)" }}
+                              style={{ border: `var(--border-width) solid ${T.border}` }}
                             />
                             <div className="text-left">
-                              <p className="text-sm text-zinc-300 font-medium truncate max-w-[140px]">{form.qrCode.name}</p>
-                              <button onClick={(e) => { e.stopPropagation(); set("qrCode", null) }}
-                                className="text-xs text-red-400 hover:text-red-300 mt-1">
+                              <p className="text-sm font-medium truncate max-w-[140px]" style={{ color: T.text }}>{form.qrCode.name}</p>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); set("qrCode", null) }}
+                                className="text-xs text-red-400 hover:text-red-300 mt-1"
+                              >
                                 Remove
                               </button>
                             </div>
                           </div>
                         ) : (
                           <>
-                            <QrCode className="h-6 w-6 text-zinc-600 mx-auto mb-2" />
-                            <p className="text-sm text-zinc-400">Upload your UPI / payment QR image</p>
+                            <QrCode className="h-6 w-6 mx-auto mb-2" style={{ color: T.subtle }} />
+                            <p className="text-sm" style={{ color: T.muted }}>Upload your UPI / payment QR image</p>
                           </>
                         )}
                       </div>
@@ -675,39 +758,53 @@ export default function CreateListingPage() {
                   initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -32 }}
                   transition={{ duration: 0.28 }} className="space-y-4">
 
-                  <div className="rounded-2xl overflow-hidden"
-                    style={{ border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)" }}>
+                  <div
+                    className="rounded-2xl overflow-hidden"
+                    style={{ border: `var(--border-width) solid ${T.border}`, background: T.surface2 }}
+                  >
                     {form.images[0] ? (
                       <img src={URL.createObjectURL(form.images[0])} alt="preview" className="w-full h-48 object-cover" />
                     ) : (
-                      <div className="w-full h-32 flex items-center justify-center" style={{ background: "rgba(255,107,26,0.05)" }}>
-                        {form.type === "OFFLINE" ? <Package className="h-10 w-10 text-zinc-700" /> : <FileText className="h-10 w-10 text-zinc-700" />}
+                      <div className="w-full h-32 flex items-center justify-center" style={{ background: T.surface3 }}>
+                        {form.type === "OFFLINE"
+                          ? <Package className="h-10 w-10" style={{ color: T.subtle }} />
+                          : <FileText className="h-10 w-10" style={{ color: T.subtle }} />}
                       </div>
                     )}
                     <div className="p-5 space-y-3">
                       <div className="flex gap-2 flex-wrap">
-                        <span className={cn(
-                          "text-[10px] font-semibold px-2.5 py-1 rounded-full border",
-                          form.type === "ONLINE"
-                            ? "bg-[#FF6B1A]/15 text-[#FF6B1A] border-[#FF6B1A]/20"
-                            : "bg-amber-500/15 text-amber-400 border-amber-500/20"
-                        )}>{form.type}</span>
+                        <span
+                          className="text-[10px] font-semibold px-2.5 py-1 rounded-full border"
+                          style={{
+                            background: form.type === "ONLINE" ? "rgba(255,107,26,0.15)" : "rgba(245,158,11,0.15)",
+                            color: form.type === "ONLINE" ? "#FF6B1A" : "#f59e0b",
+                            borderColor: form.type === "ONLINE" ? "rgba(255,107,26,0.25)" : "rgba(245,158,11,0.25)",
+                          }}
+                        >{form.type}</span>
                         {form.category && (
-                          <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-white/[0.06] text-zinc-400 border border-white/[0.06]">
+                          <span
+                            className="text-[10px] font-semibold px-2.5 py-1 rounded-full border"
+                            style={{ background: T.surface3, color: T.muted, borderColor: T.border }}
+                          >
                             {form.category}
                           </span>
                         )}
                         {form.condition && form.type === "OFFLINE" && (
-                          <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-white/[0.06] text-zinc-400 border border-white/[0.06]">
+                          <span
+                            className="text-[10px] font-semibold px-2.5 py-1 rounded-full border"
+                            style={{ background: T.surface3, color: T.muted, borderColor: T.border }}
+                          >
                             {form.condition}
                           </span>
                         )}
                       </div>
-                      <h3 className="font-semibold text-white text-lg">{form.title}</h3>
-                      <p className="text-sm text-zinc-500 line-clamp-3">{form.description}</p>
-                      <div className="pt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs text-zinc-500"
-                        style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                        <span className="text-zinc-300 font-semibold text-sm">
+                      <h3 className="font-semibold text-lg" style={{ color: T.text }}>{form.title}</h3>
+                      <p className="text-sm line-clamp-3" style={{ color: T.muted }}>{form.description}</p>
+                      <div
+                        className="pt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs"
+                        style={{ borderTop: `var(--border-width) solid ${T.border}`, color: T.muted }}
+                      >
+                        <span className="font-semibold text-sm" style={{ color: T.text }}>
                           {form.isFree ? "Free" : form.price ? `₹${form.price}` : "—"}
                         </span>
                         {form.subject && <span>{form.subject}</span>}
@@ -720,9 +817,11 @@ export default function CreateListingPage() {
                   </div>
 
                   {error && (
-                    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                       className="rounded-xl px-4 py-3"
-                      style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}>
+                      style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}
+                    >
                       <p className="text-xs text-red-400">{error}</p>
                     </motion.div>
                   )}
@@ -732,11 +831,16 @@ export default function CreateListingPage() {
             </AnimatePresence>
 
             {/* Footer nav */}
-            <div className="flex items-center justify-between mt-10 pt-6"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+            <div
+              className="flex items-center justify-between mt-10 pt-6"
+              style={{ borderTop: `var(--border-width) solid ${T.border}` }}
+            >
               <button
                 onClick={() => step > 1 ? setStep((s) => (s - 1) as Step) : navigate(-1)}
-                className="flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-zinc-300 transition-colors"
+                className="flex items-center gap-2 text-sm font-medium transition-colors"
+                style={{ color: T.muted }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = T.text)}
+                onMouseLeave={(e) => (e.currentTarget.style.color = T.muted)}
               >
                 <ChevronLeft className="h-4 w-4" />
                 {step > 1 ? "Back" : "Cancel"}
