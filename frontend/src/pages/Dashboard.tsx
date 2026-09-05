@@ -82,13 +82,15 @@ const T = {
   bg: "var(--bg)",
   surface: "var(--surface)",
   surface2: "var(--surface-2)",
-  border: "var(--border)",
-  text: "var(--text)",
+  border: "var(--border-strong)",
   muted: "var(--text-muted)",
   subtle: "var(--text-subtle)",
   primary: "var(--primary)",
   primaryDim: "var(--primary-dim)",
+  text: "var(--text)",
 }
+// Edgy border style — dark, sharp outline used across all cards/boxes
+const EDGE_BORDER = "1.5px solid rgba(0,0,0,0.75)"
 
 // ── Login Prompt Modal ────────────────────────────────────────────────────────
 function LoginPromptModal({ open, onClose, action }: { open: boolean; onClose: () => void; action: "buy" | "sell" }) {
@@ -108,8 +110,8 @@ function LoginPromptModal({ open, onClose, action }: { open: boolean; onClose: (
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 260, damping: 22 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-sm rounded-3xl p-8 text-center overflow-hidden"
-            style={{ background: T.surface, border: `1px solid ${T.border}` }}
+            className="relative w-full max-w-sm p-8 text-center overflow-hidden"
+            style={{ background: T.surface, border: EDGE_BORDER, borderRadius: 0 }}
           >
             <div className="absolute inset-0 pointer-events-none"
               style={{ background: "radial-gradient(ellipse at top, rgba(232,97,28,0.12) 0%, transparent 60%)" }} />
@@ -117,8 +119,8 @@ function LoginPromptModal({ open, onClose, action }: { open: boolean; onClose: (
               style={{ color: T.subtle }}>
               <X className="h-4 w-4" />
             </button>
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5"
-              style={{ background: "rgba(232,97,28,0.10)", border: "1px solid rgba(232,97,28,0.20)" }}>
+            <div className="w-14 h-14 flex items-center justify-center mx-auto mb-5"
+              style={{ background: "rgba(232,97,28,0.10)", border: EDGE_BORDER, borderRadius: 0 }}>
               <Lock className="h-6 w-6" style={{ color: T.primary }} />
             </div>
             <h3 className="text-xl font-bold mb-2" style={{ color: T.text }}>
@@ -194,8 +196,8 @@ function PurchaseModal({ item, open, onClose, isAuthenticated, onLoginPrompt }: 
             exit={{ opacity: 0, scale: 0.88, y: 32 }}
             transition={{ type: "spring", stiffness: 280, damping: 24 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-md rounded-3xl overflow-hidden"
-            style={{ background: T.surface, border: `1px solid ${T.border}` }}
+            className="relative w-full max-w-md overflow-hidden"
+            style={{ background: T.surface, border: EDGE_BORDER, borderRadius: 0 }}
           >
             {/* Ambient glow */}
             <div className="absolute inset-0 pointer-events-none"
@@ -272,7 +274,7 @@ function PurchaseModal({ item, open, onClose, isAuthenticated, onLoginPrompt }: 
 
                   {/* Seller chip */}
                   {item.seller && (
-                    <div className="flex items-center gap-2.5 mb-5 p-3 rounded-xl" style={{ background: T.surface2, border: `1px solid ${T.border}` }}>
+                    <div className="flex items-center gap-2.5 mb-5 p-3" style={{ background: T.surface2, border: EDGE_BORDER, borderRadius: 0 }}>
                       <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ background: "rgba(232,97,28,0.18)" }}>
                         <span className="text-sm font-bold" style={{ color: T.primary }}>
@@ -672,8 +674,8 @@ export default function Dashboard() {
           <div className="flex items-center gap-3">
             {/* Mobile hamburger */}
             <button
-              className="md:hidden h-9 w-9 rounded-xl flex items-center justify-center transition-all"
-              style={{ background: T.surface2, border: `1px solid ${T.border}`, color: T.muted }}
+              className="md:hidden h-9 w-9 flex items-center justify-center transition-all"
+              style={{ background: T.surface2, border: EDGE_BORDER, color: T.muted, borderRadius: 0 }}
               onClick={() => setMobileSidebarOpen((o) => !o)}
               aria-label="Toggle menu"
             >
@@ -693,8 +695,8 @@ export default function Dashboard() {
             <button
               id="dashboard-notif-bell"
               onClick={() => { setNotifPanelOpen((o) => !o); if (!notifPanelOpen) void handleMarkAllRead() }}
-              className="relative h-10 w-10 rounded-xl flex items-center justify-center transition-all"
-              style={{ background: notifPanelOpen ? "rgba(232,97,28,0.15)" : T.surface2, border: `1px solid ${notifPanelOpen ? "rgba(232,97,28,0.35)" : T.border}`, color: notifPanelOpen ? T.primary : T.muted }}
+              className="relative h-10 w-10 flex items-center justify-center transition-all"
+              style={{ background: notifPanelOpen ? "rgba(232,97,28,0.15)" : T.surface2, border: notifPanelOpen ? "1.5px solid rgba(232,97,28,0.70)" : EDGE_BORDER, color: notifPanelOpen ? T.primary : T.muted, borderRadius: 0 }}
             >
               <Bell className="h-4 w-4" />
               {inboxUnread > 0 && (
@@ -710,8 +712,8 @@ export default function Dashboard() {
             {/* User profile icon */}
             <button
               onClick={() => isAuthenticated ? navigate("/account") : navigate("/login")}
-              className="h-10 w-10 rounded-xl flex items-center justify-center transition-all"
-              style={{ background: T.surface2, border: `1px solid ${T.border}`, color: T.muted }}
+              className="h-10 w-10 flex items-center justify-center transition-all"
+              style={{ background: T.surface2, border: EDGE_BORDER, color: T.muted, borderRadius: 0 }}
               title="Profile"
             >
               <User className="h-4 w-4" />
@@ -779,8 +781,8 @@ export default function Dashboard() {
               <div className="flex items-center justify-between px-5 py-4 flex-shrink-0"
                 style={{ borderBottom: `1px solid ${T.border}` }}>
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-                    style={{ background: "rgba(232,97,28,0.12)", border: "1px solid rgba(232,97,28,0.20)" }}>
+                  <div className="w-9 h-9 flex items-center justify-center"
+                    style={{ background: "rgba(232,97,28,0.12)", border: "1.5px solid rgba(232,97,28,0.55)", borderRadius: 0 }}>
                     <Bell className="h-4 w-4" style={{ color: T.primary }} />
                   </div>
                   <div>
@@ -791,14 +793,14 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   {notifications.some((n) => !n.isRead) && (
                     <button onClick={() => void handleMarkAllRead()}
-                      className="text-xs flex items-center gap-1 px-2.5 py-1.5 rounded-lg transition-all"
-                      style={{ color: T.muted, background: T.surface2 }}>
+                      className="text-xs flex items-center gap-1 px-2.5 py-1.5 transition-all"
+                      style={{ color: T.muted, background: T.surface2, borderRadius: 0 }}>
                       <CheckCheck className="h-3 w-3" /> All read
                     </button>
                   )}
                   <button onClick={() => setNotifPanelOpen(false)}
-                    className="h-8 w-8 rounded-xl flex items-center justify-center transition-all"
-                    style={{ background: T.surface2, color: T.muted }}>
+                    className="h-8 w-8 flex items-center justify-center transition-all"
+                    style={{ background: T.surface2, color: T.muted, borderRadius: 0 }}>
                     <X className="h-4 w-4" />
                   </button>
                 </div>
@@ -831,10 +833,11 @@ export default function Dashboard() {
                           key={notif.id}
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="rounded-2xl overflow-hidden"
+                          className="overflow-hidden"
                           style={{
-                            background: notif.isRead ? T.surface : (isDark ? "rgba(232,97,28,0.05)" : "rgba(232,97,28,0.04)"),
-                            border: `1px solid ${notif.isRead ? T.border : "rgba(232,97,28,0.20)"}`,
+                            background: notif.isRead ? T.surface : (isDark ? "rgba(232,97,28,0.07)" : "rgba(232,97,28,0.06)"),
+                            border: notif.isRead ? EDGE_BORDER : "1.5px solid rgba(232,97,28,0.60)",
+                            borderRadius: 0,
                           }}
                         >
                           {/* Card header */}
@@ -864,10 +867,10 @@ export default function Dashboard() {
                           </div>
 
                           {/* Listing info */}
-                          <div className="mx-4 mb-3 rounded-xl px-3 py-2.5 flex items-center gap-3"
-                            style={{ background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)", border: `1px solid ${T.border}` }}>
-                            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                              style={{ background: "rgba(232,97,28,0.10)" }}>
+                          <div className="mx-4 mb-3 px-3 py-2.5 flex items-center gap-3"
+                            style={{ background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)", border: EDGE_BORDER, borderRadius: 0 }}>
+                            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0"
+                              style={{ background: "rgba(232,97,28,0.10)", borderRadius: 0 }}>
                               <Package className="h-3.5 w-3.5" style={{ color: T.primary }} />
                             </div>
                             <div className="flex-1 min-w-0">
@@ -878,11 +881,11 @@ export default function Dashboard() {
                               </p>
                             </div>
                             {/* Status badge */}
-                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border flex items-center gap-1 ${pr.status === "PENDING" ? "text-amber-400 bg-amber-400/10 border-amber-400/20" :
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 border flex items-center gap-1 ${pr.status === "PENDING" ? "text-amber-400 bg-amber-400/10 border-amber-400/20" :
                               pr.status === "ACCEPTED" ? "text-green-400 bg-green-400/10 border-green-400/20" :
                                 pr.status === "DECLINED" ? "text-red-400 bg-red-400/10 border-red-400/20" :
                                   "text-zinc-400 bg-zinc-400/10 border-zinc-400/20"
-                              }`}>
+                              }`} style={{ borderRadius: 0 }}>
                               {pr.status === "PENDING" && <Clock className="h-2.5 w-2.5" />}
                               {pr.status === "ACCEPTED" && <CheckCircle2 className="h-2.5 w-2.5" />}
                               {pr.status === "DECLINED" && <XCircle className="h-2.5 w-2.5" />}
@@ -893,16 +896,16 @@ export default function Dashboard() {
 
                           {/* Buyer note */}
                           {pr.note && (
-                            <div className="mx-4 mb-3 px-3 py-2 rounded-xl text-xs italic"
-                              style={{ background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)", color: T.muted, border: `1px solid ${T.border}` }}>
+                            <div className="mx-4 mb-3 px-3 py-2 text-xs italic"
+                              style={{ background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)", color: T.muted, border: EDGE_BORDER, borderRadius: 0 }}>
                               "{pr.note}"
                             </div>
                           )}
 
                           {/* Buyer contact info (for seller, when request received) */}
                           {isRequest && pr.buyer?.email && (
-                            <div className="mx-4 mb-3 px-3 py-2 rounded-xl flex items-center gap-2 text-xs"
-                              style={{ background: "rgba(232,97,28,0.06)", border: "1px solid rgba(232,97,28,0.15)" }}>
+                            <div className="mx-4 mb-3 px-3 py-2 flex items-center gap-2 text-xs"
+                              style={{ background: "rgba(232,97,28,0.06)", border: "1.5px solid rgba(232,97,28,0.45)", borderRadius: 0 }}>
                               <User className="h-3 w-3 flex-shrink-0" style={{ color: T.primary }} />
                               <span style={{ color: T.muted }}>Contact: </span>
                               <span className="font-medium truncate" style={{ color: T.text }}>{pr.buyer.email}</span>
@@ -915,8 +918,8 @@ export default function Dashboard() {
                               <button
                                 onClick={() => void handleNotifAction(pr.id, "ACCEPTED")}
                                 disabled={notifActionLoading !== null}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all"
-                                style={{ background: "rgba(34,197,94,0.15)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.25)" }}
+                                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all"
+                                style={{ background: "rgba(34,197,94,0.15)", color: "#22c55e", border: "1.5px solid rgba(34,197,94,0.60)", borderRadius: 0 }}
                               >
                                 {notifActionLoading === pr.id + "ACCEPTED"
                                   ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -926,8 +929,8 @@ export default function Dashboard() {
                               <button
                                 onClick={() => void handleNotifAction(pr.id, "DECLINED")}
                                 disabled={notifActionLoading !== null}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all"
-                                style={{ background: "rgba(239,68,68,0.10)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.20)" }}
+                                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all"
+                                style={{ background: "rgba(239,68,68,0.10)", color: "#ef4444", border: "1.5px solid rgba(239,68,68,0.55)", borderRadius: 0 }}
                               >
                                 {notifActionLoading === pr.id + "DECLINED"
                                   ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -944,11 +947,11 @@ export default function Dashboard() {
               </div>
 
               {/* Footer link to full inbox */}
-              <div className="px-5 py-4 flex-shrink-0" style={{ borderTop: `1px solid ${T.border}` }}>
+              <div className="px-5 py-4 flex-shrink-0" style={{ borderTop: EDGE_BORDER }}>
                 <button
                   onClick={() => { setNotifPanelOpen(false); navigate("/inbox") }}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all"
-                  style={{ background: T.surface2, color: T.muted, border: `1px solid ${T.border}` }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-all"
+                  style={{ background: T.surface2, color: T.muted, border: EDGE_BORDER, borderRadius: 0 }}
                 >
                   <Inbox className="h-4 w-4" /> View Full Inbox
                 </button>
@@ -987,8 +990,8 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
       </div>
 
       {!isAuthenticated ? (
-        <div className="relative rounded-2xl p-8 overflow-hidden"
-          style={{ border: "1px solid rgba(232,97,28,0.20)", background: "rgba(232,97,28,0.04)" }}>
+        <div className="relative p-8 overflow-hidden"
+          style={{ border: "2px solid rgba(232,97,28,0.70)", background: "rgba(232,97,28,0.04)", borderRadius: 0 }}>
           <div className="absolute inset-0 pointer-events-none"
             style={{ background: "radial-gradient(ellipse at top left, rgba(232,97,28,0.08) 0%, transparent 60%)" }} />
           <div className="flex items-center justify-between flex-wrap gap-6">
@@ -998,8 +1001,8 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
               <p className="text-sm max-w-md" style={{ color: T.muted }}>Log in to buy items, list your own, message sellers, and access the full marketplace.</p>
             </div>
             <div className="flex gap-3">
-              <Button onClick={() => { window.location.href = "/login" }} className="text-sm font-mono uppercase tracking-widest">Log In <ArrowRight className="ml-2 h-4 w-4" /></Button>
-              <Button variant="outline" onClick={() => { window.location.href = "/login?tab=register" }} className="text-sm font-mono uppercase tracking-widest">Sign Up</Button>
+              <Button onClick={() => { window.location.href = "/login" }} className="text-sm font-mono uppercase tracking-widest" style={{ borderRadius: 0 }}>Log In <ArrowRight className="ml-2 h-4 w-4" /></Button>
+              <Button variant="outline" onClick={() => { window.location.href = "/login?tab=register" }} className="text-sm font-mono uppercase tracking-widest" style={{ borderRadius: 0 }}>Sign Up</Button>
             </div>
           </div>
         </div>
@@ -1010,9 +1013,9 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
             { label: "Total Earned", value: `₹${stats.earned.toLocaleString("en-IN")}`, icon: TrendingUp, colorStyle: { color: T.text }, bgStyle: { background: T.surface2 } },
             { label: "Reputation", value: stats.reputation > 0 ? `${stats.reputation}/5` : "—", icon: Star, colorStyle: { color: "#f59e0b" }, bgStyle: { background: "rgba(245,158,11,0.12)" } },
           ].map((s) => (
-            <div key={s.label} className="rounded-2xl p-5 flex items-center gap-4"
-              style={{ border: `1px solid ${T.border}`, background: T.surface }}>
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={s.bgStyle}>
+            <div key={s.label} className="p-5 flex items-center gap-4"
+              style={{ border: EDGE_BORDER, background: T.surface, borderRadius: 0 }}>
+              <div className="w-11 h-11 flex items-center justify-center" style={{ ...s.bgStyle, borderRadius: 0 }}>
                 <s.icon className="h-5 w-5" style={s.colorStyle} />
               </div>
               <div>
@@ -1028,22 +1031,22 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
       <div>
         <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: T.subtle }}>Quick Actions</p>
         <div className="grid grid-cols-2 gap-3">
-          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => onUpload("OFFLINE")}
-            className="flex items-center gap-3 p-5 rounded-xl transition-all text-left group"
-            style={{ border: "1.5px solid #111", background: "rgba(245,158,11,0.12)" }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: "rgba(245,158,11,0.30)" }}>
+          <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} onClick={() => onUpload("OFFLINE")}
+            className="flex items-center gap-3 p-5 transition-all text-left group"
+            style={{ border: EDGE_BORDER, background: "rgba(245,158,11,0.12)", borderRadius: 0 }}>
+            <div className="w-10 h-10 flex items-center justify-center flex-shrink-0"
+              style={{ background: "rgba(245,158,11,0.30)", borderRadius: 0 }}>
               <Package className="h-5 w-5 text-amber-400" />
             </div>
             <div>
               <p className="text-sm font-semibold" style={{ color: T.text }}>Upload Hardware</p>
             </div>
           </motion.button>
-          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => onUpload("ONLINE")}
-            className="flex items-center gap-3 p-5 rounded-xl transition-all text-left group"
-            style={{ border: "1.5px solid #111", background: "rgba(232,97,28,0.12)" }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: "rgba(232,97,28,0.30)" }}>
+          <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} onClick={() => onUpload("ONLINE")}
+            className="flex items-center gap-3 p-5 transition-all text-left group"
+            style={{ border: EDGE_BORDER, background: "rgba(232,97,28,0.12)", borderRadius: 0 }}>
+            <div className="w-10 h-10 flex items-center justify-center flex-shrink-0"
+              style={{ background: "rgba(232,97,28,0.30)", borderRadius: 0 }}>
               <Upload className="h-5 w-5" style={{ color: T.primary }} />
             </div>
             <div>
@@ -1064,10 +1067,10 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {MOCK_LISTINGS.slice(0, 4).map((item) => (
             <div key={item.id} onClick={onViewMarketplace}
-              className="flex items-center gap-3 p-3 rounded-xl transition-all cursor-pointer group"
-              style={{ border: `1px solid ${T.border}`, background: T.surface }}>
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: T.surface2 }}>
+              className="flex items-center gap-3 p-3 transition-all cursor-pointer group"
+              style={{ border: EDGE_BORDER, background: T.surface, borderRadius: 0 }}>
+              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0"
+                style={{ background: T.surface2, borderRadius: 0 }}>
                 {item.type === "ONLINE" ? <FileText className="h-4 w-4" style={{ color: T.primary }} /> : <Package className="h-4 w-4 text-amber-400" />}
               </div>
               <div className="flex-1 min-w-0">
@@ -1096,7 +1099,7 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
           ) : recentListings.length === 0 ? (
             <EmptyListings onUpload={onUpload} />
           ) : (
-            <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${T.border}` }}>
+            <div className="overflow-hidden" style={{ border: EDGE_BORDER, borderRadius: 0 }}>
               <table className="w-full text-sm">
                 <thead>
                   <tr style={{ borderBottom: `1px solid ${T.border}`, background: T.surface }}>
@@ -1114,7 +1117,7 @@ function OverviewSection({ user, isAuthenticated, stats, myListings, loadingList
                         style={{ borderBottom: idx < recentListings.length - 1 ? `1px solid ${T.border}` : "none" }}>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden" style={{ background: T.surface2 }}>
+                            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0 overflow-hidden" style={{ background: T.surface2, borderRadius: 0 }}>
                               {l.images?.[0] ? <img src={l.images[0]} alt="" className="w-full h-full object-cover" /> : l.type === "ONLINE" ? <FileText className="h-3.5 w-3.5" style={{ color: T.muted }} /> : <Package className="h-3.5 w-3.5" style={{ color: T.muted }} />}
                             </div>
                             <span className="text-sm font-medium line-clamp-1" style={{ color: T.text }}>{l.title}</span>
@@ -1214,10 +1217,11 @@ function MarketplaceSection({ onLoginPrompt: _onLoginPrompt, wishlist, onToggleW
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5" style={{ color: T.subtle }} />
         <input
           id="marketplace-search"
-          className="w-full rounded-2xl pl-12 pr-6 py-4 text-base font-medium focus:outline-none transition-all"
+          className="w-full pl-12 pr-6 py-4 text-base font-medium focus:outline-none transition-all"
           style={{
             background: T.surface,
-            border: `1.5px solid ${hasSearch ? "var(--primary)" : T.border}`,
+            border: hasSearch ? "2px solid var(--primary)" : EDGE_BORDER,
+            borderRadius: 0,
             color: T.text,
             boxShadow: hasSearch ? "0 0 0 3px rgba(232,97,28,0.12)" : "0 2px 16px rgba(0,0,0,0.10)",
           }}
@@ -1228,8 +1232,8 @@ function MarketplaceSection({ onLoginPrompt: _onLoginPrompt, wishlist, onToggleW
         {liveSearch && (
           <button
             onClick={() => { setLiveSearch(""); setSearch("") }}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center"
-            style={{ background: T.surface2 }}>
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center"
+            style={{ background: T.surface2, borderRadius: 0 }}>
             <X className="h-3.5 w-3.5" style={{ color: T.muted }} />
           </button>
         )}
@@ -1241,11 +1245,11 @@ function MarketplaceSection({ onLoginPrompt: _onLoginPrompt, wishlist, onToggleW
           <button
             key={cat}
             onClick={() => setCategory(cat)}
-            className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all"
+            className="text-xs font-semibold px-3 py-1.5 transition-all"
             style={
               category === cat
-                ? { background: "var(--primary)", color: "#fff" }
-                : { background: T.surface2, color: T.muted, border: `1px solid ${T.border}` }
+                ? { background: "var(--primary)", color: "#fff", borderRadius: 0, border: "1.5px solid rgba(0,0,0,0.75)" }
+                : { background: T.surface2, color: T.muted, border: EDGE_BORDER, borderRadius: 0 }
             }
           >
             {cat}
@@ -1262,7 +1266,7 @@ function MarketplaceSection({ onLoginPrompt: _onLoginPrompt, wishlist, onToggleW
           </motion.div>
         ) : listings.length === 0 ? (
           <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: T.surface, border: `1px solid ${T.border}` }}>
+            <div className="w-16 h-16 flex items-center justify-center mb-4" style={{ background: T.surface, border: EDGE_BORDER, borderRadius: 0 }}>
               <Search className="h-7 w-7" style={{ color: T.subtle }} />
             </div>
             <p className="text-lg font-bold" style={{ color: T.muted }}>No listings found</p>
@@ -1283,9 +1287,9 @@ function MarketplaceSection({ onLoginPrompt: _onLoginPrompt, wishlist, onToggleW
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.03, duration: 0.22 }}
-                whileHover={{ y: -5, scale: 1.02 }}
-                className="group rounded-2xl overflow-hidden cursor-pointer relative"
-                style={{ border: `1px solid ${T.border}`, background: T.surface }}
+                whileHover={{ y: -4, scale: 1.01 }}
+                className="group overflow-hidden cursor-pointer relative"
+                style={{ border: EDGE_BORDER, background: T.surface, borderRadius: 0 }}
                 onClick={() => navigate(`/listings/${item.id}`)}
               >
                 {/* Photo or placeholder */}
@@ -1379,10 +1383,10 @@ function WishlistSection({ wishlist, onToggleWishlist, }: {
       </div>
 
       {wishlisted.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center rounded-2xl"
-          style={{ border: `1px dashed ${T.border}` }}>
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-            style={{ background: T.surface2 }}>
+        <div className="flex flex-col items-center justify-center py-24 text-center"
+          style={{ border: `2px dashed rgba(0,0,0,0.50)`, borderRadius: 0 }}>
+          <div className="w-16 h-16 flex items-center justify-center mb-4"
+            style={{ background: T.surface2, borderRadius: 0 }}>
             <Heart className="h-7 w-7" style={{ color: T.subtle }} />
           </div>
           <p className="text-lg font-bold" style={{ color: T.muted }}>Your wishlist is empty</p>
@@ -1396,9 +1400,9 @@ function WishlistSection({ wishlist, onToggleWishlist, }: {
               <motion.div key={item.id}
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
-                whileHover={{ y: -5, scale: 1.02 }}
-                className="group rounded-2xl overflow-hidden relative cursor-pointer"
-                style={{ border: `1px solid ${T.border}`, background: T.surface }}>
+                whileHover={{ y: -4, scale: 1.01 }}
+                className="group overflow-hidden relative cursor-pointer"
+                style={{ border: EDGE_BORDER, background: T.surface, borderRadius: 0 }}>
                 <div className="relative overflow-hidden" style={{ height: "160px" }}>
                   <img src={imgSrc} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 50%)" }} />
@@ -1442,10 +1446,10 @@ function ListingsSection({ listings, loading, isAuthenticated, onUpload, onViewD
     return (
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="p-8 max-w-5xl">
         <h2 className="text-2xl font-bold mb-6" style={{ color: T.text }}>My Listings</h2>
-        <div className="flex flex-col items-center justify-center py-20 text-center rounded-xl"
-          style={{ border: `1px dashed ${T.border}` }}>
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-            style={{ background: T.surface2, border: `1px solid ${T.border}` }}>
+        <div className="flex flex-col items-center justify-center py-20 text-center"
+          style={{ border: `2px dashed rgba(0,0,0,0.50)`, borderRadius: 0 }}>
+          <div className="w-14 h-14 flex items-center justify-center mb-4"
+            style={{ background: T.surface2, border: EDGE_BORDER, borderRadius: 0 }}>
             <Lock className="h-6 w-6" style={{ color: T.subtle }} />
           </div>
           <p className="text-base font-semibold" style={{ color: T.muted }}>Login to manage your listings</p>
@@ -1468,8 +1472,8 @@ function ListingsSection({ listings, loading, isAuthenticated, onUpload, onViewD
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: T.subtle }} />
         <input
-          className="w-full rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none transition-all"
-          style={{ background: T.surface, border: `1px solid ${T.border}`, color: T.text }}
+          className="w-full pl-9 pr-4 py-2.5 text-sm focus:outline-none transition-all"
+          style={{ background: T.surface, border: EDGE_BORDER, color: T.text, borderRadius: 0 }}
           placeholder="Search your listings…" value={search} onChange={(e) => setSearch(e.target.value)}
         />
       </div>
@@ -1478,7 +1482,7 @@ function ListingsSection({ listings, loading, isAuthenticated, onUpload, onViewD
       ) : filtered.length === 0 ? (
         <EmptyListings onUpload={onUpload} />
       ) : (
-        <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${T.border}` }}>
+        <div className="overflow-hidden" style={{ border: EDGE_BORDER, borderRadius: 0 }}>
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: `1px solid ${T.border}`, background: T.surface }}>
@@ -1496,8 +1500,8 @@ function ListingsSection({ listings, loading, isAuthenticated, onUpload, onViewD
                     style={{ borderBottom: idx < filtered.length - 1 ? `1px solid ${T.border}` : "none" }}>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
-                          style={{ background: T.surface2 }}>
+                        <div className="w-9 h-9 flex items-center justify-center flex-shrink-0 overflow-hidden"
+                          style={{ background: T.surface2, borderRadius: 0 }}>
                           {l.images?.[0] ? <img src={l.images[0]} alt="" className="w-full h-full object-cover" /> : l.type === "ONLINE" ? <FileText className="h-4 w-4" style={{ color: T.muted }} /> : <Package className="h-4 w-4" style={{ color: T.muted }} />}
                         </div>
                         <div>
@@ -1540,8 +1544,8 @@ function MessagesSection({ isAuthenticated, onLogin }: { isAuthenticated: boolea
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="p-8 max-w-5xl">
       <h2 className="text-2xl font-bold mb-6" style={{ color: T.text }}>Messages</h2>
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-          style={{ background: T.surface2, border: `1px solid ${T.border}` }}>
+        <div className="w-14 h-14 flex items-center justify-center mb-4"
+          style={{ background: T.surface2, border: EDGE_BORDER, borderRadius: 0 }}>
           {isAuthenticated ? <MessageSquare className="h-6 w-6" style={{ color: T.subtle }} /> : <Lock className="h-6 w-6" style={{ color: T.subtle }} />}
         </div>
         <p className="text-base font-semibold" style={{ color: T.muted }}>{isAuthenticated ? "No messages yet" : "Login to view messages"}</p>
@@ -1557,10 +1561,10 @@ function MessagesSection({ isAuthenticated, onLogin }: { isAuthenticated: boolea
 // ── Empty state ────────────────────────────────────────────────────────────
 function EmptyListings({ onUpload }: { onUpload: (type?: "ONLINE" | "OFFLINE") => void }) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-center rounded-xl"
-      style={{ border: `1px dashed ${T.border}` }}>
-      <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-        style={{ background: T.surface2, border: `1px solid ${T.border}` }}>
+    <div className="flex flex-col items-center justify-center py-16 text-center"
+      style={{ border: `2px dashed rgba(0,0,0,0.50)`, borderRadius: 0 }}>
+      <div className="w-12 h-12 flex items-center justify-center mb-3"
+        style={{ background: T.surface2, border: EDGE_BORDER, borderRadius: 0 }}>
         <PackagePlus className="h-5 w-5" style={{ color: T.subtle }} />
       </div>
       <p className="text-base font-semibold" style={{ color: T.muted }}>No listings yet</p>
