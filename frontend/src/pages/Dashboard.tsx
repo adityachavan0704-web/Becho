@@ -472,7 +472,7 @@ export default function Dashboard() {
   }
 
   // Sidebar active style helpers
-  const navActive = { background: "rgba(232,97,28,0.12)", color: "#FFFFFF" }
+  const navActive = { background: "rgba(232,97,28,0.12)", color: T.text }
   const navInactive = { color: T.muted }
 
   // Sidebar content — shared between desktop and mobile
@@ -709,7 +709,7 @@ export default function Dashboard() {
             </Button>
             {/* User profile icon */}
             <button
-              onClick={() => isAuthenticated ? navigate("/profile") : navigate("/login")}
+              onClick={() => isAuthenticated ? navigate("/account") : navigate("/login")}
               className="h-10 w-10 rounded-xl flex items-center justify-center transition-all"
               style={{ background: T.surface2, border: `1px solid ${T.border}`, color: T.muted }}
               title="Profile"

@@ -5,10 +5,11 @@ import { useParams, useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ArrowLeft, Package, MapPin, MessageSquare, CheckCircle2,
-  Loader2, AlertCircle, ShoppingBag, User, Tag, Star, Zap, Send, QrCode
+  Loader2, AlertCircle, ShoppingBag, User, Tag, Star, Send, QrCode
 } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
 import { apiFetch, ApiRequestError } from "../lib/api"
+import BechoLogo from "../components/BechoLogo"
 
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
 
@@ -107,12 +108,7 @@ export default function PurchasePage() {
     <div className="min-h-screen bg-[#080808]">
       {/* Nav */}
       <nav className="sticky top-0 z-40 bg-[#080808]/90 backdrop-blur border-b border-white/[0.05] px-6 py-3.5 flex items-center gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#FF6B1A] flex items-center justify-center">
-            <Zap className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-base font-bold text-white tracking-tight">Becho</span>
-        </div>
+        <BechoLogo size={28} showWordmark={true} wordmarkColor="white" />
         <div className="h-4 w-px bg-zinc-800 mx-2" />
         <button
           onClick={() => navigate(-1)}

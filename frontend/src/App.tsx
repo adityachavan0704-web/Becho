@@ -13,6 +13,7 @@ import Chat from "./pages/Chat"
 import PurchasePage from "./pages/PurchasePage"
 import InboxPage from "./pages/Inbox"
 import CreateListingPage from "./pages/CreateListingPage"
+import AccountPage from "./pages/AccountPage"
 
 function App() {
   return (
@@ -39,6 +40,14 @@ function App() {
                 }
               />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route
+                path="/account"
+                element={
+                  <ProtectedRoute>
+                    <AccountPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/inbox"
                 element={

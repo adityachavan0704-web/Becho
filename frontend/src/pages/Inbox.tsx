@@ -5,9 +5,10 @@ import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Inbox as InboxIcon, ArrowLeft, Package, MessageSquare,
-  Loader2, CheckCircle2, XCircle, Clock, Zap, User,
+  Loader2, CheckCircle2, XCircle, Clock, User,
   ShoppingBag, ChevronRight, Bell, CheckCheck
 } from "lucide-react"
+import BechoLogo from "../components/BechoLogo"
 import { io } from "socket.io-client"
 import { useAuth } from "../contexts/AuthContext"
 import { useTheme } from "../contexts/ThemeContext"
@@ -160,12 +161,7 @@ export default function InboxPage() {
       {/* Nav */}
       <nav className="sticky top-0 z-40 backdrop-blur px-6 py-3.5 flex items-center gap-3"
         style={{ backgroundColor: isDark ? "rgba(8,8,8,0.92)" : "rgba(220,210,196,0.96)", borderBottom: "var(--border-width) solid var(--border)" }}>
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#FF6B1A] flex items-center justify-center">
-            <Zap className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-base font-bold tracking-tight" style={{ color: "var(--text)" }}>Becho</span>
-        </div>
+        <BechoLogo size={28} showWordmark={true} wordmarkColor={isDark ? "white" : undefined} />
         <div className="h-4 w-px mx-2" style={{ backgroundColor: "var(--border)" }} />
         <button
           onClick={() => navigate(-1)}
