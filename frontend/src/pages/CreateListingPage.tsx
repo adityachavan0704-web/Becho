@@ -4,17 +4,16 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Package, FileText, Upload, ChevronRight, ChevronLeft,
   Check, Loader2, ImagePlus, FilePlus, Tag, Info, QrCode,
-  DollarSign, X, ArrowLeft
+  X, ArrowLeft
 } from "lucide-react"
 import { useAuth } from "../contexts/AuthContext"
 import { useTheme } from "../contexts/ThemeContext"
-import { cn } from "../lib/utils"
 import BechoLogo from "../components/BechoLogo"
 
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
 
-const CATEGORIES_ONLINE = ["Notes", "Books", "Software", "Tutorials", "Mock Tests", "Projects"]
-const CATEGORIES_OFFLINE = ["Books", "Hardware", "Cycles", "Equipment", "Lab Tools", "Furniture"]
+const CATEGORIES_ONLINE = ["Notes", "Books", "Software", "Tutorials", "Mock Tests", "Projects", "Other"]
+const CATEGORIES_OFFLINE = ["Books", "Hardware", "Cycles", "Other", "Lab Tools", "Furniture"]
 
 type Step = 1 | 2 | 3 | 4
 
@@ -42,19 +41,19 @@ const STEPS = [
 
 // ── Theme-aware style helpers ──────────────────────────────────────────────────
 const T = {
-  bg:         "var(--bg)",
-  bgSubtle:   "var(--bg-subtle)",
-  surface:    "var(--surface)",
-  surface2:   "var(--surface-2)",
-  surface3:   "var(--surface-3)",
-  border:     "var(--border)",
+  bg: "var(--bg)",
+  bgSubtle: "var(--bg-subtle)",
+  surface: "var(--surface)",
+  surface2: "var(--surface-2)",
+  surface3: "var(--surface-3)",
+  border: "var(--border)",
   borderStrong: "var(--border-strong)",
-  text:       "var(--text)",
-  muted:      "var(--text-muted)",
-  subtle:     "var(--text-subtle)",
-  primary:    "var(--primary)",
+  text: "var(--text)",
+  muted: "var(--text-muted)",
+  subtle: "var(--text-subtle)",
+  primary: "var(--primary)",
   primaryDim: "var(--primary-dim)",
-  primaryGlow:"var(--primary-glow)",
+  primaryGlow: "var(--primary-glow)",
 }
 
 export default function CreateListingPage() {
@@ -230,7 +229,7 @@ export default function CreateListingPage() {
           style={{ background: "radial-gradient(circle, rgba(245,158,11,0.04) 0%, transparent 70%)", transform: "translate(30%,30%)" }} />
 
         {/* Back */}
-        <div className="px-8 pt-8">
+        <div className="px-5 pt-8">
           <button
             onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-sm transition-colors group"
@@ -244,12 +243,12 @@ export default function CreateListingPage() {
         </div>
 
         {/* Logo */}
-        <div className="px-8 pt-6 pb-2">
+        <div className="px-5 pt-6 pb-2">
           <BechoLogo size={32} showWordmark />
         </div>
 
         {/* Heading */}
-        <div className="px-8 pt-6 pb-8">
+        <div className="px-5 pt-6 pb-8">
           <h1 className="text-2xl font-bold mb-1" style={{ color: T.text }}>Create a Listing</h1>
           <p className="text-sm" style={{ color: T.muted }}>
             {form.type === "ONLINE" ? "Online / Digital resource" : "Hardware / Physical item"}
@@ -257,30 +256,25 @@ export default function CreateListingPage() {
         </div>
 
         {/* Vertical stepper */}
-        <div className="px-8 flex-1">
-          <div className="relative">
-            <div className="absolute left-[18px] top-6 bottom-6 w-px" style={{ background: T.border }} />
-            <motion.div
-              className="absolute left-[18px] top-6 w-px origin-top"
-              style={{ background: "linear-gradient(to bottom, #FF6B1A, #f59e0b)" }}
-              animate={{ height: `${((step - 1) / (STEPS.length - 1)) * 100}%` }}
-              transition={{ type: "spring", stiffness: 200, damping: 28 }}
-            />
-            <div className="space-y-8">
-              {STEPS.map((s, i) => {
-                const num = (i + 1) as Step
-                const active = step === num
-                const done = step > num
-                return (
-                  <div key={s.label} className="relative flex items-start gap-4">
+        <div className="px-5 flex-1">
+          <div className="space-y-0">
+            {STEPS.map((s, i) => {
+              const num = (i + 1) as Step
+              const active = step === num
+              const done = step > num
+              const isLast = i === STEPS.length - 1
+              return (
+                <div key={s.label} className="flex items-start gap-1.5">
+                  {/* Circle + connector column */}
+                  <div className="flex flex-col items-center flex-shrink-0">
                     <motion.div
                       className="relative z-10 w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
                       animate={{
                         background: done
                           ? "rgba(255,107,26,0.20)"
                           : active
-                          ? "rgba(255,107,26,0.14)"
-                          : isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.05)",
+                            ? "rgba(255,107,26,0.14)"
+                            : isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.05)",
                         borderColor: done || active
                           ? "rgba(255,107,26,0.5)"
                           : isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.15)",
@@ -302,24 +296,38 @@ export default function CreateListingPage() {
                         )}
                       </AnimatePresence>
                     </motion.div>
-                    <div className="pt-1.5">
-                      <p
-                        className="text-sm font-semibold transition-colors"
-                        style={{ color: active ? T.text : done ? T.muted : T.subtle }}
-                      >
-                        {s.label}
-                      </p>
-                      <p
-                        className="text-xs mt-0.5 transition-colors"
-                        style={{ color: active ? T.muted : T.subtle }}
-                      >
-                        {s.desc}
-                      </p>
-                    </div>
+                    {/* Segment connector to next step */}
+                    {!isLast && (
+                      <motion.div
+                        className="w-px my-1"
+                        style={{ minHeight: "32px", flex: 1 }}
+                        animate={{
+                          background: done
+                            ? "linear-gradient(to bottom, rgba(255,107,26,0.7), rgba(255,107,26,0.3))"
+                            : T.border,
+                        }}
+                        transition={{ duration: 0.4 }}
+                      />
+                    )}
                   </div>
-                )
-              })}
-            </div>
+                  {/* Label text */}
+                  <div className="pt-1.5 pb-7">
+                    <p
+                      className="text-sm font-semibold transition-colors"
+                      style={{ color: active ? T.text : done ? T.muted : T.subtle }}
+                    >
+                      {s.label}
+                    </p>
+                    <p
+                      className="text-xs mt-0.5 transition-colors"
+                      style={{ color: active ? T.muted : T.subtle }}
+                    >
+                      {s.desc}
+                    </p>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
 
@@ -328,7 +336,7 @@ export default function CreateListingPage() {
           {step >= 2 && form.title && (
             <motion.div
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
-              className="mx-8 mb-8 rounded-2xl overflow-hidden"
+              className="mx-5 mb-8 rounded-2xl overflow-hidden"
               style={{ border: `var(--border-width) solid ${T.border}`, background: T.surface2 }}
             >
               {form.images[0] ? (
@@ -527,35 +535,44 @@ export default function CreateListingPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs font-medium mb-2 block" style={{ color: T.muted }}>
-                        Subject <span className="font-normal" style={{ color: T.subtle }}>(optional)</span>
-                      </label>
-                      <input
-                        className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
-                        style={inputStyle}
-                        onFocus={inputFocus}
-                        onBlur={inputBlur}
-                        placeholder="e.g. Physics"
-                        value={form.subject} onChange={(e) => set("subject", e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium mb-2 block" style={{ color: T.muted }}>
-                        Semester <span className="font-normal" style={{ color: T.subtle }}>(optional)</span>
-                      </label>
-                      <input
-                        type="number" min="1" max="8"
-                        className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
-                        style={inputStyle}
-                        onFocus={inputFocus}
-                        onBlur={inputBlur}
-                        placeholder="1 – 8"
-                        value={form.semester} onChange={(e) => set("semester", e.target.value)}
-                      />
-                    </div>
-                  </div>
+                  {form.category && (
+                    <motion.div
+                      key="subject-semester"
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.22 }}
+                      className="grid grid-cols-2 gap-4"
+                    >
+                      <div>
+                        <label className="text-xs font-medium mb-2 block" style={{ color: T.muted }}>
+                          Subject <span className="font-normal" style={{ color: T.subtle }}>(optional)</span>
+                        </label>
+                        <input
+                          className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                          style={inputStyle}
+                          onFocus={inputFocus}
+                          onBlur={inputBlur}
+                          placeholder="e.g. Physics"
+                          value={form.subject} onChange={(e) => set("subject", e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium mb-2 block" style={{ color: T.muted }}>
+                          Semester <span className="font-normal" style={{ color: T.subtle }}>(optional)</span>
+                        </label>
+                        <input
+                          type="number" min="1" max="8"
+                          className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                          style={inputStyle}
+                          onFocus={inputFocus}
+                          onBlur={inputBlur}
+                          placeholder="1 – 8"
+                          value={form.semester} onChange={(e) => set("semester", e.target.value)}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
@@ -576,7 +593,7 @@ export default function CreateListingPage() {
                     </div>
                     {!form.isFree && (
                       <div className="relative">
-                        <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: T.muted }} />
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-medium" style={{ color: T.muted }}>₹</span>
                         <input
                           type="number" min="0"
                           className="w-full rounded-xl pl-9 pr-4 py-3 text-sm outline-none transition-all"

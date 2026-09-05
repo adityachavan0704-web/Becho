@@ -472,7 +472,7 @@ export default function Dashboard() {
   }
 
   // Sidebar active style helpers
-  const navActive = { background: "rgba(232,97,28,0.12)", color: T.primary }
+  const navActive = { background: "rgba(232,97,28,0.12)", color: "#FFFFFF" }
   const navInactive = { color: T.muted }
 
   // Sidebar content — shared between desktop and mobile
@@ -497,19 +497,7 @@ export default function Dashboard() {
             }}
           >
             <item.icon className="h-4 w-4 flex-shrink-0" />
-            {!compact && (
-              <>
-                {item.label}
-                {item.id === "messages" && (
-                  <span className="ml-auto text-[10px] font-bold rounded-full px-1.5 py-0.5"
-                    style={{ background: "rgba(232,97,28,0.15)", color: T.primary }}>2</span>
-                )}
-              </>
-            )}
-            {compact && item.id === "messages" && (
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full"
-                style={{ background: T.primary }} />
-            )}
+            {!compact && item.label}
           </button>
         ))}
 
@@ -583,35 +571,10 @@ export default function Dashboard() {
       <div className="p-3 flex-shrink-0" style={{ borderTop: `1px solid ${T.border}` }}>
         {isAuthenticated && user ? (
           <>
-            {!compact && (
-              <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1"
-                style={{ backgroundColor: T.surface2 }}>
-                <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ background: "rgba(232,97,28,0.20)" }}>
-                  <span className="text-sm font-bold" style={{ color: T.primary }}>
-                    {user?.name?.[0]?.toUpperCase() ?? "?"}
-                  </span>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold truncate" style={{ color: T.text }}>{user?.name ?? "—"}</p>
-                  <p className="text-xs truncate" style={{ color: T.subtle }}>{user?.email ?? ""}</p>
-                </div>
-              </div>
-            )}
-            {compact && (
-              <div className="flex items-center justify-center py-1 mb-1">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center"
-                  style={{ background: "rgba(232,97,28,0.20)" }}>
-                  <span className="text-sm font-bold" style={{ color: T.primary }}>
-                    {user?.name?.[0]?.toUpperCase() ?? "?"}
-                  </span>
-                </div>
-              </div>
-            )}
             <button onClick={handleLogout}
               title={compact ? "Sign Out" : undefined}
-              className="w-full flex items-center gap-2 rounded-xl text-sm text-red-400 hover:bg-red-400/5 transition-all"
-              style={{ padding: compact ? "8px" : "8px 12px", justifyContent: compact ? "center" : undefined }}>
+              className="w-full flex items-center gap-2 rounded-xl text-sm hover:bg-black/5 transition-all"
+              style={{ padding: compact ? "8px" : "8px 12px", justifyContent: compact ? "center" : undefined, color: "#000000" }}>
               <LogOut className="h-4 w-4" />
               {!compact && "Sign Out"}
             </button>
@@ -744,6 +707,15 @@ export default function Dashboard() {
             <Button size="sm" onClick={() => openUpload()}>
               <Plus className="h-4 w-4 mr-1.5" /> SELL
             </Button>
+            {/* User profile icon */}
+            <button
+              onClick={() => isAuthenticated ? navigate("/profile") : navigate("/login")}
+              className="h-10 w-10 rounded-xl flex items-center justify-center transition-all"
+              style={{ background: T.surface2, border: `1px solid ${T.border}`, color: T.muted }}
+              title="Profile"
+            >
+              <User className="h-4 w-4" />
+            </button>
           </div>
         </header>
 
