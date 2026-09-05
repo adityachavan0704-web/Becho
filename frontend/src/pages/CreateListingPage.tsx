@@ -318,12 +318,6 @@ export default function CreateListingPage() {
                     >
                       {s.label}
                     </p>
-                    <p
-                      className="text-xs mt-0.5 transition-colors"
-                      style={{ color: active ? T.muted : T.subtle }}
-                    >
-                      {s.desc}
-                    </p>
                   </div>
                 </div>
               )
@@ -420,11 +414,7 @@ export default function CreateListingPage() {
                 transition={{ duration: 0.25 }}
                 className="mb-8"
               >
-                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#FF6B1A" }}>
-                  Step {step} of {STEPS.length}
-                </p>
                 <h2 className="text-2xl font-bold" style={{ color: T.text }}>{STEPS[step - 1].label}</h2>
-                <p className="text-sm mt-1" style={{ color: T.muted }}>{STEPS[step - 1].desc}</p>
               </motion.div>
             </AnimatePresence>
 

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  Inbox as InboxIcon, ArrowLeft, Package, MessageSquare,
+  Inbox as InboxIcon, Package, MessageSquare,
   Loader2, CheckCircle2, XCircle, Clock, User,
   ShoppingBag, ChevronRight, Bell, CheckCheck
 } from "lucide-react"
@@ -64,10 +64,10 @@ interface SentRequest {
 }
 
 const statusConfig: Record<PRStatus, { label: string; color: string; icon: React.ReactNode }> = {
-  PENDING:   { label: "Pending",   color: "text-amber-400 bg-amber-400/10 border-amber-400/20",   icon: <Clock className="h-3 w-3" /> },
-  ACCEPTED:  { label: "Accepted",  color: "text-green-400 bg-green-400/10 border-green-400/20",   icon: <CheckCircle2 className="h-3 w-3" /> },
-  DECLINED:  { label: "Declined",  color: "text-red-400 bg-red-400/10 border-red-400/20",         icon: <XCircle className="h-3 w-3" /> },
-  COMPLETED: { label: "Completed", color: "text-zinc-400 bg-zinc-400/10 border-zinc-400/20",      icon: <CheckCheck className="h-3 w-3" /> },
+  PENDING: { label: "Pending", color: "text-amber-400 bg-amber-400/10 border-amber-400/20", icon: <Clock className="h-3 w-3" /> },
+  ACCEPTED: { label: "Accepted", color: "text-green-400 bg-green-400/10 border-green-400/20", icon: <CheckCircle2 className="h-3 w-3" /> },
+  DECLINED: { label: "Declined", color: "text-red-400 bg-red-400/10 border-red-400/20", icon: <XCircle className="h-3 w-3" /> },
+  COMPLETED: { label: "Completed", color: "text-zinc-400 bg-zinc-400/10 border-zinc-400/20", icon: <CheckCheck className="h-3 w-3" /> },
 }
 
 const notifTypeLabel: Record<NotifType, string> = {
@@ -162,17 +162,9 @@ export default function InboxPage() {
       <nav className="sticky top-0 z-40 backdrop-blur px-6 py-3.5 flex items-center gap-3"
         style={{ backgroundColor: isDark ? "rgba(8,8,8,0.92)" : "rgba(220,210,196,0.96)", borderBottom: "var(--border-width) solid var(--border)" }}>
         <BechoLogo size={28} showWordmark={true} wordmarkColor={isDark ? "white" : undefined} />
-        <div className="h-4 w-px mx-2" style={{ backgroundColor: "var(--border)" }} />
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-1.5 text-xs transition-colors"
-          style={{ color: "var(--text-muted)" }}
-        >
-          <ArrowLeft className="h-4 w-4" /> Back
-        </button>
       </nav>
 
-      <div className="max-w-2xl mx-auto px-4 py-10">
+      <div className="max-w-2xl mx-auto px-6 py-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
