@@ -35,14 +35,19 @@ export function ListingCard({ listing, className }: ListingCardProps) {
       : "bg-amber-500/15 text-amber-400 border-amber-500/20"
 
   const categoryColors: Record<string, string> = {
-    Notes: "bg-zinc-700/50 text-zinc-300",
-    Books: "bg-zinc-700/50 text-zinc-300",
-    Hardware: "bg-orange-500/15 text-orange-400",
-    Cycles: "bg-zinc-700/50 text-zinc-300",
-    Equipment: "bg-zinc-700/50 text-zinc-300",
-    Software: "bg-zinc-700/50 text-zinc-300",
+    Notes: "bg-blue-500/15 text-blue-400 border border-blue-500/20",
+    Books: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20",
+    Hardware: "bg-orange-500/15 text-orange-400 border border-orange-500/20",
+    Cycles: "bg-amber-500/15 text-amber-400 border border-amber-500/20",
+    Equipment: "bg-purple-500/15 text-purple-400 border border-purple-500/20",
+    Software: "bg-cyan-500/15 text-cyan-400 border border-cyan-500/20",
+    Tutorials: "bg-indigo-500/15 text-indigo-400 border border-indigo-500/20",
+    "Lab Tools": "bg-rose-500/15 text-rose-400 border border-rose-500/20",
+    Furniture: "bg-teal-500/15 text-teal-400 border border-teal-500/20",
+    "Mock Tests": "bg-yellow-500/15 text-yellow-400 border border-yellow-500/20",
+    Projects: "bg-pink-500/15 text-pink-400 border border-pink-500/20",
   }
-  const catColor = categoryColors[listing.category] ?? "bg-zinc-700/50 text-zinc-300"
+  const catColor = categoryColors[listing.category] ?? "bg-zinc-700/50 text-zinc-300 border border-zinc-600/30"
 
   return (
     <motion.div
