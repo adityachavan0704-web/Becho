@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "../components/ui/Button"
 import { Input } from "../components/ui/Input"
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom"
@@ -39,8 +39,13 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
 
   // If already logged in, redirect right away
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(redirectTo, { replace: true })
+    }
+  }, [isAuthenticated, navigate, redirectTo])
+
   if (isAuthenticated) {
-    navigate(redirectTo, { replace: true })
     return null
   }
 

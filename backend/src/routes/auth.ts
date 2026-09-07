@@ -2,7 +2,7 @@
 // Covers: register, login, refresh, logout, Google OAuth, /me
 
 import { Router } from "express";
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import passport from "passport";
@@ -238,10 +238,16 @@ router.get(
 // ─────────────────────────────────────────────
 router.get(
   "/google/callback",
-  passport.authenticate("google", {
-    session: false,
-    failureRedirect: `${FRONTEND_URL}/login?error=google_failed`,
-  }),
+  (req: Request, res: Response, next: NextFunction) => {
+    passport.authenticate("google", { session: false }, (err: Error | null, user: { id: string; email: string; role: string } | false) => {
+      if (err || !user) {
+        return res.redirect(`${FRONTEND_URL}/login?error=google_failed`);
+      }
+      // Attach user to request so the next handler can access it
+      req.user = user;
+      next();
+    })(req, res, next);
+  },
   async (req: Request, res: Response) => {
     try {
       const user = req.user as { id: string; email: string; role: string } | undefined;

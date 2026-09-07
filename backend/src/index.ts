@@ -13,6 +13,7 @@ import listingsRouter from "./routes/listings";
 import mentorshipRouter from "./routes/mentorship";
 import chatRouter, { setSocketIO } from "./routes/chat";
 import purchaseRouter, { setPurchaseSocketIO } from "./routes/purchase";
+import aiRouter from "./routes/ai";
 
 // ─── App setup ─────────────────────────────────────────────────
 const app = express();
@@ -76,6 +77,7 @@ app.use("/api/listings", listingsRouter);
 app.use("/api/mentorship", mentorshipRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/purchase", purchaseRouter);
+app.use("/api/ai", aiRouter);
 
 // ─── Health check ──────────────────────────────────────────────
 app.get("/health", (_req, res) => {

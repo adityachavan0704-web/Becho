@@ -9,6 +9,7 @@ import {
 import { useAuth } from "../contexts/AuthContext"
 import { useTheme } from "../contexts/ThemeContext"
 import BechoLogo from "../components/BechoLogo"
+import AiListingGenerator from "../components/AiListingGenerator"
 
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
 
@@ -479,6 +480,16 @@ export default function CreateListingPage() {
                 <motion.div key="step2"
                   initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -32 }}
                   transition={{ duration: 0.28 }} className="space-y-5">
+
+                  {/* AI Generate button */}
+                  <AiListingGenerator
+                    currentCondition={form.condition}
+                    onApply={(data) => {
+                      set("title", data.title)
+                      set("description", data.description)
+                      if (data.category) set("category", data.category)
+                    }}
+                  />
 
                   <div>
                     <label className="text-xs font-medium mb-2 block" style={{ color: T.muted }}>Title *</label>

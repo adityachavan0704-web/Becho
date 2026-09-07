@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import { AuthProvider } from "./contexts/AuthContext"
 import { ThemeProvider } from "./contexts/ThemeContext"
 import ProtectedRoute from "./components/ProtectedRoute"
+import ErrorBoundary from "./components/ErrorBoundary"
 import Landing from "./pages/Landing"
 import Login from "./pages/Login"
 import Dashboard from "./pages/Dashboard"
@@ -14,13 +15,15 @@ import PurchasePage from "./pages/PurchasePage"
 import InboxPage from "./pages/Inbox"
 import CreateListingPage from "./pages/CreateListingPage"
 import AccountPage from "./pages/AccountPage"
+import AiChatbox from "./components/AiChatbox"
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <Router>
-          <div className="min-h-screen font-sans" style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <Router>
+            <div className="min-h-screen font-sans" style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}>
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Landing />} />
@@ -73,10 +76,12 @@ function App() {
                 }
               />
             </Routes>
+            <AiChatbox />
           </div>
         </Router>
       </AuthProvider>
     </ThemeProvider>
+    </ErrorBoundary>
   )
 }
 
