@@ -12,6 +12,7 @@ export interface AuthUser {
   name: string
   role: "BUYER" | "SELLER"
   reputation?: number
+  profilePicture?: string | null
 }
 
 interface AuthContextValue {

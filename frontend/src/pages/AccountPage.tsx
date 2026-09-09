@@ -98,12 +98,21 @@ export default function AccountPage() {
           style={{ background: T.surface, border: `1px solid ${T.border}` }}
         >
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
-              style={{ background: T.primaryDim }}>
-              <span className="text-2xl font-bold" style={{ color: T.primary }}>
-                {user.name?.[0]?.toUpperCase() ?? "?"}
-              </span>
-            </div>
+            {user.profilePicture ? (
+              <img
+                src={user.profilePicture}
+                alt={user.name}
+                className="w-16 h-16 rounded-2xl object-cover flex-shrink-0"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style={{ background: T.primaryDim }}>
+                <span className="text-2xl font-bold" style={{ color: T.primary }}>
+                  {user.name?.[0]?.toUpperCase() ?? "?"}
+                </span>
+              </div>
+            )}
             <div className="min-w-0 flex-1">
               <h1 className="text-xl font-bold" style={{ color: T.text }}>{user.name}</h1>
               <div className="flex items-center gap-1.5 mt-1">

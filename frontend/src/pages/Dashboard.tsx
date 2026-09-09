@@ -712,11 +712,27 @@ export default function Dashboard() {
             {/* User profile icon */}
             <button
               onClick={() => isAuthenticated ? navigate("/account") : navigate("/login")}
-              className="h-10 w-10 flex items-center justify-center transition-all"
-              style={{ background: T.surface2, border: EDGE_BORDER, color: T.muted, borderRadius: 0 }}
+              className="h-10 w-10 flex items-center justify-center transition-all overflow-hidden"
+              style={{
+                background: T.surface2,
+                border: EDGE_BORDER,
+                color: T.muted,
+                borderRadius: user?.profilePicture ? "50%" : 0,
+                padding: 0,
+              }}
               title="Profile"
             >
-              <User className="h-4 w-4" />
+              {user?.profilePicture ? (
+                <img
+                  src={user.profilePicture}
+                  alt={user.name}
+                  className="h-full w-full object-cover"
+                  style={{ borderRadius: "50%" }}
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <User className="h-4 w-4" />
+              )}
             </button>
           </div>
         </header>

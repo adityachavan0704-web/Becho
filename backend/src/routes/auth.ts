@@ -60,21 +60,31 @@ passport.use(
         const email =
           profile.emails?.[0]?.value ?? `${profile.id}@google-oauth.fake`;
         const name = profile.displayName ?? "Google User";
+        const profilePicture = profile.photos?.[0]?.value ?? null;
 
         let user = await prisma.user.findFirst({
           where: { OR: [{ googleId: profile.id }, { email }] },
         });
 
         if (user) {
+          // Always update the profile picture from Google on each login
+          const updateData: Record<string, unknown> = {};
           if (!user.googleId) {
+            updateData.googleId = profile.id;
+            updateData.isVerified = true;
+          }
+          if (profilePicture) {
+            updateData.profilePicture = profilePicture;
+          }
+          if (Object.keys(updateData).length > 0) {
             user = await prisma.user.update({
               where: { id: user.id },
-              data: { googleId: profile.id, isVerified: true },
+              data: updateData,
             });
           }
         } else {
           user = await prisma.user.create({
-            data: { email, name, googleId: profile.id, isVerified: true },
+            data: { email, name, googleId: profile.id, isVerified: true, profilePicture },
           });
         }
 
@@ -127,7 +137,7 @@ router.post("/register", async (req: Request, res: Response) => {
     const tokens = await tokenResponse(user.id, user.email, user.role);
     res.status(201).json({
       ...tokens,
-      user: { id: user.id, email: user.email, name: user.name, role: user.role },
+      user: { id: user.id, email: user.email, name: user.name, role: user.role, profilePicture: user.profilePicture },
     });
   } catch (err) {
     console.error("[register]", err);
@@ -162,7 +172,7 @@ router.post("/login", async (req: Request, res: Response) => {
     const tokens = await tokenResponse(user.id, user.email, user.role);
     res.json({
       ...tokens,
-      user: { id: user.id, email: user.email, name: user.name, role: user.role },
+      user: { id: user.id, email: user.email, name: user.name, role: user.role, profilePicture: user.profilePicture },
     });
   } catch (err) {
     console.error("[login]", err);
@@ -199,7 +209,7 @@ router.post("/refresh", async (req: Request, res: Response) => {
     res.json({
       accessToken,
       expiresIn: 15 * 60,
-      user: { id: user.id, email: user.email, name: user.name, role: user.role },
+      user: { id: user.id, email: user.email, name: user.name, role: user.role, profilePicture: user.profilePicture },
     });
   } catch (err) {
     console.error("[refresh]", err);
@@ -216,7 +226,7 @@ router.post("/logout", async (req: Request, res: Response) => {
     if (refreshToken) {
       await prisma.refreshToken
         .delete({ where: { token: refreshToken } })
-        .catch(() => {}); // ignore if already gone
+        .catch(() => { }); // ignore if already gone
     }
     res.json({ success: true });
   } catch (err) {
@@ -239,8 +249,13 @@ router.get(
 router.get(
   "/google/callback",
   (req: Request, res: Response, next: NextFunction) => {
-    passport.authenticate("google", { session: false }, (err: Error | null, user: { id: string; email: string; role: string } | false) => {
-      if (err || !user) {
+    passport.authenticate("google", { session: false }, (err: Error | null, user: { id: string; email: string; role: string } | false, info: unknown) => {
+      if (err) {
+        console.error("[google/callback] Auth error:", err);
+        return res.redirect(`${FRONTEND_URL}/login?error=google_failed`);
+      }
+      if (!user) {
+        console.error("[google/callback] No user returned. Info:", info);
         return res.redirect(`${FRONTEND_URL}/login?error=google_failed`);
       }
       // Attach user to request so the next handler can access it
@@ -281,6 +296,7 @@ router.get("/me", requireAuth, async (req: Request, res: Response) => {
       select: {
         id: true, email: true, name: true, role: true,
         isVerified: true, reputation: true, createdAt: true,
+        profilePicture: true,
       },
     });
     if (!user) { res.status(404).json({ error: "User not found" }); return; }
