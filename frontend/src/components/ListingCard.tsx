@@ -55,13 +55,17 @@ export function ListingCard({ listing, className }: ListingCardProps) {
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       onClick={() => navigate(`/listings/${listing.id}`)}
       className={cn(
-        "group cursor-pointer rounded-2xl border border-white/[0.06] bg-zinc-900/60 overflow-hidden",
-        "hover:border-[#FF6B1A]/25 hover:shadow-[0_0_30px_rgba(255,107,26,0.07)] transition-all duration-300",
+        "group cursor-pointer rounded-2xl overflow-hidden",
+        "hover:shadow-[0_0_30px_rgba(255,107,26,0.07)] transition-all duration-300",
         className
       )}
+      style={{
+        background: "var(--surface)",
+        border: "var(--border-width) solid var(--border)",
+      }}
     >
       {/* Thumbnail */}
-      <div className="relative h-44 bg-zinc-800/80 overflow-hidden">
+      <div className="relative h-44 overflow-hidden" style={{ background: "var(--surface-3)" }}>
         {hasImage ? (
           <img
             src={listing.images[0]}
@@ -69,26 +73,27 @@ export function ListingCard({ listing, className }: ListingCardProps) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex items-center justify-center h-full"
+            style={{ background: "linear-gradient(135deg, var(--surface-2), var(--surface-3))" }}>
             {listing.type === "ONLINE" ? (
-              <FileText className="h-12 w-12 text-zinc-600" />
+              <FileText className="h-12 w-12" style={{ color: "var(--text-subtle)" }} />
             ) : (
-              <Package className="h-12 w-12 text-zinc-600" />
+              <Package className="h-12 w-12" style={{ color: "var(--text-subtle)" }} />
             )}
           </div>
         )}
         {/* Overlay badges */}
         <div className="absolute top-2.5 left-2.5 flex gap-1.5">
-          <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full border", typeColor)}>
+          <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full border backdrop-blur-sm", typeColor)}>
             {listing.type}
           </span>
-          <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", catColor)}>
+          <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm", catColor)}>
             {listing.category}
           </span>
         </div>
         {listing.isFree && (
           <div className="absolute top-2.5 right-2.5">
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FF6B1A]/20 text-[#FF6B1A] border border-[#FF6B1A]/30">
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FF6B1A]/20 text-[#FF6B1A] border border-[#FF6B1A]/30 backdrop-blur-sm">
               FREE
             </span>
           </div>
@@ -97,10 +102,11 @@ export function ListingCard({ listing, className }: ListingCardProps) {
 
       {/* Content */}
       <div className="p-4">
-        <h3 className="font-semibold text-sm text-white leading-snug line-clamp-2 mb-1 group-hover:text-[#FF6B1A] transition-colors">
+        <h3 className="font-semibold text-sm leading-snug line-clamp-2 mb-1 group-hover:text-[#FF6B1A] transition-colors"
+          style={{ color: "var(--text)" }}>
           {listing.title}
         </h3>
-        <p className="text-xs text-zinc-500 line-clamp-2 mb-3">{listing.description}</p>
+        <p className="text-xs line-clamp-2 mb-3" style={{ color: "var(--text-muted)" }}>{listing.description}</p>
 
         {/* Seller & subject */}
         <div className="flex items-center gap-1.5 mb-3">
@@ -109,7 +115,7 @@ export function ListingCard({ listing, className }: ListingCardProps) {
               {listing.seller.name[0]?.toUpperCase()}
             </span>
           </div>
-          <span className="text-[11px] text-zinc-500 truncate">{listing.seller.name}</span>
+          <span className="text-[11px] truncate" style={{ color: "var(--text-muted)" }}>{listing.seller.name}</span>
           {listing.seller.reputation > 0 && (
             <span className="ml-auto flex items-center gap-0.5 text-[11px] text-amber-400">
               <Star className="h-2.5 w-2.5 fill-amber-400" />
@@ -119,12 +125,13 @@ export function ListingCard({ listing, className }: ListingCardProps) {
         </div>
 
         {/* Footer: price + CTA */}
-        <div className="flex items-center justify-between border-t border-white/[0.05] pt-3">
+        <div className="flex items-center justify-between pt-3"
+          style={{ borderTop: "var(--border-width) solid var(--border)" }}>
           <div>
             {listing.isFree ? (
               <p className="text-base font-bold text-[#FF6B1A]">Free</p>
             ) : (
-              <p className="text-base font-bold text-white">
+              <p className="text-base font-bold" style={{ color: "var(--text)" }}>
                 ₹{listing.price.toLocaleString("en-IN")}
               </p>
             )}

@@ -3,8 +3,8 @@ import { motion, useAnimationFrame } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import { Button } from "../components/ui/Button"
 import BechoLogo from "../components/BechoLogo"
-import SecondaryNav from "../components/SecondaryNav"
 import { useTheme } from "../contexts/ThemeContext"
+import { CursorDrivenParticleTypography } from "../components/ui/cursor-driven-particle-typography"
 import {
   ArrowRight,
   Star,
@@ -103,7 +103,7 @@ function SphereCarousel() {
           }}
         >
           <div
-            className="relative w-[160px] h-[210px] rounded-none overflow-hidden shadow-2xl"
+            className="relative w-[160px] h-[210px] rounded-2xl overflow-hidden shadow-2xl"
             style={{
               border: "var(--border-width) solid rgba(255,255,255,0.10)",
               boxShadow: card.z > 0
@@ -114,7 +114,7 @@ function SphereCarousel() {
             <img src={card.item.img} alt={card.item.label} className="w-full h-full object-cover" draggable={false} />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
             <div
-              className="absolute top-3 left-3 px-2 py-0.5 rounded-none text-[10px] font-mono font-bold uppercase tracking-widest"
+              className="absolute top-3 left-3 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-widest"
               style={{ background: card.item.color + "22", color: card.item.color, border: `1px solid ${card.item.color}44` }}
             >
               {card.item.tag}
@@ -159,7 +159,7 @@ function StatCard({ value, label }: { value: string; label: string }) {
       initial={{ opacity: 0, scale: 0.9 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
-      className="text-center p-8 rounded-none backdrop-blur-sm"
+      className="text-center p-8 rounded-2xl backdrop-blur-sm"
       style={{ background: "var(--surface)", border: "var(--border-width) solid var(--border)" }}
     >
       <div className="text-4xl font-bold mb-2" style={{ color: "var(--primary)" }}>{value}</div>
@@ -188,46 +188,51 @@ export default function Landing() {
         className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl"
         style={{ borderBottom: "var(--border-width) solid var(--border)", background: isDark ? "rgba(4,4,4,0.92)" : "rgba(220,210,196,0.95)" }}
       >
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <BechoLogo size={38} showWordmark={true} />
+            <BechoLogo size={34} showWordmark={true} />
           </div>
-          <div className="hidden md:flex items-center gap-6">
-            <div className="flex items-center gap-6 text-sm font-mono" style={{ color: "var(--text-muted)" }}>
-              <button className="hover:text-primary transition-colors" style={{ color: "inherit" }}
+          <div className="hidden md:flex items-center gap-8">
+            <div className="flex items-center gap-6 text-sm" style={{ color: "var(--text-muted)" }}>
+              <button className="hover:text-[#FF6B1A] transition-colors font-medium" style={{ color: "inherit" }}
                 onClick={() => navigate("/browse")}>Browse</button>
-              <button className="hover:text-primary transition-colors" style={{ color: "inherit" }}
+              <button className="hover:text-[#FF6B1A] transition-colors font-medium" style={{ color: "inherit" }}
+                onClick={() => navigate("/mentorship")}>Mentorship</button>
+              <button className="hover:text-[#FF6B1A] transition-colors font-medium" style={{ color: "inherit" }}
                 onClick={() => navigate("/login")}>Sell</button>
-              <span style={{ color: "var(--text-subtle)" }}>|</span>
             </div>
-            <Button className="text-xs uppercase tracking-widest font-mono h-9 px-5"
-              onClick={() => navigate("/login")}>Log In</Button>
-            <Button className="text-xs uppercase tracking-widest font-mono h-9 px-5"
-              onClick={() => navigate("/login?role=buyer")}>Join Now</Button>
+            <div className="flex items-center gap-3">
+              <button
+                className="text-sm font-medium px-4 py-2 rounded-xl transition-all hover:opacity-80"
+                style={{ color: "var(--text-muted)" }}
+                onClick={() => navigate("/login")}>Log In</button>
+              <Button className="text-sm font-medium h-9 px-5 rounded-xl"
+                onClick={() => navigate("/login?role=buyer")}>Join Now</Button>
+            </div>
           </div>
           {/* Mobile */}
           <div className="flex md:hidden items-center gap-2">
-            <Button className="text-xs" onClick={() => navigate("/login")}>Log In</Button>
-            <Button className="text-xs" onClick={() => navigate("/login?role=buyer")}>Join</Button>
+            <button className="text-sm font-medium px-3 py-1.5" style={{ color: "var(--text-muted)" }}
+              onClick={() => navigate("/login")}>Log In</button>
+            <Button className="text-xs h-8 px-4 rounded-xl" onClick={() => navigate("/login?role=buyer")}>Join</Button>
           </div>
         </div>
-        <SecondaryNav />
       </nav>
 
       {/* ── Hero ── */}
-      <section className="relative pt-36 flex flex-col items-center text-center px-6" style={{ minHeight: "100vh" }}>
+      <section className="relative pt-28 pb-16 flex flex-col items-center text-center px-6" style={{ minHeight: "85vh" }}>
 
         {/* Top tagline */}
         <motion.p
           initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-          className="text-2xl sm:text-3xl font-semibold mt-8 mb-6 tracking-tight"
+          className="text-lg sm:text-xl font-semibold mt-12 mb-8 tracking-tight"
           style={{ color: "var(--primary)", fontStyle: "italic" }}
         >
           " We sell what you want "
         </motion.p>
 
-        {/* Flex-1 column: heading → button → description, equally spaced */}
-        <div className="flex-1 flex flex-col items-center justify-between w-full max-w-4xl pb-16">
+        {/* Stacked hero: heading → description → CTA */}
+        <div className="flex flex-col items-center gap-8 w-full max-w-4xl">
 
           {/* Main heading */}
           <motion.h1
@@ -236,30 +241,45 @@ export default function Landing() {
             className="text-5xl sm:text-6xl lg:text-[5.5rem] font-bold tracking-tight leading-[1.08]"
             style={{ color: "var(--text)" }}
           >
-            The student market
-            <br />
-            <span style={{ color: "var(--text)" }}>for academic resources</span>
+            Student Market
           </motion.h1>
 
-          {/* Kharido button — exactly between heading and description */}
+          {/* Becho Particle Typography Simulation */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="w-full h-[200px] sm:h-[300px] md:h-[400px] relative -my-4 sm:-my-8 flex items-center justify-center"
           >
-            <Button size="lg" className="h-13 px-10 text-sm font-mono uppercase tracking-widest"
-              onClick={() => navigate("/dashboard")}>
-              Kharido <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+            <CursorDrivenParticleTypography
+              text="becho"
+              fontSize={240}
+              particleSize={2}
+              particleDensity={4}
+              dispersionStrength={25}
+              color="var(--primary)"
+            />
           </motion.div>
 
-          {/* Description — at the bottom */}
+          {/* Description — directly below heading */}
           <motion.p
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.6 }}
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }}
             className="text-lg max-w-xl leading-relaxed"
             style={{ color: "var(--text-muted)" }}
           >
             Buy, sell, and share notes, books, electronics &amp; more. Connect with seniors
             for mentorship. Only verified students — zero noise.
           </motion.p>
+
+          {/* CTA button — below description */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.6 }}
+          >
+            <Button size="lg" className="h-13 px-10 text-sm font-mono uppercase tracking-widest"
+              onClick={() => navigate("/dashboard")}>
+              Kharido <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </motion.div>
 
         </div>
 
@@ -336,7 +356,7 @@ export default function Landing() {
               viewport={{ once: true, margin: "-80px" }}
               transition={{ delay: idx * 0.12, duration: 0.6, type: "spring", stiffness: 60 }}
               whileHover={{ y: -4 }}
-              className="group relative p-6 rounded-none backdrop-blur-sm transition-all duration-500 overflow-hidden cursor-pointer"
+              className="group relative p-6 rounded-2xl backdrop-blur-sm transition-all duration-500 overflow-hidden cursor-pointer"
               style={{
                 background: "var(--surface)",
                 border: "var(--border-width) solid var(--border)",
@@ -349,7 +369,7 @@ export default function Landing() {
               />
               {/* Category + Price Row */}
               <div className="flex items-center justify-between mb-4">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-widest px-2.5 py-1 rounded-none"
+                <span className="text-[10px] font-mono font-bold uppercase tracking-widest px-2.5 py-1 rounded-md"
                   style={{ background: "rgba(255,107,26,0.12)", color: "var(--primary)", border: "var(--border-width) solid rgba(255,107,26,0.25)" }}>
                   {item.category}
                 </span>
@@ -363,7 +383,7 @@ export default function Landing() {
               <p className="leading-relaxed text-sm mb-4 line-clamp-3" style={{ color: "var(--text-muted)" }}>{item.desc}</p>
               {/* Seller Row */}
               <div className="flex items-center gap-2 mt-auto pt-3" style={{ borderTop: "var(--border-width) solid var(--border)" }}>
-                <div className="w-7 h-7 rounded-none flex items-center justify-center flex-shrink-0"
+                <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
                   style={{ background: "rgba(255,107,26,0.15)" }}>
                   <span className="text-xs font-bold" style={{ color: "var(--primary)" }}>{item.seller[0]}</span>
                 </div>
@@ -377,7 +397,7 @@ export default function Landing() {
               </div>
               {/* Hover CTA */}
               <div className="absolute inset-x-0 bottom-0 flex items-center justify-center pb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <span className="text-xs font-bold px-4 py-1.5 rounded-none" style={{ background: "rgba(255,107,26,0.90)", color: "#fff" }}>
+                <span className="text-xs font-bold px-4 py-1.5 rounded-full" style={{ background: "rgba(255,107,26,0.90)", color: "#fff" }}>
                   View Listing →
                 </span>
               </div>
@@ -391,7 +411,7 @@ export default function Landing() {
       <section className="px-6 pb-24">
         <motion.div
           initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="max-w-4xl mx-auto relative rounded-none overflow-hidden p-12 text-center"
+          className="max-w-4xl mx-auto relative rounded-2xl overflow-hidden p-12 text-center"
           style={{
             border: "var(--border-width) solid var(--border)",
             background: isDark
@@ -439,7 +459,7 @@ export default function Landing() {
                 { label: "LinkedIn", svg: <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z M4 6a2 2 0 100-4 2 2 0 000 4z" fill="rgba(255,255,255,0.7)" /> },
               ].map(({ label, svg }) => (
                 <button key={label} title={label}
-                  className="w-9 h-9 rounded-none flex items-center justify-center transition-all duration-200 hover:bg-white/10"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-white/10"
                   style={{ border: "var(--border-width) solid rgba(255,255,255,0.12)" }}>
                   <svg viewBox="0 0 24 24" className="w-4 h-4">{svg}</svg>
                 </button>
@@ -501,7 +521,7 @@ export default function Landing() {
             </ul>
 
             {/* Mission callout */}
-            <div className="mt-4 p-4 rounded-none" style={{ background: "rgba(255,107,26,0.10)", border: "var(--border-width) solid rgba(255,107,26,0.20)" }}>
+            <div className="mt-4 p-4 rounded-xl" style={{ background: "rgba(255,107,26,0.10)", border: "var(--border-width) solid rgba(255,107,26,0.20)" }}>
               <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.60)" }}>
                 <span style={{ color: "#FF6B1A", fontWeight: 600 }}>Our mission:</span> To empower every student with affordable access to academic resources — and a fair way to earn from what they already own.
               </p>

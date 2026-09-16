@@ -265,7 +265,7 @@ export default function CreateListingPage() {
               const done = step > num
               const isLast = i === STEPS.length - 1
               return (
-                <div key={s.label} className="flex items-start gap-1.5">
+                <div key={s.label} className="flex items-start gap-3">
                   {/* Circle + connector column */}
                   <div className="flex flex-col items-center flex-shrink-0">
                     <motion.div
@@ -312,7 +312,7 @@ export default function CreateListingPage() {
                     )}
                   </div>
                   {/* Label text */}
-                  <div className="pt-1.5 pb-7">
+                  <div className="pt-1.5 pb-5">
                     <p
                       className="text-sm font-semibold transition-colors"
                       style={{ color: active ? T.text : done ? T.muted : T.subtle }}
@@ -405,7 +405,7 @@ export default function CreateListingPage() {
 
         {/* Form area */}
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-xl mx-auto px-6 py-10 lg:py-16">
+          <div className="max-w-2xl mx-auto px-6 sm:px-10 py-10 lg:py-16">
 
             {/* Step heading */}
             <AnimatePresence mode="wait">
@@ -850,7 +850,7 @@ export default function CreateListingPage() {
 
             {/* Footer nav */}
             <div
-              className="flex items-center justify-between mt-10 pt-6"
+              className="flex items-center justify-between mt-12 pt-6"
               style={{ borderTop: `var(--border-width) solid ${T.border}` }}
             >
               <button

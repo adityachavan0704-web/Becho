@@ -5,7 +5,6 @@ import {
   Search, X, LogOut, Bell, LayoutDashboard
 } from "lucide-react"
 import BechoLogo from "../components/BechoLogo"
-import SecondaryNav from "../components/SecondaryNav"
 import { useAuth } from "../contexts/AuthContext"
 import { useTheme } from "../contexts/ThemeContext"
 import { ListingCard } from "../components/ListingCard"
@@ -148,7 +147,6 @@ export default function Browse() {
           )}
         </div>
         </nav>
-        <SecondaryNav />
       </div>
 
       <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-6">
@@ -227,7 +225,7 @@ export default function Browse() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
           >
             {listings.map((listing, idx) => (
               <motion.div
@@ -267,7 +265,7 @@ export default function Browse() {
 
 function SkeletonGrid() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
       {Array.from({ length: 15 }).map((_, i) => (
         <div key={i} className="rounded-2xl overflow-hidden animate-pulse"
           style={{ border: "var(--border-width) solid var(--border)", backgroundColor: "var(--surface)" }}>

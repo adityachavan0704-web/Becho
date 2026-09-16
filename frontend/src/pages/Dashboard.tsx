@@ -89,8 +89,8 @@ const T = {
   primaryDim: "var(--primary-dim)",
   text: "var(--text)",
 }
-// Edgy border style — dark, sharp outline used across all cards/boxes
-const EDGE_BORDER = "1.5px solid rgba(0,0,0,0.75)"
+// Edgy border style — uses CSS variables to adapt to light/dark theme
+const EDGE_BORDER = "var(--border-width) solid var(--border-strong)"
 
 // ── Login Prompt Modal ────────────────────────────────────────────────────────
 function LoginPromptModal({ open, onClose, action }: { open: boolean; onClose: () => void; action: "buy" | "sell" }) {
