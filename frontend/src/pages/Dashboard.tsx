@@ -595,7 +595,19 @@ export default function Dashboard() {
   )
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: T.bg }}>
+    <div className="flex h-screen overflow-hidden relative" style={{ backgroundColor: T.bg }}>
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: "url('/becho-store-bg.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          opacity: isDark ? 0.15 : 0.08,
+          pointerEvents: "none"
+        }}
+      />
 
       {/* ── Mobile Overlay ── */}
       <AnimatePresence>
@@ -628,7 +640,7 @@ export default function Dashboard() {
 
       {/* ── Desktop Sidebar ── */}
       <motion.aside
-        className="hidden md:flex flex-col flex-shrink-0 relative backdrop-blur"
+        className="hidden md:flex flex-col flex-shrink-0 relative backdrop-blur z-10"
         style={{
           borderRight: `1px solid ${T.border}`,
           backgroundColor: isDark ? "rgba(3,3,3,0.92)" : "rgba(210,200,186,0.95)",
@@ -667,7 +679,7 @@ export default function Dashboard() {
       </motion.aside>
 
       {/* ── Main ── */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden z-10 relative">
         {/* Header */}
         <header className="flex items-center justify-between px-4 md:px-8 py-5 flex-shrink-0 backdrop-blur"
           style={{ borderBottom: `1px solid ${T.border}`, backgroundColor: isDark ? "rgba(3,3,3,0.88)" : "rgba(210,200,186,0.95)" }}>

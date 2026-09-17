@@ -175,8 +175,21 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen relative overflow-x-hidden" style={{ backgroundColor: "var(--bg)" }}>
+      {/* Background Image */}
+      <div 
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: "url('/becho-store-bg.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          opacity: isDark ? 0.75 : 0.55,
+          pointerEvents: "none"
+        }}
+      />
+      
       {/* Global background glow */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-20%] left-[20%] w-[60%] h-[60%] blur-[200px] rounded-full"
           style={{ background: isDark ? "rgba(232,97,28,0.05)" : "rgba(232,97,28,0.07)" }} />
         <div className="absolute bottom-[-20%] right-[10%] w-[50%] h-[50%] blur-[160px] rounded-full"
@@ -220,7 +233,7 @@ export default function Landing() {
       </nav>
 
       {/* ── Hero ── */}
-      <section className="relative pt-28 pb-16 flex flex-col items-center text-center px-6" style={{ minHeight: "85vh" }}>
+      <section className="relative pt-28 pb-16 flex flex-col items-center text-center px-6 z-10" style={{ minHeight: "85vh" }}>
 
         {/* Top tagline */}
         <motion.p
@@ -287,7 +300,7 @@ export default function Landing() {
 
 
       {/* ── 3D Sphere Carousel ── */}
-      <section className="relative px-6 py-16 flex flex-col items-center justify-center" style={{ minHeight: "100vh" }}>
+      <section className="relative px-6 py-16 flex flex-col items-center justify-center z-10" style={{ minHeight: "100vh" }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -311,10 +324,12 @@ export default function Landing() {
       </section>
 
       {/* ── Marquee ── */}
-      <MarqueeStrip />
+      <div className="relative z-10">
+        <MarqueeStrip />
+      </div>
 
       {/* ── Stats ── */}
-      <section className="max-w-5xl mx-auto px-6 py-20">
+      <section className="max-w-5xl mx-auto px-6 py-20 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <StatCard value="2.4K+" label="Students" />
           <StatCard value="8,900+" label="Items Listed" />
@@ -324,7 +339,7 @@ export default function Landing() {
       </section>
 
       {/* ── Fresh Recommendations ── */}
-      <section className="max-w-6xl mx-auto px-6 pb-24">
+      <section className="max-w-6xl mx-auto px-6 pb-24 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-center mb-16"
@@ -408,7 +423,7 @@ export default function Landing() {
 
 
       {/* ── CTA Banner ── */}
-      <section className="px-6 pb-24">
+      <section className="px-6 pb-24 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="max-w-4xl mx-auto relative rounded-2xl overflow-hidden p-12 text-center"
@@ -440,7 +455,7 @@ export default function Landing() {
       </section>
 
       {/* ── Footer ── */}
-      <footer style={{ backgroundColor: "#0a1628", borderTop: "var(--border-width) solid rgba(255,255,255,0.06)" }}>
+      <footer className="relative z-10" style={{ backgroundColor: "#0a1628", borderTop: "var(--border-width) solid rgba(255,255,255,0.06)" }}>
         {/* Top section */}
         <div className="max-w-7xl mx-auto px-6 pt-16 pb-12 grid grid-cols-1 md:grid-cols-4 gap-10">
 
