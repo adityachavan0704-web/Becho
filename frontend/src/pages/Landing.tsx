@@ -175,19 +175,6 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen relative overflow-x-hidden" style={{ backgroundColor: "var(--bg)" }}>
-      {/* Background Image */}
-      <div 
-        className="fixed inset-0 z-0"
-        style={{
-          backgroundImage: "url('/becho-store-bg.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          opacity: isDark ? 0.75 : 0.55,
-          pointerEvents: "none"
-        }}
-      />
-      
       {/* Global background glow */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-20%] left-[20%] w-[60%] h-[60%] blur-[200px] rounded-full"
@@ -202,8 +189,11 @@ export default function Landing() {
         style={{ borderBottom: "var(--border-width) solid var(--border)", background: isDark ? "rgba(4,4,4,0.92)" : "rgba(220,210,196,0.95)" }}
       >
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <BechoLogo size={34} showWordmark={true} />
+            <span className="hidden md:inline-block text-sm font-semibold italic ml-2" style={{ color: "var(--primary)" }}>
+              " We sell what you want "
+            </span>
           </div>
           <div className="hidden md:flex items-center gap-8">
             <div className="flex items-center gap-6 text-sm" style={{ color: "var(--text-muted)" }}>
@@ -233,62 +223,49 @@ export default function Landing() {
       </nav>
 
       {/* ── Hero ── */}
-      <section className="relative pt-28 pb-16 flex flex-col items-center text-center px-6 z-10" style={{ minHeight: "85vh" }}>
+      <section className="relative pt-28 pb-0 flex flex-col items-center text-center px-6 z-10" style={{ minHeight: "100vh" }}>
+        {/* Background Image - Only in Hero Section */}
+        <div 
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: "url('/becho-store-bg.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: 1,
+            pointerEvents: "none"
+          }}
+        />
 
-        {/* Top tagline */}
-        <motion.p
-          initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-          className="text-lg sm:text-xl font-semibold mt-12 mb-8 tracking-tight"
-          style={{ color: "var(--primary)", fontStyle: "italic" }}
-        >
-          " We sell what you want "
-        </motion.p>
 
-        {/* Stacked hero: heading → description → CTA */}
-        <div className="flex flex-col items-center gap-8 w-full max-w-4xl">
+        {/* Stacked hero: heading → CTA */}
+        <div className="flex flex-col items-center gap-8 w-full max-w-4xl relative z-10 justify-center" style={{ minHeight: "calc(100vh - 180px)" }}>
 
           {/* Main heading */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.7, type: "spring", stiffness: 60 }}
             className="text-5xl sm:text-6xl lg:text-[5.5rem] font-bold tracking-tight leading-[1.08]"
-            style={{ color: "var(--text)" }}
+            style={{ 
+              color: "#FFFFFF", 
+              textShadow: "0 0 20px rgba(255,107,26,0.8), 0 0 40px rgba(255,107,26,0.6), 0 0 60px rgba(255,107,26,0.4), 0 4px 12px rgba(0,0,0,0.5)",
+              fontFamily: "Georgia, serif"
+            }}
           >
             Student Market
           </motion.h1>
 
-          {/* Becho Particle Typography Simulation */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="w-full h-[200px] sm:h-[300px] md:h-[400px] relative -my-4 sm:-my-8 flex items-center justify-center"
-          >
-            <CursorDrivenParticleTypography
-              text="becho"
-              fontSize={240}
-              particleSize={2}
-              particleDensity={4}
-              dispersionStrength={25}
-              color="var(--primary)"
-            />
-          </motion.div>
-
-          {/* Description — directly below heading */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }}
-            className="text-lg max-w-xl leading-relaxed"
-            style={{ color: "var(--text-muted)" }}
-          >
-            Buy, sell, and share notes, books, electronics &amp; more. Connect with seniors
-            for mentorship. Only verified students — zero noise.
-          </motion.p>
-
-          {/* CTA button — below description */}
+          {/* CTA button — below heading */}
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.6 }}
+            className="mt-6"
           >
-            <Button size="lg" className="h-13 px-10 text-sm font-mono uppercase tracking-widest"
+            <Button size="lg" className="h-13 px-10 text-sm font-mono uppercase tracking-widest shadow-2xl"
+              style={{ 
+                border: "3px solid #000", 
+                fontWeight: "bold",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.4)"
+              }}
               onClick={() => navigate("/dashboard")}>
               Kharido <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
