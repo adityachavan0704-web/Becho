@@ -13,7 +13,7 @@ const router = Router();
 router.get("/status", (_req: Request, res: Response) => {
   res.json({
     available: isGeminiAvailable(),
-    model: "gemini-2.0-flash",
+    model: "gemini-3.6-flash",
   });
 });
 

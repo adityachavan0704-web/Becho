@@ -220,7 +220,7 @@ export async function handleChatMessage(
     // Handle specific Gemini errors
     const errMsg = error instanceof Error ? error.message : String(error);
 
-    if (errMsg.includes("429") || errMsg.includes("RATE_LIMIT")) {
+    if (errMsg.includes("429") || errMsg.includes("RATE_LIMIT") || errMsg.includes("503")) {
       return {
         message: "Our AI is experiencing high demand. Please try again in a moment! ⏳",
       };

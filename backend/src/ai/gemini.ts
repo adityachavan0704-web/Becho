@@ -16,7 +16,7 @@ if (!GEMINI_API_KEY) {
 // ─── Client singleton ──────────────────────────────────────────
 const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
-const MODEL_NAME = "gemini-2.0-flash";
+const MODEL_NAME = "gemini-3.6-flash";
 
 function getModel(systemInstruction?: string): GenerativeModel {
   if (!genAI) {
