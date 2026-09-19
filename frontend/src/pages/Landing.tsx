@@ -8,6 +8,7 @@ import { CursorDrivenParticleTypography } from "../components/ui/cursor-driven-p
 import {
   ArrowRight,
   Star,
+  Plus,
 } from "lucide-react"
 
 // ─── 3D Carousel Data ────────────────────────────────────────────────────────
@@ -185,8 +186,8 @@ export default function Landing() {
 
       {/* ── Navbar ── */}
       <nav
-        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl"
-        style={{ borderBottom: "var(--border-width) solid var(--border)", background: isDark ? "rgba(4,4,4,0.92)" : "rgba(220,210,196,0.95)" }}
+        className="fixed top-0 left-0 right-0 z-50"
+        style={{ borderBottom: "var(--border-width) solid var(--border)", background: "var(--bg)" }}
       >
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -196,31 +197,45 @@ export default function Landing() {
             </span>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <div className="flex items-center gap-6 text-sm" style={{ color: "var(--text-muted)" }}>
-              <button className="hover:text-[#FF6B1A] transition-colors font-medium" style={{ color: "inherit" }}
-                onClick={() => navigate("/browse")}>Browse</button>
-              <button className="hover:text-[#FF6B1A] transition-colors font-medium" style={{ color: "inherit" }}
-                onClick={() => navigate("/mentorship")}>Mentorship</button>
-              <button className="hover:text-[#FF6B1A] transition-colors font-medium" style={{ color: "inherit" }}
-                onClick={() => navigate("/login")}>Sell</button>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                className="text-sm font-medium px-4 py-2 rounded-xl transition-all hover:opacity-80"
-                style={{ color: "var(--text-muted)" }}
-                onClick={() => navigate("/login")}>Log In</button>
-              <Button className="text-sm font-medium h-9 px-5 rounded-xl"
-                onClick={() => navigate("/login?role=buyer")}>Join Now</Button>
-            </div>
+            <Button className="text-sm font-medium h-9 px-6 rounded-xl shadow-lg flex items-center gap-2"
+              onClick={() => navigate("/login")}>
+              <Plus className="w-4 h-4" /> SELL
+            </Button>
           </div>
           {/* Mobile */}
           <div className="flex md:hidden items-center gap-2">
-            <button className="text-sm font-medium px-3 py-1.5" style={{ color: "var(--text-muted)" }}
-              onClick={() => navigate("/login")}>Log In</button>
-            <Button className="text-xs h-8 px-4 rounded-xl" onClick={() => navigate("/login?role=buyer")}>Join</Button>
+            <Button className="text-xs h-8 px-4 rounded-xl shadow-md flex items-center gap-1.5" onClick={() => navigate("/login")}>
+              <Plus className="w-3.5 h-3.5" /> SELL
+            </Button>
           </div>
         </div>
       </nav>
+
+      {/* ── Search Bar (Liquid Glass) ── */}
+      <div className="fixed top-[84px] left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-4 pointer-events-auto">
+        <div 
+          className="flex items-center gap-3 px-6 py-3.5 rounded-full"
+          style={{
+            background: isDark ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.85)",
+            backdropFilter: "blur(64px) saturate(200%)",
+            WebkitBackdropFilter: "blur(64px) saturate(200%)",
+            border: isDark ? "1px solid rgba(0, 0, 0, 0.6)" : "1px solid rgba(0, 0, 0, 0.35)",
+            boxShadow: isDark 
+              ? "0 16px 40px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255,255,255,0.4)" 
+              : "0 16px 40px rgba(0, 0, 0, 0.2), inset 0 2px 6px rgba(255,255,255,1)"
+          }}
+        >
+          <svg className="w-5 h-5" style={{ color: "var(--text-muted)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input 
+            type="text" 
+            placeholder="Search for study notes, kits, projects..." 
+            className="w-full bg-transparent border-none outline-none text-sm font-medium placeholder-opacity-70"
+            style={{ color: "var(--text)" }}
+          />
+        </div>
+      </div>
 
       {/* ── Hero ── */}
       <section className="relative pt-28 pb-0 flex flex-col items-center text-center px-6 z-10" style={{ minHeight: "100vh" }}>
