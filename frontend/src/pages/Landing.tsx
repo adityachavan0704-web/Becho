@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { Button } from "../components/ui/Button"
 import BechoLogo from "../components/BechoLogo"
 import { useTheme } from "../contexts/ThemeContext"
-import { CursorDrivenParticleTypography } from "../components/ui/cursor-driven-particle-typography"
+// import { CursorDrivenParticleTypography } from "../components/ui/cursor-driven-particle-typography"
 import {
   ArrowRight,
   Star,
@@ -198,13 +198,16 @@ export default function Landing() {
           </div>
           <div className="hidden md:flex items-center gap-8">
             <Button className="text-sm font-medium h-9 px-6 rounded-xl shadow-lg flex items-center gap-2"
+              style={{ border: "2px solid #000" }}
               onClick={() => navigate("/login")}>
               <Plus className="w-4 h-4" /> SELL
             </Button>
           </div>
           {/* Mobile */}
           <div className="flex md:hidden items-center gap-2">
-            <Button className="text-xs h-8 px-4 rounded-xl shadow-md flex items-center gap-1.5" onClick={() => navigate("/login")}>
+            <Button className="text-xs h-8 px-4 rounded-xl shadow-md flex items-center gap-1.5"
+              style={{ border: "2px solid #000" }}
+              onClick={() => navigate("/login")}>
               <Plus className="w-3.5 h-3.5" /> SELL
             </Button>
           </div>
@@ -213,24 +216,24 @@ export default function Landing() {
 
       {/* ── Search Bar (Liquid Glass) ── */}
       <div className="fixed top-[84px] left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-4 pointer-events-auto">
-        <div 
+        <div
           className="flex items-center gap-3 px-6 py-3.5 rounded-full"
           style={{
             background: isDark ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.85)",
             backdropFilter: "blur(64px) saturate(200%)",
             WebkitBackdropFilter: "blur(64px) saturate(200%)",
-            border: isDark ? "1px solid rgba(0, 0, 0, 0.6)" : "1px solid rgba(0, 0, 0, 0.35)",
-            boxShadow: isDark 
-              ? "0 16px 40px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255,255,255,0.4)" 
+            border: "2px solid #000",
+            boxShadow: isDark
+              ? "0 16px 40px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255,255,255,0.4)"
               : "0 16px 40px rgba(0, 0, 0, 0.2), inset 0 2px 6px rgba(255,255,255,1)"
           }}
         >
           <svg className="w-5 h-5" style={{ color: "var(--text-muted)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <input 
-            type="text" 
-            placeholder="Search for study notes, kits, projects..." 
+          <input
+            type="text"
+            placeholder="Search for study notes, kits, projects..."
             className="w-full bg-transparent border-none outline-none text-sm font-medium placeholder-opacity-70"
             style={{ color: "var(--text)" }}
           />
@@ -240,7 +243,7 @@ export default function Landing() {
       {/* ── Hero ── */}
       <section className="relative pt-28 pb-0 flex flex-col items-center text-center px-6 z-10" style={{ minHeight: "100vh" }}>
         {/* Background Image - Only in Hero Section */}
-        <div 
+        <div
           className="absolute inset-0 z-0"
           style={{
             backgroundImage: "url('/becho-store-bg.jpg')",
@@ -261,8 +264,8 @@ export default function Landing() {
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.7, type: "spring", stiffness: 60 }}
             className="text-5xl sm:text-6xl lg:text-[5.5rem] font-bold tracking-tight leading-[1.08]"
-            style={{ 
-              color: "#FFFFFF", 
+            style={{
+              color: "#FFFFFF",
               textShadow: "0 0 20px rgba(255,107,26,0.8), 0 0 40px rgba(255,107,26,0.6), 0 0 60px rgba(255,107,26,0.4), 0 4px 12px rgba(0,0,0,0.5)",
               fontFamily: "Georgia, serif"
             }}
@@ -276,8 +279,8 @@ export default function Landing() {
             className="mt-6"
           >
             <Button size="lg" className="h-13 px-10 text-sm font-mono uppercase tracking-widest shadow-2xl"
-              style={{ 
-                border: "3px solid #000", 
+              style={{
+                border: "2px solid #000",
                 fontWeight: "bold",
                 boxShadow: "0 8px 24px rgba(0,0,0,0.4)"
               }}
