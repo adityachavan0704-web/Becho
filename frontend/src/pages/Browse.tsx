@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Search, X, LogOut, Bell, LayoutDashboard
@@ -29,6 +29,7 @@ interface Meta {
 
 export default function Browse() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, logout } = useAuth()
   const { isDark } = useTheme()
 
@@ -77,6 +78,17 @@ export default function Browse() {
   useEffect(() => {
     void fetchListings(query, type, category)
   }, [query, type, category, fetchListings])
+
+  // Pre-fill search from URL ?q= param (e.g. from Landing page)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const urlQ = params.get("q") ?? ""
+    if (urlQ) {
+      setLiveQuery(urlQ)
+      setQuery(urlQ)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleLogout = () => { logout(); navigate("/") }
   const clearSearch = () => { setLiveQuery(""); setQuery("") }

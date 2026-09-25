@@ -9,6 +9,7 @@ import {
   ArrowRight,
   Star,
   Plus,
+  Search,
 } from "lucide-react"
 
 // ─── 3D Carousel Data ────────────────────────────────────────────────────────
@@ -173,6 +174,17 @@ function StatCard({ value, label }: { value: string; label: string }) {
 export default function Landing() {
   const navigate = useNavigate()
   const { isDark } = useTheme()
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const handleSearch = () => {
+    const q = searchQuery.trim()
+    if (q) navigate(`/browse?q=${encodeURIComponent(q)}`)
+    else navigate("/browse")
+  }
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleSearch()
+  }
 
   return (
     <div className="min-h-screen relative overflow-x-hidden" style={{ backgroundColor: "var(--bg)" }}>
@@ -228,15 +240,31 @@ export default function Landing() {
               : "0 16px 40px rgba(0, 0, 0, 0.2), inset 0 2px 6px rgba(255,255,255,1)"
           }}
         >
-          <svg className="w-5 h-5" style={{ color: "var(--text-muted)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+          <button
+            onClick={handleSearch}
+            className="flex-shrink-0 transition-opacity hover:opacity-70"
+            title="Search"
+          >
+            <Search className="w-5 h-5" style={{ color: "var(--text-muted)" }} />
+          </button>
           <input
             type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
             placeholder="Search for study notes, kits, projects..."
             className="w-full bg-transparent border-none outline-none text-sm font-medium placeholder-opacity-70"
-            style={{ color: "var(--text)" }}
+            style={{ color: isDark ? "#111" : "var(--text)" }}
           />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="flex-shrink-0 text-xs opacity-50 hover:opacity-100 transition-opacity"
+              title="Clear"
+            >
+              ✕
+            </button>
+          )}
         </div>
       </div>
 
@@ -536,6 +564,52 @@ export default function Landing() {
                 <span style={{ color: "#FF6B1A", fontWeight: 600 }}>Our mission:</span> To empower every student with affordable access to academic resources — and a fair way to earn from what they already own.
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* ── Donate to BECHO QR Section ── */}
+        <div className="max-w-7xl mx-auto px-6 pb-12 flex flex-col items-center">
+          <div
+            className="flex flex-col items-center gap-4 p-6 rounded-2xl"
+            style={{
+              background: "rgba(255,107,26,0.06)",
+              border: "1px solid rgba(255,107,26,0.22)",
+              maxWidth: "260px",
+              width: "100%",
+            }}
+          >
+            {/* Label */}
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🧡</span>
+              <span
+                className="text-sm font-bold uppercase tracking-widest font-mono"
+                style={{ color: "#FF6B1A" }}
+              >
+                Donate to BECHO
+              </span>
+              <span className="text-lg">🧡</span>
+            </div>
+
+            {/* QR Image */}
+            <div
+              className="rounded-xl overflow-hidden"
+              style={{
+                border: "2px solid rgba(255,107,26,0.40)",
+                boxShadow: "0 0 24px rgba(255,107,26,0.18)",
+              }}
+            >
+              <img
+                src="/donate_qr.jpg"
+                alt="Donate to Becho via UPI"
+                className="w-[180px] h-[180px] object-cover block"
+              />
+            </div>
+
+            {/* Sub-text */}
+            <p className="text-xs text-center leading-relaxed" style={{ color: "rgba(255,255,255,0.50)" }}>
+              Support Becho with any amount via UPI.<br />
+              Every rupee helps us grow! 🚀
+            </p>
           </div>
         </div>
 
