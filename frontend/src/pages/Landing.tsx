@@ -245,7 +245,7 @@ export default function Landing() {
       </nav>
 
       {/* ── Search Bar (Liquid Glass) ── */}
-      <div className="fixed top-[84px] left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-4 pointer-events-auto">
+      <div className="fixed top-[84px] left-1/2 -translate-x-1/2 z-40 w-full max-w-2xl px-4">
         <div
           className="flex items-center gap-3 px-6 py-3.5 rounded-full"
           style={{
