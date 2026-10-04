@@ -2,7 +2,8 @@
 // Prisma 7: url is configured in prisma.config.ts, NOT here.
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -114,7 +115,7 @@ model Mentorship {
 }
 
 model Message {
-  id         String   @id @default(uuid())
+  id         String   @id @default(uuid())  
   content    String
   senderId   String
   receiverId String

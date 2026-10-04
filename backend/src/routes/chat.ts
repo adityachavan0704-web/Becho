@@ -16,6 +16,34 @@ export function setSocketIO(instance: SocketServer) {
   io = instance;
 }
 
+// ─── GET /api/chat (conversations list) ───────────────────────
+// MUST be before /:listingId to avoid being swallowed by that param route
+// Returns all unique conversations for the current user
+router.get("/", requireAuth, async (req: Request, res: Response) => {
+  try {
+    const userId = req.authUser?.userId;
+
+    // Get distinct listings where user has messages
+    const messages = await prisma.message.findMany({
+      where: {
+        OR: [{ senderId: userId }, { receiverId: userId }],
+      },
+      distinct: ["listingId"],
+      include: {
+        listing: { select: { id: true, title: true, images: true } },
+        sender: { select: { id: true, name: true } },
+        receiver: { select: { id: true, name: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json({ conversations: messages });
+  } catch (err) {
+    console.error("[chat/conversations]", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // ─── GET /api/chat/:listingId ──────────────────────────────────
 // Returns last 50 messages for a listing chat, ordered oldest first
 router.get("/:listingId", requireAuth, async (req: Request, res: Response) => {
@@ -56,7 +84,8 @@ router.get("/:listingId", requireAuth, async (req: Request, res: Response) => {
 });
 
 // ─── POST /api/chat/:listingId ─────────────────────────────────
-// Send a message — saves to DB, emits via Socket.io to the room
+// Send a message — saves to DB, emits via Socket.io to the room AND to the
+// receiver's personal user room so they get a notification even if not in chat
 router.post("/:listingId", requireAuth, async (req: Request, res: Response) => {
   try {
     const listingId = req.params.listingId as string;
@@ -93,41 +122,18 @@ router.post("/:listingId", requireAuth, async (req: Request, res: Response) => {
       },
     });
 
-    // Emit to the listing's chat room in real-time
     if (io) {
+      // Emit to listing chat room (for users currently in the chat)
       io.to(`listing:${listingId}`).emit("new_message", message);
+
+      // Also emit to the receiver's personal room for notifications
+      // (fires even when they're on a different page)
+      io.to(`user:${receiverId}`).emit("new_chat_message", message);
     }
 
     res.status(201).json({ message });
   } catch (err) {
     console.error("[chat/POST]", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// ─── GET /api/chat/conversations ──────────────────────────────
-// Returns all unique conversations (grouped by listingId) for the current user
-router.get("/", requireAuth, async (req: Request, res: Response) => {
-  try {
-    const userId = req.authUser?.userId;
-
-    // Get distinct listings where user has messages
-    const messages = await prisma.message.findMany({
-      where: {
-        OR: [{ senderId: userId }, { receiverId: userId }],
-      },
-      distinct: ["listingId"],
-      include: {
-        listing: { select: { id: true, title: true, images: true } },
-        sender: { select: { id: true, name: true } },
-        receiver: { select: { id: true, name: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-
-    res.json({ conversations: messages });
-  } catch (err) {
-    console.error("[chat/conversations]", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });

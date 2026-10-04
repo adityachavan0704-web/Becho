@@ -77,6 +77,31 @@ interface DashNotification {
   purchaseRequest: DashPurchaseRequest | null
 }
 
+// ── Chat Types ────────────────────────────────────────────────────────────────
+interface ChatUser { id: string; name: string }
+interface ChatMessage {
+  id: string
+  content: string
+  senderId: string
+  receiverId: string
+  listingId: string | null
+  sender: ChatUser
+  receiver: ChatUser
+  createdAt: string
+  listing?: { id: string; title: string; images: string[] } | null
+}
+interface Conversation {
+  id: string
+  listingId: string | null
+  listing: { id: string; title: string; images: string[] } | null
+  sender: ChatUser
+  receiver: ChatUser
+  content: string
+  createdAt: string
+  senderId: string
+  receiverId: string
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const T = {
   bg: "var(--bg)",
@@ -348,6 +373,8 @@ export default function Dashboard() {
   const [purchaseItem, setPurchaseItem] = useState<PurchaseItem | null>(null)
   const [globalWishlist, setGlobalWishlist] = useState<Set<string>>(new Set())
   const [inboxUnread, setInboxUnread] = useState(0)
+  const [msgUnread, setMsgUnread] = useState(0)
+  const [chatToast, setChatToast] = useState<ChatMessage | null>(null)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [sidebarHovered, setSidebarHovered] = useState(false)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
@@ -422,6 +449,16 @@ export default function Dashboard() {
       })
       setInboxUnread((n) => n + 1)
     })
+    // Real-time new message notification — fires when NOT in the chat room
+    socket.on("new_chat_message", (msg: ChatMessage) => {
+      // Only show toast if this user is the receiver
+      if (msg.receiverId === user.id) {
+        setMsgUnread((n) => n + 1)
+        setChatToast(msg)
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => setChatToast(null), 5000)
+      }
+    })
     return () => { socket.disconnect() }
   }, [user, getAccessToken])
 
@@ -491,7 +528,7 @@ export default function Dashboard() {
           <button key={item.id}
             onClick={() => { setActiveSection(item.id); setMobileSidebarOpen(false) }}
             title={compact ? item.label : undefined}
-            className="w-full flex items-center gap-3 rounded-xl text-sm font-medium transition-all duration-200"
+            className="w-full flex items-center gap-3 rounded-xl text-sm font-medium transition-all duration-200 relative"
             style={{
               ...(activeSection === item.id ? navActive : navInactive),
               padding: compact ? "10px" : "10px 16px",
@@ -500,6 +537,17 @@ export default function Dashboard() {
           >
             <item.icon className="h-4 w-4 flex-shrink-0" />
             {!compact && item.label}
+            {/* Show unread badge on Messages item */}
+            {item.id === "messages" && msgUnread > 0 && !compact && (
+              <span className="ml-auto text-[10px] font-bold rounded-full px-1.5 py-0.5"
+                style={{ background: "rgba(232,97,28,0.85)", color: "#fff" }}>
+                {msgUnread > 9 ? "9+" : msgUnread}
+              </span>
+            )}
+            {item.id === "messages" && msgUnread > 0 && compact && (
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full"
+                style={{ background: "rgba(232,97,28,0.85)" }} />
+            )}
           </button>
         ))}
 
@@ -761,7 +809,22 @@ export default function Dashboard() {
               <MarketplaceSection key="browse" isAuthenticated={isAuthenticated} onLoginPrompt={(action) => setLoginPrompt({ open: true, action })} wishlist={globalWishlist} onToggleWishlist={toggleGlobalWishlist} onBuyItem={(item) => setPurchaseItem(item)} />
             )}
             {activeSection === "messages" && (
-              <MessagesSection key="messages" isAuthenticated={isAuthenticated} onLogin={() => navigate("/login")} />
+              <MessagesSection
+                key="messages"
+                isAuthenticated={isAuthenticated}
+                currentUserId={user?.id ?? ""}
+                getAccessToken={getAccessToken}
+                onLogin={() => navigate("/login")}
+                onOpenChat={(listingId, receiverId, name) =>
+                  navigate(`/chat/${listingId}?receiverId=${receiverId}&name=${encodeURIComponent(name)}`)
+                }
+                notifications={notifications}
+                notifActionLoading={notifActionLoading}
+                onNotifAction={handleNotifAction}
+                onMarkAllRead={handleMarkAllRead}
+                msgUnread={msgUnread}
+                onClearMsgUnread={() => setMsgUnread(0)}
+              />
             )}
             {activeSection === "wishlist" && (
               <WishlistSection key="wishlist" wishlist={globalWishlist} onToggleWishlist={toggleGlobalWishlist} isAuthenticated={isAuthenticated} onLoginPrompt={(action) => setLoginPrompt({ open: true, action })} />
@@ -986,6 +1049,56 @@ export default function Dashboard() {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* ── New Message Toast ── */}
+      <AnimatePresence>
+        {chatToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 40, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 340, damping: 28 }}
+            className="fixed bottom-6 right-6 z-[60] flex items-start gap-3 p-4 max-w-sm w-full cursor-pointer"
+            style={{
+              background: isDark ? "rgba(18,18,18,0.97)" : "rgba(252,248,242,0.97)",
+              border: "1.5px solid rgba(232,97,28,0.60)",
+              borderRadius: 0,
+              boxShadow: "0 8px 32px rgba(0,0,0,0.28)",
+              backdropFilter: "blur(16px)",
+            }}
+            onClick={() => {
+              setChatToast(null)
+              setActiveSection("messages")
+            }}
+          >
+            {/* Icon */}
+            <div className="w-9 h-9 flex items-center justify-center flex-shrink-0"
+              style={{ background: "rgba(232,97,28,0.15)", borderRadius: 0 }}>
+              <MessageSquare className="h-4 w-4" style={{ color: T.primary }} />
+            </div>
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold uppercase tracking-wider mb-0.5" style={{ color: T.primary }}>
+                New Message
+              </p>
+              <p className="text-sm font-semibold truncate" style={{ color: T.text }}>
+                {chatToast.sender.name}
+              </p>
+              <p className="text-xs truncate mt-0.5" style={{ color: T.muted }}>
+                {chatToast.content}
+              </p>
+            </div>
+            {/* Dismiss */}
+            <button
+              onClick={(e) => { e.stopPropagation(); setChatToast(null) }}
+              className="flex-shrink-0 mt-0.5"
+              style={{ color: T.subtle }}
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
@@ -1566,22 +1679,292 @@ function ListingsSection({ listings, loading, isAuthenticated, onUpload, onViewD
   )
 }
 
-// ── Messages ──────────────────────────────────────────────────────────────────
-function MessagesSection({ isAuthenticated, onLogin }: { isAuthenticated: boolean; onLogin: () => void }) {
-  return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="p-8 max-w-5xl">
-      <h2 className="text-2xl font-bold mb-6" style={{ color: T.text }}>Messages</h2>
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-14 h-14 flex items-center justify-center mb-4"
-          style={{ background: T.surface2, border: EDGE_BORDER, borderRadius: 0 }}>
-          {isAuthenticated ? <MessageSquare className="h-6 w-6" style={{ color: T.subtle }} /> : <Lock className="h-6 w-6" style={{ color: T.subtle }} />}
+// ── Messages (full conversations + inbox merged) ───────────────────────────────
+function MessagesSection({
+  isAuthenticated, currentUserId, getAccessToken, onLogin, onOpenChat,
+  notifications, notifActionLoading, onNotifAction, onMarkAllRead,
+  msgUnread, onClearMsgUnread,
+}: {
+  isAuthenticated: boolean
+  currentUserId: string
+  getAccessToken: () => string | null
+  onLogin: () => void
+  onOpenChat: (listingId: string, receiverId: string, name: string) => void
+  notifications: DashNotification[]
+  notifActionLoading: string | null
+  onNotifAction: (requestId: string, status: "ACCEPTED" | "DECLINED") => Promise<void>
+  onMarkAllRead: () => Promise<void>
+  msgUnread: number
+  onClearMsgUnread: () => void
+}) {
+  const [tab, setTab] = useState<"conversations" | "inbox">("conversations")
+  const [conversations, setConversations] = useState<Conversation[]>([])
+  const [convLoading, setConvLoading] = useState(false)
+  const inboxUnreadCount = notifications.filter((n) => !n.isRead).length
+
+  useEffect(() => {
+    if (!isAuthenticated) return
+    const token = getAccessToken()
+    if (!token) return
+    setConvLoading(true)
+    void fetch(`${API_URL}/api/chat`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.ok ? r.json() as Promise<{ conversations: Conversation[] }> : Promise.resolve({ conversations: [] }))
+      .then((data) => setConversations(data.conversations))
+      .catch(() => setConversations([]))
+      .finally(() => setConvLoading(false))
+  }, [isAuthenticated, getAccessToken])
+
+  // When switching to conversations tab, clear msg unread
+  useEffect(() => {
+    if (tab === "conversations") onClearMsgUnread()
+  }, [tab, onClearMsgUnread])
+
+  if (!isAuthenticated) {
+    return (
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="p-8 max-w-5xl">
+        <h2 className="text-2xl font-bold mb-6" style={{ color: T.text }}>Messages</h2>
+        <div className="flex flex-col items-center justify-center py-20 text-center"
+          style={{ border: `2px dashed rgba(0,0,0,0.50)`, borderRadius: 0 }}>
+          <div className="w-14 h-14 flex items-center justify-center mb-4"
+            style={{ background: T.surface2, border: EDGE_BORDER, borderRadius: 0 }}>
+            <Lock className="h-6 w-6" style={{ color: T.subtle }} />
+          </div>
+          <p className="text-base font-semibold" style={{ color: T.muted }}>Login to view messages</p>
+          <p className="text-sm mt-1.5 mb-5" style={{ color: T.subtle }}>Log in to message sellers and manage your chats.</p>
+          <Button size="sm" onClick={onLogin}><User className="h-4 w-4 mr-1.5" /> Log In</Button>
         </div>
-        <p className="text-base font-semibold" style={{ color: T.muted }}>{isAuthenticated ? "No messages yet" : "Login to view messages"}</p>
-        <p className="text-sm mt-1.5 mb-5" style={{ color: T.subtle }}>
-          {isAuthenticated ? "When buyers contact you, messages will appear here." : "Log in to message sellers and manage your chats."}
-        </p>
-        {!isAuthenticated && <Button size="sm" onClick={onLogin}><User className="h-4 w-4 mr-1.5" /> Log In</Button>}
+      </motion.div>
+    )
+  }
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="p-8 max-w-4xl space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold" style={{ color: T.text }}>Messages</h2>
+          <p className="text-sm mt-0.5" style={{ color: T.muted }}>Your conversations & purchase requests</p>
+        </div>
       </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 p-1" style={{ background: T.surface2, border: EDGE_BORDER, borderRadius: 0 }}>
+        {(["conversations", "inbox"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className="flex-1 flex items-center justify-center gap-2 text-sm font-semibold py-2.5 transition-all relative"
+            style={tab === t
+              ? { background: T.primary, color: "#fff", borderRadius: 0 }
+              : { color: T.muted }}
+          >
+            {t === "conversations" ? <MessageSquare className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
+            {t === "conversations" ? "Conversations" : "Purchase Requests"}
+            {t === "conversations" && msgUnread > 0 && (
+              <span className="absolute top-1 right-1 min-w-[16px] h-4 rounded-full text-[10px] font-bold flex items-center justify-center px-1"
+                style={{ background: tab === "conversations" ? "rgba(255,255,255,0.3)" : T.primary, color: "#fff" }}>
+                {msgUnread > 9 ? "9+" : msgUnread}
+              </span>
+            )}
+            {t === "inbox" && inboxUnreadCount > 0 && (
+              <span className="absolute top-1 right-1 min-w-[16px] h-4 rounded-full text-[10px] font-bold flex items-center justify-center px-1"
+                style={{ background: tab === "inbox" ? "rgba(255,255,255,0.3)" : T.primary, color: "#fff" }}>
+                {inboxUnreadCount > 9 ? "9+" : inboxUnreadCount}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      <AnimatePresence mode="wait">
+        {tab === "conversations" ? (
+          <motion.div key="conversations" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            {convLoading ? (
+              <div className="flex justify-center py-16">
+                <Loader2 className="h-5 w-5 animate-spin" style={{ color: T.muted }} />
+              </div>
+            ) : conversations.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center"
+                style={{ border: `2px dashed rgba(0,0,0,0.50)`, borderRadius: 0 }}>
+                <div className="w-14 h-14 flex items-center justify-center mb-4"
+                  style={{ background: T.surface2, border: EDGE_BORDER, borderRadius: 0 }}>
+                  <MessageSquare className="h-6 w-6" style={{ color: T.subtle }} />
+                </div>
+                <p className="text-base font-semibold" style={{ color: T.muted }}>No conversations yet</p>
+                <p className="text-sm mt-1.5" style={{ color: T.subtle }}>When you send or receive messages, they appear here.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {conversations.map((conv) => {
+                  const isMe = conv.senderId === currentUserId
+                  const otherUser = isMe ? conv.receiver : conv.sender
+                  const receiverId = isMe ? conv.receiverId : conv.senderId
+                  const listingTitle = conv.listing?.title ?? "Unknown listing"
+                  const listingImg = conv.listing?.images?.[0]
+                  return (
+                    <motion.button
+                      key={conv.id}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      onClick={() => onOpenChat(conv.listingId ?? "", receiverId, listingTitle)}
+                      className="w-full flex items-center gap-4 p-4 text-left transition-all group"
+                      style={{ background: T.surface, border: EDGE_BORDER, borderRadius: 0 }}
+                    >
+                      {/* Listing thumbnail */}
+                      <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center overflow-hidden"
+                        style={{ background: T.surface2, borderRadius: 0, border: EDGE_BORDER }}>
+                        {listingImg
+                          ? <img src={listingImg} alt={listingTitle} className="w-full h-full object-cover" />
+                          : <MessageSquare className="h-5 w-5" style={{ color: T.subtle }} />}
+                      </div>
+                      {/* Info */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold truncate" style={{ color: T.text }}>{listingTitle}</p>
+                        <p className="text-xs mt-0.5" style={{ color: T.muted }}>
+                          with <span style={{ color: T.text }}>{otherUser.name}</span>
+                        </p>
+                        <p className="text-xs mt-1 truncate" style={{ color: T.subtle }}>
+                          {isMe ? "You: " : ""}{conv.content}
+                        </p>
+                      </div>
+                      {/* Time */}
+                      <div className="flex-shrink-0 text-right">
+                        <p className="text-xs" style={{ color: T.subtle }}>
+                          {new Date(conv.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                        </p>
+                        <ChevronRight className="h-4 w-4 mt-1 ml-auto" style={{ color: T.subtle }} />
+                      </div>
+                    </motion.button>
+                  )
+                })}
+              </div>
+            )}
+          </motion.div>
+        ) : (
+          <motion.div key="inbox" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
+            {notifications.length > 0 && notifications.some((n) => !n.isRead) && (
+              <div className="flex justify-end">
+                <button
+                  onClick={() => void onMarkAllRead()}
+                  className="flex items-center gap-1.5 text-xs transition-colors"
+                  style={{ color: T.muted }}
+                >
+                  <CheckCheck className="h-3.5 w-3.5" /> Mark all read
+                </button>
+              </div>
+            )}
+            {notifications.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center"
+                style={{ border: `2px dashed rgba(0,0,0,0.50)`, borderRadius: 0 }}>
+                <div className="w-14 h-14 flex items-center justify-center mb-4"
+                  style={{ background: T.surface2, border: EDGE_BORDER, borderRadius: 0 }}>
+                  <Bell className="h-6 w-6" style={{ color: T.subtle }} />
+                </div>
+                <p className="text-base font-semibold" style={{ color: T.muted }}>No purchase requests yet</p>
+                <p className="text-sm mt-1.5" style={{ color: T.subtle }}>Requests from buyers will appear here.</p>
+              </div>
+            ) : (
+              notifications.map((notif) => {
+                const pr = notif.purchaseRequest
+                if (!pr) return null
+                const isSellerView = pr.sellerId === currentUserId
+                const statusColors: Record<PRStatus, string> = {
+                  PENDING: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+                  ACCEPTED: "text-green-400 bg-green-400/10 border-green-400/20",
+                  DECLINED: "text-red-400 bg-red-400/10 border-red-400/20",
+                  COMPLETED: "text-zinc-400 bg-zinc-400/10 border-zinc-400/20",
+                }
+                return (
+                  <motion.div
+                    key={notif.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-4 space-y-3"
+                    style={notif.isRead
+                      ? { background: T.surface, border: EDGE_BORDER, borderRadius: 0 }
+                      : { background: T.surface, border: "1.5px solid rgba(232,97,28,0.50)", borderRadius: 0, boxShadow: "0 0 0 1px rgba(232,97,28,0.08)" }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {!notif.isRead && <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: T.primary }} />}
+                        <span className="text-xs" style={{ color: T.muted }}>
+                          <span className="font-semibold" style={{ color: T.text }}>
+                            {notif.type === "PURCHASE_REQUEST" ? pr.buyer.name : pr.seller.name}
+                          </span>
+                          {" "}
+                          {notif.type === "PURCHASE_REQUEST" ? "wants to buy your listing" :
+                           notif.type === "PURCHASE_ACCEPTED" ? "accepted your request for" : "declined your request for"}
+                          {notif.type !== "PURCHASE_REQUEST" && (
+                            <span className="font-medium" style={{ color: T.text }}> {pr.listing.title}</span>
+                          )}
+                        </span>
+                      </div>
+                      <span className="text-xs flex-shrink-0" style={{ color: T.subtle }}>
+                        {new Date(notif.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                      </span>
+                    </div>
+
+                    {/* Listing row */}
+                    <div className="flex items-center gap-3 p-2" style={{ background: T.surface2, border: EDGE_BORDER, borderRadius: 0 }}>
+                      <div className="w-10 h-10 flex-shrink-0 overflow-hidden flex items-center justify-center" style={{ background: T.bg, borderRadius: 0 }}>
+                        {pr.listing.images[0]
+                          ? <img src={pr.listing.images[0]} alt={pr.listing.title} className="w-full h-full object-cover" />
+                          : <Package className="h-4 w-4" style={{ color: T.subtle }} />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold truncate" style={{ color: T.text }}>{pr.listing.title}</p>
+                        <p className="text-xs" style={{ color: T.muted }}>{pr.listing.isFree ? "Free" : `₹${pr.listing.price.toLocaleString("en-IN")}`}</p>
+                      </div>
+                    </div>
+
+                    {/* Status + Actions */}
+                    <div className="flex items-center justify-between">
+                      <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border ${statusColors[pr.status]}`}>
+                        {pr.status === "PENDING" ? <Clock className="h-3 w-3" /> :
+                         pr.status === "ACCEPTED" ? <CheckCircle2 className="h-3 w-3" /> :
+                         pr.status === "DECLINED" ? <XCircle className="h-3 w-3" /> : <CheckCheck className="h-3 w-3" />}
+                        {pr.status.charAt(0) + pr.status.slice(1).toLowerCase()}
+                      </span>
+                      {isSellerView && pr.status === "PENDING" && (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => void onNotifAction(pr.id, "DECLINED")}
+                            disabled={notifActionLoading !== null}
+                            className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 bg-red-400/10 border border-red-400/20 px-3 py-1.5 transition-all disabled:opacity-50"
+                            style={{ borderRadius: 0 }}
+                          >
+                            {notifActionLoading === pr.id + "DECLINED" ? <Loader2 className="h-3 w-3 animate-spin" /> : <XCircle className="h-3 w-3" />}
+                            Decline
+                          </button>
+                          <button
+                            onClick={() => void onNotifAction(pr.id, "ACCEPTED")}
+                            disabled={notifActionLoading !== null}
+                            className="flex items-center gap-1.5 text-xs text-green-400 hover:text-green-300 bg-green-400/10 border border-green-400/20 px-3 py-1.5 transition-all disabled:opacity-50"
+                            style={{ borderRadius: 0 }}
+                          >
+                            {notifActionLoading === pr.id + "ACCEPTED" ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle2 className="h-3 w-3" />}
+                            Accept
+                          </button>
+                        </div>
+                      )}
+                      {pr.status === "ACCEPTED" && (
+                        <button
+                          onClick={() => onOpenChat(pr.listing.id, isSellerView ? pr.buyer.id : pr.seller.id, pr.listing.title)}
+                          className="flex items-center gap-1.5 text-xs hover:underline"
+                          style={{ color: T.primary }}
+                        >
+                          <MessageSquare className="h-3 w-3" /> Chat
+                        </button>
+                      )}
+                    </div>
+                  </motion.div>
+                )
+              })
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }
