@@ -17,13 +17,14 @@ import type { Listing } from "../components/ListingCard"
 import BechoLogo from "../components/BechoLogo"
 
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
-type ActiveSection = "overview" | "listings" | "browse" | "messages" | "wishlist"
+type ActiveSection = "overview" | "listings" | "browse" | "messages" | "wishlist" | "profile"
 const NAV_ITEMS = [
   { id: "overview" as const, label: "Overview", icon: LayoutDashboard },
   { id: "listings" as const, label: "My Listings", icon: Package },
   { id: "browse" as const, label: "Marketplace", icon: ShoppingBag },
-  { id: "messages" as const, label: "Messages", icon: MessageSquare },
+  { id: "messages" as const, label: "Messages & Inbox", icon: Inbox },
   { id: "wishlist" as const, label: "Wishlist", icon: Heart },
+  { id: "profile" as const, label: "Profile", icon: User },
 ]
 
 const MOCK_LISTINGS = [
@@ -751,21 +752,6 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* Bell / Notification trigger */}
-            <button
-              id="dashboard-notif-bell"
-              onClick={() => { setNotifPanelOpen((o) => !o); if (!notifPanelOpen) void handleMarkAllRead() }}
-              className="relative h-10 w-10 flex items-center justify-center transition-all"
-              style={{ background: notifPanelOpen ? "rgba(232,97,28,0.15)" : T.surface2, border: notifPanelOpen ? "1.5px solid rgba(232,97,28,0.70)" : EDGE_BORDER, color: notifPanelOpen ? T.primary : T.muted, borderRadius: 0 }}
-            >
-              <Bell className="h-4 w-4" />
-              {inboxUnread > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full text-[10px] font-bold text-white flex items-center justify-center px-1"
-                  style={{ background: T.primary }}>
-                  {inboxUnread > 9 ? "9+" : inboxUnread}
-                </span>
-              )}
-            </button>
             <Button size="sm" onClick={() => openUpload()}>
               <Plus className="h-4 w-4 mr-1.5" /> SELL
             </Button>
@@ -829,6 +815,9 @@ export default function Dashboard() {
             {activeSection === "wishlist" && (
               <WishlistSection key="wishlist" wishlist={globalWishlist} onToggleWishlist={toggleGlobalWishlist} isAuthenticated={isAuthenticated} onLoginPrompt={(action) => setLoginPrompt({ open: true, action })} />
             )}
+            {activeSection === "profile" && (
+              <ProfileSection key="profile" user={user} isAuthenticated={isAuthenticated} onLogin={() => navigate("/login")} onNavigateToAccount={() => navigate("/account")} />
+            )}
           </AnimatePresence>
         </div>
       </main>
@@ -841,216 +830,6 @@ export default function Dashboard() {
         isAuthenticated={isAuthenticated}
         onLoginPrompt={(action) => setLoginPrompt({ open: true, action })}
       />
-
-      {/* ── Notification Panel ── */}
-      <AnimatePresence>
-        {notifPanelOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40"
-              style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(2px)" }}
-              onClick={() => setNotifPanelOpen(false)}
-            />
-            {/* Panel */}
-            <motion.div
-              initial={{ x: "100%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: "100%", opacity: 0 }}
-              transition={{ type: "spring", stiffness: 320, damping: 32 }}
-              className="fixed right-0 top-0 h-full z-50 flex flex-col"
-              style={{
-                width: "min(420px, 100vw)",
-                backgroundColor: isDark ? "rgba(10,10,10,0.98)" : "rgba(250,245,238,0.98)",
-                borderLeft: `1px solid ${T.border}`,
-                backdropFilter: "blur(20px)",
-                boxShadow: "-8px 0 40px rgba(0,0,0,0.18)",
-              }}
-            >
-              {/* Panel header */}
-              <div className="flex items-center justify-between px-5 py-4 flex-shrink-0"
-                style={{ borderBottom: `1px solid ${T.border}` }}>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 flex items-center justify-center"
-                    style={{ background: "rgba(232,97,28,0.12)", border: "1.5px solid rgba(232,97,28,0.55)", borderRadius: 0 }}>
-                    <Bell className="h-4 w-4" style={{ color: T.primary }} />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-bold" style={{ color: T.text }}>Notifications</h2>
-                    <p className="text-xs" style={{ color: T.muted }}>Purchase requests from buyers</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {notifications.some((n) => !n.isRead) && (
-                    <button onClick={() => void handleMarkAllRead()}
-                      className="text-xs flex items-center gap-1 px-2.5 py-1.5 transition-all"
-                      style={{ color: T.muted, background: T.surface2, borderRadius: 0 }}>
-                      <CheckCheck className="h-3 w-3" /> All read
-                    </button>
-                  )}
-                  <button onClick={() => setNotifPanelOpen(false)}
-                    className="h-8 w-8 flex items-center justify-center transition-all"
-                    style={{ background: T.surface2, color: T.muted, borderRadius: 0 }}>
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Panel body */}
-              <div className="flex-1 overflow-y-auto">
-                {notifLoading ? (
-                  <div className="flex items-center justify-center py-20">
-                    <Loader2 className="h-6 w-6 animate-spin" style={{ color: T.muted }} />
-                  </div>
-                ) : notifications.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-                      style={{ background: "rgba(232,97,28,0.08)", border: "1px solid rgba(232,97,28,0.12)" }}>
-                      <ShoppingCart className="h-6 w-6" style={{ color: T.muted }} />
-                    </div>
-                    <p className="font-semibold mb-1" style={{ color: T.text }}>No requests yet</p>
-                    <p className="text-sm" style={{ color: T.muted }}>When buyers request your listings, they'll appear here.</p>
-                  </div>
-                ) : (
-                  <div className="p-4 space-y-3">
-                    {notifications.map((notif) => {
-                      const pr = notif.purchaseRequest
-                      if (!pr) return null
-                      const isPending = pr.status === "PENDING"
-                      const isRequest = notif.type === "PURCHASE_REQUEST"
-                      return (
-                        <motion.div
-                          key={notif.id}
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="overflow-hidden"
-                          style={{
-                            background: notif.isRead ? T.surface : (isDark ? "rgba(232,97,28,0.07)" : "rgba(232,97,28,0.06)"),
-                            border: notif.isRead ? EDGE_BORDER : "1.5px solid rgba(232,97,28,0.60)",
-                            borderRadius: 0,
-                          }}
-                        >
-                          {/* Card header */}
-                          <div className="flex items-start gap-3 px-4 pt-4 pb-3">
-                            {/* Avatar */}
-                            <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold"
-                              style={{ background: "rgba(232,97,28,0.15)", color: T.primary }}>
-                              {isRequest
-                                ? (pr.buyer?.name?.[0]?.toUpperCase() ?? "?")
-                                : (pr.seller?.name?.[0]?.toUpperCase() ?? "?")}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-semibold" style={{ color: T.text }}>
-                                {isRequest ? pr.buyer?.name : pr.seller?.name}
-                              </p>
-                              <p className="text-xs" style={{ color: T.muted }}>
-                                {isRequest
-                                  ? `wants to buy your listing`
-                                  : notif.type === "PURCHASE_ACCEPTED"
-                                    ? `accepted your request`
-                                    : `declined your request`}
-                              </p>
-                            </div>
-                            <span className="text-[10px] flex-shrink-0" style={{ color: T.subtle }}>
-                              {new Date(notif.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
-                            </span>
-                          </div>
-
-                          {/* Listing info */}
-                          <div className="mx-4 mb-3 px-3 py-2.5 flex items-center gap-3"
-                            style={{ background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)", border: EDGE_BORDER, borderRadius: 0 }}>
-                            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0"
-                              style={{ background: "rgba(232,97,28,0.10)", borderRadius: 0 }}>
-                              <Package className="h-3.5 w-3.5" style={{ color: T.primary }} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs font-medium truncate" style={{ color: T.text }}>{pr.listing?.title}</p>
-                              <p className="text-xs flex items-center gap-0.5" style={{ color: T.muted }}>
-                                <IndianRupee className="h-2.5 w-2.5" />
-                                {pr.listing?.isFree ? "Free" : pr.listing?.price?.toLocaleString("en-IN")}
-                              </p>
-                            </div>
-                            {/* Status badge */}
-                            <span className={`text-[10px] font-semibold px-2 py-0.5 border flex items-center gap-1 ${pr.status === "PENDING" ? "text-amber-400 bg-amber-400/10 border-amber-400/20" :
-                              pr.status === "ACCEPTED" ? "text-green-400 bg-green-400/10 border-green-400/20" :
-                                pr.status === "DECLINED" ? "text-red-400 bg-red-400/10 border-red-400/20" :
-                                  "text-zinc-400 bg-zinc-400/10 border-zinc-400/20"
-                              }`} style={{ borderRadius: 0 }}>
-                              {pr.status === "PENDING" && <Clock className="h-2.5 w-2.5" />}
-                              {pr.status === "ACCEPTED" && <CheckCircle2 className="h-2.5 w-2.5" />}
-                              {pr.status === "DECLINED" && <XCircle className="h-2.5 w-2.5" />}
-                              {pr.status === "COMPLETED" && <CheckCheck className="h-2.5 w-2.5" />}
-                              {pr.status}
-                            </span>
-                          </div>
-
-                          {/* Buyer note */}
-                          {pr.note && (
-                            <div className="mx-4 mb-3 px-3 py-2 text-xs italic"
-                              style={{ background: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)", color: T.muted, border: EDGE_BORDER, borderRadius: 0 }}>
-                              "{pr.note}"
-                            </div>
-                          )}
-
-                          {/* Buyer contact info (for seller, when request received) */}
-                          {isRequest && pr.buyer?.email && (
-                            <div className="mx-4 mb-3 px-3 py-2 flex items-center gap-2 text-xs"
-                              style={{ background: "rgba(232,97,28,0.06)", border: "1.5px solid rgba(232,97,28,0.45)", borderRadius: 0 }}>
-                              <User className="h-3 w-3 flex-shrink-0" style={{ color: T.primary }} />
-                              <span style={{ color: T.muted }}>Contact: </span>
-                              <span className="font-medium truncate" style={{ color: T.text }}>{pr.buyer.email}</span>
-                            </div>
-                          )}
-
-                          {/* Actions — only for seller on pending requests */}
-                          {isRequest && isPending && (
-                            <div className="flex gap-2 px-4 pb-4">
-                              <button
-                                onClick={() => void handleNotifAction(pr.id, "ACCEPTED")}
-                                disabled={notifActionLoading !== null}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all"
-                                style={{ background: "rgba(34,197,94,0.15)", color: "#22c55e", border: "1.5px solid rgba(34,197,94,0.60)", borderRadius: 0 }}
-                              >
-                                {notifActionLoading === pr.id + "ACCEPTED"
-                                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                  : <CheckCircle2 className="h-3.5 w-3.5" />}
-                                Accept
-                              </button>
-                              <button
-                                onClick={() => void handleNotifAction(pr.id, "DECLINED")}
-                                disabled={notifActionLoading !== null}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all"
-                                style={{ background: "rgba(239,68,68,0.10)", color: "#ef4444", border: "1.5px solid rgba(239,68,68,0.55)", borderRadius: 0 }}
-                              >
-                                {notifActionLoading === pr.id + "DECLINED"
-                                  ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                  : <XCircle className="h-3.5 w-3.5" />}
-                                Decline
-                              </button>
-                            </div>
-                          )}
-                        </motion.div>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Footer link to full inbox */}
-              <div className="px-5 py-4 flex-shrink-0" style={{ borderTop: EDGE_BORDER }}>
-                <button
-                  onClick={() => { setNotifPanelOpen(false); navigate("/inbox") }}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-all"
-                  style={{ background: T.surface2, color: T.muted, border: EDGE_BORDER, borderRadius: 0 }}
-                >
-                  <Inbox className="h-4 w-4" /> View Full Inbox
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
 
       {/* ── New Message Toast ── */}
       <AnimatePresence>
@@ -1565,6 +1344,89 @@ function WishlistSection({ wishlist, onToggleWishlist, }: {
               </motion.div>
             )
           })}
+        </div>
+      )}
+    </motion.div>
+  )
+}
+
+// ── Profile Section ───────────────────────────────────────────────────────────
+function ProfileSection({ user, isAuthenticated, onLogin, onNavigateToAccount }: {
+  user: { name: string; email: string; role: string; reputation?: number; profilePicture?: string } | null
+  isAuthenticated: boolean
+  onLogin: () => void
+  onNavigateToAccount: () => void
+}) {
+  return (
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="p-8 max-w-3xl space-y-6">
+      <h2 className="text-3xl font-black" style={{ color: T.text }}>Profile</h2>
+
+      {!isAuthenticated ? (
+        <div className="flex flex-col items-center justify-center py-24 text-center"
+          style={{ border: `2px dashed rgba(0,0,0,0.50)`, borderRadius: 0 }}>
+          <div className="w-16 h-16 flex items-center justify-center mb-4"
+            style={{ background: T.surface2, borderRadius: 0 }}>
+            <User className="h-7 w-7" style={{ color: T.subtle }} />
+          </div>
+          <p className="text-lg font-bold" style={{ color: T.muted }}>Not logged in</p>
+          <p className="text-sm mt-1 mb-4" style={{ color: T.subtle }}>Log in to view your profile</p>
+          <Button onClick={onLogin}>Log In</Button>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {/* Profile Card */}
+          <div className="p-6 flex items-start gap-6" style={{ background: T.surface, border: EDGE_BORDER, borderRadius: 0 }}>
+            {/* Avatar */}
+            <div className="w-24 h-24 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden"
+              style={{ background: user?.profilePicture ? "transparent" : "rgba(232,97,28,0.15)", border: EDGE_BORDER }}>
+              {user?.profilePicture ? (
+                <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              ) : (
+                <User className="h-12 w-12" style={{ color: T.primary }} />
+              )}
+            </div>
+            {/* Info */}
+            <div className="flex-1">
+              <h3 className="text-2xl font-bold" style={{ color: T.text }}>{user?.name}</h3>
+              <p className="text-sm mt-1" style={{ color: T.muted }}>{user?.email}</p>
+              <div className="flex items-center gap-4 mt-3">
+                <div className="flex items-center gap-1.5">
+                  <Star className="h-4 w-4" style={{ color: "#f59e0b" }} fill="#f59e0b" />
+                  <span className="text-sm font-bold" style={{ color: T.text }}>
+                    {user?.reputation ? `${user.reputation}/5` : "No rating"}
+                  </span>
+                </div>
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full uppercase"
+                  style={{ background: T.surface2, color: T.muted }}>
+                  {user?.role}
+                </span>
+              </div>
+              <Button 
+                onClick={onNavigateToAccount} 
+                variant="outline"
+                className="mt-4"
+                size="sm"
+              >
+                Edit Profile
+              </Button>
+            </div>
+          </div>
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="p-4 text-center" style={{ background: T.surface, border: EDGE_BORDER, borderRadius: 0 }}>
+              <div className="text-2xl font-black" style={{ color: T.primary }}>12</div>
+              <div className="text-xs font-semibold mt-1" style={{ color: T.muted }}>LISTINGS</div>
+            </div>
+            <div className="p-4 text-center" style={{ background: T.surface, border: EDGE_BORDER, borderRadius: 0 }}>
+              <div className="text-2xl font-black" style={{ color: T.primary }}>8</div>
+              <div className="text-xs font-semibold mt-1" style={{ color: T.muted }}>SOLD</div>
+            </div>
+            <div className="p-4 text-center" style={{ background: T.surface, border: EDGE_BORDER, borderRadius: 0 }}>
+              <div className="text-2xl font-black" style={{ color: T.primary }}>₹5.2K</div>
+              <div className="text-xs font-semibold mt-1" style={{ color: T.muted }}>EARNED</div>
+            </div>
+          </div>
         </div>
       )}
     </motion.div>

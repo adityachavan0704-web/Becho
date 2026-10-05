@@ -170,7 +170,7 @@ function StatCard({ value, label }: { value: string; label: string }) {
   )
 }
 
-// ─── Main Landing Page ────────────────────────────────────────────────────────
+// ─── Main Landing Page ────────────────────────────────────────────────────────w
 export default function Landing() {
   const navigate = useNavigate()
   const { isDark } = useTheme()
