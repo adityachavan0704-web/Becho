@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { Button } from "../components/ui/Button"
 import BechoLogo from "../components/BechoLogo"
 import { useTheme } from "../contexts/ThemeContext"
-import { LiquidGlassCarousel } from "../components/ui/liquid-glass-carousel"
+import { LiquidGlassCarousel } from "../components/ui/liquid-glass-carousel.tsx"
 import {
   ArrowRight,
   Star,
