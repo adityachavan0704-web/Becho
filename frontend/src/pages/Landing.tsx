@@ -1,10 +1,10 @@
-import { useRef, useState, useEffect } from "react"
-import { motion, useAnimationFrame } from "framer-motion"
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import { Button } from "../components/ui/Button"
 import BechoLogo from "../components/BechoLogo"
 import { useTheme } from "../contexts/ThemeContext"
-// import { CursorDrivenParticleTypography } from "../components/ui/cursor-driven-particle-typography"
+import { LiquidGlassCarousel } from "../components/ui/liquid-glass-carousel"
 import {
   ArrowRight,
   Star,
@@ -12,165 +12,7 @@ import {
   Search,
 } from "lucide-react"
 
-// ─── 3D Carousel Data ────────────────────────────────────────────────────────
-const carouselItems = [
-  { img: "/arduino_kit.png", label: "Arduino Kit", tag: "Electronics", color: "#E8611C" },
-  { img: "/sensors_collection.png", label: "IoT Sensors", tag: "Hardware", color: "#ff7b3a" },
-  { img: "/textbooks_stack.png", label: "Engineering Books", tag: "Books", color: "#ffffff" },
-  { img: "/video_course.png", label: "Video Courses", tag: "Digital", color: "#ffa06d" },
-  { img: "/lab_equipment.png", label: "Lab Equipment", tag: "Instruments", color: "#E8611C" },
-  { img: "/notes_pdf.png", label: "Study Notes", tag: "Notes", color: "#ffffff" },
-  { img: "/raspberry_pi.png", label: "Raspberry Pi", tag: "Electronics", color: "#ff7b3a" },
-  { img: "/mentorship.png", label: "Mentorship", tag: "Guidance", color: "#ffa06d" },
-]
-
-// ─── 3D Sphere Carousel ───────────────────────────────────────────────────────
-function SphereCarousel() {
-  const angleRef = useRef(0)
-  const [cards, setCards] = useState<
-    { x: number; y: number; z: number; rotY: number; scale: number; opacity: number; item: (typeof carouselItems)[0] }[]
-  >([])
-  const containerRef = useRef<HTMLDivElement>(null)
-  const isDragging = useRef(false)
-  const lastX = useRef(0)
-  const velocityRef = useRef(0)
-
-  const count = carouselItems.length
-  const rx = 380
-  const ry = 90
-
-  const compute = (angle: number) =>
-    carouselItems.map((item, i) => {
-      const theta = (i / count) * Math.PI * 2 + angle
-      const x = Math.sin(theta) * rx
-      const z = Math.cos(theta) * rx
-      const yBias = Math.sin(theta) * ry
-      const scale = 0.6 + ((z + rx) / (2 * rx)) * 0.55
-      const opacity = 0.3 + ((z + rx) / (2 * rx)) * 0.7
-      return { x, y: yBias, z, rotY: -(theta * 180) / Math.PI + 90, scale, opacity, item }
-    })
-
-  useAnimationFrame(() => {
-    if (!isDragging.current) {
-      angleRef.current += 0.004
-      velocityRef.current *= 0.95
-    } else {
-      angleRef.current += velocityRef.current * 0.01
-    }
-    setCards(compute(angleRef.current))
-  })
-
-  const handleMouseDown = (e: React.MouseEvent) => { isDragging.current = true; lastX.current = e.clientX }
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging.current) return
-    const delta = e.clientX - lastX.current
-    velocityRef.current = delta * 0.1
-    angleRef.current += delta * 0.004
-    lastX.current = e.clientX
-  }
-  const handleMouseUp = () => { isDragging.current = false }
-  const handleTouchStart = (e: React.TouchEvent) => { isDragging.current = true; lastX.current = e.touches[0].clientX }
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging.current) return
-    const delta = e.touches[0].clientX - lastX.current
-    velocityRef.current = delta * 0.1
-    angleRef.current += delta * 0.004
-    lastX.current = e.touches[0].clientX
-  }
-  const handleTouchEnd = () => { isDragging.current = false }
-
-  return (
-    <div
-      ref={containerRef}
-      className="relative w-full h-[520px] flex items-center justify-center select-none cursor-grab active:cursor-grabbing"
-      onMouseDown={handleMouseDown} onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
-      onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}
-      style={{ perspective: "1200px" }}
-    >
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-[600px] h-[600px] rounded-full"
-          style={{ background: "radial-gradient(ellipse at center, rgba(232,97,28,0.08) 0%, transparent 70%)" }} />
-      </div>
-      {[...cards].sort((a, b) => a.z - b.z).map((card) => (
-        <div
-          key={card.item.label}
-          className="absolute"
-          style={{
-            transform: `translateX(${card.x}px) translateY(${card.y}px) scale(${card.scale})`,
-            opacity: card.opacity,
-            zIndex: Math.round(card.z + rx),
-            transition: "none",
-            willChange: "transform, opacity",
-          }}
-        >
-          <div
-            className="relative w-[160px] h-[210px] rounded-2xl overflow-hidden shadow-2xl"
-            style={{
-              border: "var(--border-width) solid rgba(255,255,255,0.10)",
-              boxShadow: card.z > 0
-                ? `0 20px 60px rgba(0,0,0,0.5), 0 0 20px ${card.item.color}22`
-                : "0 10px 30px rgba(0,0,0,0.35)",
-            }}
-          >
-            <img src={card.item.img} alt={card.item.label} className="w-full h-full object-cover" draggable={false} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-            <div
-              className="absolute top-3 left-3 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-widest"
-              style={{ background: card.item.color + "22", color: card.item.color, border: `1px solid ${card.item.color}44` }}
-            >
-              {card.item.tag}
-            </div>
-            <div className="absolute bottom-3 left-3 right-3">
-              <p className="text-white text-xs font-semibold leading-tight">{card.item.label}</p>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// ─── Marquee Strip ────────────────────────────────────────────────────────────
-const marqueeItems = ["Arduino Kits", "Lab Manuals", "Study Notes", "IoT Sensors", "Video Courses", "Raspberry Pi", "Textbooks", "Mentorship", "Project Files", "Lab Equipment"]
-
-function MarqueeStrip() {
-  return (
-    <div className="w-full overflow-hidden py-4" style={{ borderTop: "var(--border-width) solid var(--border)", borderBottom: "var(--border-width) solid var(--border)", backgroundColor: "var(--surface)" }}>
-      <motion.div
-        className="flex gap-12 whitespace-nowrap"
-        animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-      >
-        {[...marqueeItems, ...marqueeItems].map((item, i) => (
-          <span key={i} className="flex items-center gap-3 text-sm font-mono uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
-            <span style={{ color: "var(--primary)" }}>✦</span>
-            {item}
-          </span>
-        ))}
-      </motion.div>
-    </div>
-  )
-}
-
-
-// ─── Stat Card ────────────────────────────────────────────────────────────────
-function StatCard({ value, label }: { value: string; label: string }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true }}
-      className="text-center p-8 rounded-2xl backdrop-blur-sm"
-      style={{ background: "var(--surface)", border: "var(--border-width) solid var(--border)" }}
-    >
-      <div className="text-4xl font-bold mb-2" style={{ color: "var(--primary)" }}>{value}</div>
-      <div className="text-sm font-mono uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>{label}</div>
-    </motion.div>
-  )
-}
-
-// ─── Main Landing Page ────────────────────────────────────────────────────────w
+// ─── Main Landing Page ────────────────────────────────────────────────────────
 export default function Landing() {
   const navigate = useNavigate()
   const { isDark } = useTheme()
@@ -352,43 +194,32 @@ export default function Landing() {
       {/* ══ SCROLLABLE CONTENT — slides over the fixed hero ══ */}
       <div className="relative" style={{ zIndex: 10, background: "var(--bg)" }}>
 
-        {/* ── 3D Sphere Carousel ── */}
-        <section className="relative px-6 py-16 flex flex-col items-center justify-center z-10" style={{ minHeight: "100vh" }}>
+        {/* ── Liquid Glass Carousel Section ── */}
+        <section className="relative px-6 py-20 flex flex-col items-center justify-center" style={{ minHeight: "90vh" }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="text-center mb-4"
+            className="text-center mb-8"
           >
             <span className="text-xs font-mono uppercase tracking-widest mb-2 block" style={{ color: "var(--primary)" }}>What's on Becho</span>
             <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "var(--text)" }}>Explore what students are trading</h2>
           </motion.div>
-          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.3, duration: 1 }} className="w-full">
-            <SphereCarousel />
-          </motion.div>
-          <motion.p
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.6, duration: 0.6 }}
-            className="text-center text-xs font-mono uppercase tracking-widest -mt-4"
-            style={{ color: "var(--text-subtle)" }}
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            whileInView={{ opacity: 1 }} 
+            viewport={{ once: true }} 
+            transition={{ delay: 0.3, duration: 1 }} 
+            className="w-full max-w-6xl"
+            style={{ height: "520px" }}
           >
-            ← drag to explore →
-          </motion.p>
-        </section>
-
-        {/* ── Marquee ── */}
-        <div className="relative z-10">
-          <MarqueeStrip />
-        </div>
-
-        {/* ── Stats ── */}
-        <section className="max-w-5xl mx-auto px-6 py-20 relative z-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <StatCard value="2.4K+" label="Students" />
-            <StatCard value="8,900+" label="Items Listed" />
-            <StatCard value="12+" label="Colleges" />
-            <StatCard value="98%" label="Trust Score" />
-          </div>
+            <LiquidGlassCarousel 
+              panelHeight={520}
+              background={isDark ? "rgba(17,17,17,0.8)" : "rgba(255,255,255,0.95)"}
+              entry={true}
+            />
+          </motion.div>
         </section>
 
         {/* ── Fresh Recommendations ── */}
