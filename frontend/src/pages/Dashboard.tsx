@@ -7,7 +7,7 @@ import {
   ChevronRight, Loader2, PackagePlus, FileText, Search,
   MoreHorizontal, Lock, X, ArrowRight,
   Heart, Inbox, PanelLeftClose, PanelLeftOpen, Menu,
-  CheckCircle2, XCircle, Clock, CheckCheck, ShoppingCart, IndianRupee
+  CheckCircle2, XCircle, Clock, CheckCheck
 } from "lucide-react"
 import { io } from "socket.io-client"
 import { useAuth } from "../contexts/AuthContext"
@@ -379,9 +379,8 @@ export default function Dashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [sidebarHovered, setSidebarHovered] = useState(false)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
-  const [notifPanelOpen, setNotifPanelOpen] = useState(false)
   const [notifications, setNotifications] = useState<DashNotification[]>([])
-  const [notifLoading, setNotifLoading] = useState(false)
+  const [, setNotifLoading] = useState(false)
   const [notifActionLoading, setNotifActionLoading] = useState<string | null>(null)
 
   const toggleGlobalWishlist = (id: string) => {
@@ -1352,7 +1351,7 @@ function WishlistSection({ wishlist, onToggleWishlist, }: {
 
 // ── Profile Section ───────────────────────────────────────────────────────────
 function ProfileSection({ user, isAuthenticated, onLogin, onNavigateToAccount }: {
-  user: { name: string; email: string; role: string; reputation?: number; profilePicture?: string } | null
+  user: { name: string; email: string; role: string; reputation?: number; profilePicture?: string | null } | null
   isAuthenticated: boolean
   onLogin: () => void
   onNavigateToAccount: () => void

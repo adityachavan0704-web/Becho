@@ -51,7 +51,6 @@ function pad(value: number) {
 export function LiquidGlassCarousel({
   items = liquidGlassCarouselDefaultItems,
   panelHeight = 450,
-  gap = 12,
   background = "#ffffff",
   entry = true,
   className,
@@ -61,7 +60,7 @@ export function LiquidGlassCarousel({
   const containerRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
-  const [animationComplete, setAnimationComplete] = useState(false);
+  const [, setAnimationComplete] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // Entry animation: rise from bottom → align → zoom
