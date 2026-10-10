@@ -8,12 +8,12 @@ import {
   Loader2, CheckCircle2, XCircle, Clock, User,
   ShoppingBag, ChevronRight, Bell, CheckCheck
 } from "lucide-react"
-import BechoLogo from "../components/BechoLogo"
 import { io } from "socket.io-client"
 import { useAuth } from "../contexts/AuthContext"
-import { useTheme } from "../contexts/ThemeContext"
 import { apiFetch } from "../lib/api"
 import { cn } from "../lib/utils"
+
+import SidebarLayout from "../components/SidebarLayout"
 
 const API_URL = (import.meta.env["VITE_API_URL"] as string) ?? "http://localhost:3000"
 
@@ -79,7 +79,6 @@ const notifTypeLabel: Record<NotifType, string> = {
 export default function InboxPage() {
   const { user, getAccessToken } = useAuth()
   const navigate = useNavigate()
-  const { isDark } = useTheme()
   const [tab, setTab] = useState<"received" | "sent">("received")
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [sentRequests, setSentRequests] = useState<SentRequest[]>([])
@@ -157,12 +156,8 @@ export default function InboxPage() {
   if (!user) return null
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}>
-      {/* Nav */}
-      <nav className="sticky top-0 z-40 backdrop-blur px-6 py-3.5 flex items-center gap-3"
-        style={{ backgroundColor: isDark ? "rgba(8,8,8,0.92)" : "rgba(220,210,196,0.96)", borderBottom: "var(--border-width) solid var(--border)" }}>
-        <BechoLogo size={28} showWordmark={true} wordmarkColor={isDark ? "white" : undefined} />
-      </nav>
+    <SidebarLayout>
+      <div className="h-full overflow-y-auto" style={{ backgroundColor: "var(--bg)", color: "var(--text)" }}>
 
       <div className="max-w-2xl mx-auto px-6 py-10">
         {/* Header */}
@@ -279,7 +274,8 @@ export default function InboxPage() {
           </AnimatePresence>
         )}
       </div>
-    </div>
+      </div>
+    </SidebarLayout>
   )
 }
 
