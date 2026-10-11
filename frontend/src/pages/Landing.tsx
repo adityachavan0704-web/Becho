@@ -69,7 +69,18 @@ export default function Landing() {
               " We sell what you want "
             </span>
           </div>
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-3">
+            <button
+              className="text-sm font-medium h-9 px-5 rounded-xl transition-all duration-200 hover:opacity-80"
+              style={{
+                border: "2px solid var(--border)",
+                background: "transparent",
+                color: "var(--text)",
+              }}
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </button>
             <Button className="text-sm font-medium h-9 px-6 rounded-xl shadow-lg flex items-center gap-2"
               style={{ border: "2px solid #000" }}
               onClick={() => navigate("/login")}>
@@ -78,6 +89,17 @@ export default function Landing() {
           </div>
           {/* Mobile */}
           <div className="flex md:hidden items-center gap-2">
+            <button
+              className="text-xs h-8 px-3 rounded-xl transition-all duration-200 hover:opacity-80"
+              style={{
+                border: "2px solid var(--border)",
+                background: "transparent",
+                color: "var(--text)",
+              }}
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </button>
             <Button className="text-xs h-8 px-4 rounded-xl shadow-md flex items-center gap-1.5"
               style={{ border: "2px solid #000" }}
               onClick={() => navigate("/login")}>
