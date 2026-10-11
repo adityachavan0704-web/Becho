@@ -5,11 +5,12 @@ import { Button } from "../components/ui/Button"
 import BechoLogo from "../components/BechoLogo"
 import { useTheme } from "../contexts/ThemeContext"
 import { LiquidGlassCarousel } from "../components/ui/liquid-glass-carousel.tsx"
+import TactileButton from "../components/ui/TactileButton"
 import {
-  ArrowRight,
   Star,
   Plus,
   Search,
+  ArrowRight,
 } from "lucide-react"
 
 // ─── Main Landing Page ────────────────────────────────────────────────────────
@@ -173,16 +174,26 @@ export default function Landing() {
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.6 }}
               className="mt-6"
             >
-              <Button size="lg" className="h-13 px-10 text-sm font-serif font-bold uppercase tracking-wide"
-                style={{
-                  border: "2px solid rgba(0,0,0,0.8)",
-                  fontWeight: "bold",
-                  boxShadow: "0 0 20px rgba(255,107,26,0.8), 0 0 40px rgba(255,107,26,0.6), 0 0 60px rgba(255,107,26,0.4), 0 8px 24px rgba(0,0,0,0.5)",
-                  textShadow: "0 0 12px rgba(255,107,26,0.6), 0 0 24px rgba(255,107,26,0.4)",
+              <TactileButton
+                label="Kharido"
+                padding="14px 48px"
+                rounded={100}
+                fill="#FF6B1A"
+                textColor="#FFFFFF"
+                hover={{ fill: "#e85d0f", textColor: "#FFFFFF" }}
+                base={{ color: "#9c3a00", offsetX: -1, offsetY: 8 }}
+                addIcon
+                icon={{ type: "symbol", symbol: "\u2192", side: "right", size: 18, color: "#FFFFFF", hoverColor: "#FFFFFF" }}
+                gap={10}
+                font={{
+                  fontFamily: "serif",
+                  fontSize: "15px",
+                  fontWeight: "700",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
                 }}
-                onClick={() => navigate("/dashboard")}>
-                Kharido <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+                onClick={() => navigate("/dashboard")}
+              />
             </motion.div>
           </div>
         </div>
