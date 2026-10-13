@@ -310,7 +310,12 @@ export default function ListingDetail() {
               ) : null}
 
               {isOwner && (
-                <Button variant="outline" size="sm" className="flex-1">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex-1"
+                  onClick={() => navigate(`/listings/${listing.id}/edit`)}
+                >
                   Edit Listing
                 </Button>
               )}

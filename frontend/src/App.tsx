@@ -68,6 +68,14 @@ function App() {
                 }
               />
               <Route
+                path="/listings/:id/edit"
+                element={
+                  <ProtectedRoute>
+                    <CreateListingPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/chat/:listingId"
                 element={
                   <ProtectedRoute>

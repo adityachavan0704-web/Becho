@@ -1,5 +1,5 @@
-import { useState, useCallback, useRef } from "react"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useState, useCallback, useRef, useEffect } from "react"
+import { useNavigate, useSearchParams, useParams } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Package, FileText, Upload, ChevronRight, ChevronLeft,
@@ -29,6 +29,7 @@ interface FormData {
   semester: string
   condition: string
   images: File[]
+  existingImages?: string[] // For edit mode
   file: File | null
   qrCode: File | null
 }
@@ -60,11 +61,13 @@ const T = {
 export default function CreateListingPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { id: editId } = useParams<{ id: string }>() // For edit mode
   const { getAccessToken } = useAuth()
   const { isDark } = useTheme()
+  const isEditMode = Boolean(editId)
 
   const defaultType = searchParams.get("type") === "ONLINE" ? "ONLINE" : "OFFLINE"
-  const startStep: Step = searchParams.get("type") ? 2 : 1
+  const startStep: Step = searchParams.get("type") || isEditMode ? 2 : 1
 
   const [step, setStep] = useState<Step>(startStep)
   const [form, setForm] = useState<FormData>({
@@ -78,16 +81,62 @@ export default function CreateListingPage() {
     semester: "",
     condition: "Good",
     images: [],
+    existingImages: [],
     file: null,
     qrCode: null,
   })
   const [isDragging, setIsDragging] = useState(false)
   const [isDraggingFile, setIsDraggingFile] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoading, setIsLoading] = useState(isEditMode)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
   const imageDrop = useRef<HTMLDivElement>(null)
+
+  // Load existing listing data in edit mode
+  useEffect(() => {
+    if (!isEditMode || !editId) return
+    void (async () => {
+      setIsLoading(true)
+      try {
+        const res = await fetch(`${API_URL}/api/listings/${editId}`)
+        if (!res.ok) throw new Error("Failed to load listing")
+        const data = await res.json() as { listing: {
+          type: "ONLINE" | "OFFLINE"
+          title: string
+          description: string
+          category: string
+          price: number
+          isFree: boolean
+          subject?: string
+          semester?: number
+          condition?: string
+          images: string[]
+        }}
+        const listing = data.listing
+        setForm({
+          type: listing.type,
+          title: listing.title,
+          description: listing.description,
+          category: listing.category,
+          price: listing.isFree ? "" : String(listing.price),
+          isFree: listing.isFree,
+          subject: listing.subject || "",
+          semester: listing.semester ? String(listing.semester) : "",
+          condition: listing.condition || "Good",
+          images: [],
+          existingImages: listing.images,
+          file: null,
+          qrCode: null,
+        })
+      } catch (err) {
+        setError("Failed to load listing data")
+      } finally {
+        setIsLoading(false)
+      }
+    })()
+  }, [isEditMode, editId])
 
   const set = (key: keyof FormData, val: unknown) =>
     setForm((f) => ({ ...f, [key]: val }))
@@ -127,20 +176,29 @@ export default function CreateListingPage() {
       form.images.forEach((img) => fd.append("images", img))
       if (form.file) fd.append("file", form.file)
       if (form.qrCode) fd.append("qrCode", form.qrCode)
+      // In edit mode, keep existing images
+      if (isEditMode && form.existingImages) {
+        fd.append("existingImages", JSON.stringify(form.existingImages))
+      }
 
-      const res = await fetch(`${API_URL}/api/listings`, {
-        method: "POST",
+      const url = isEditMode 
+        ? `${API_URL}/api/listings/${editId}` 
+        : `${API_URL}/api/listings`
+      const method = isEditMode ? "PUT" : "POST"
+
+      const res = await fetch(url, {
+        method,
         headers: { Authorization: `Bearer ${getAccessToken()}` },
         body: fd,
       })
 
       if (!res.ok) {
         const data = await res.json() as { error?: string }
-        throw new Error(data.error ?? "Failed to create listing")
+        throw new Error(data.error ?? `Failed to ${isEditMode ? 'update' : 'create'} listing`)
       }
 
       setSuccess(true)
-      setTimeout(() => navigate("/dashboard"), 2800)
+      setTimeout(() => navigate(isEditMode ? `/listings/${editId}` : "/dashboard"), 2800)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong")
     } finally {
@@ -173,6 +231,18 @@ export default function CreateListingPage() {
     e.currentTarget.style.boxShadow = "none"
   }
 
+  // ── Loading Screen (Edit Mode) ────────────────────────────────────────────────
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: T.bg }}>
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-[#FF6B1A]" />
+          <p className="text-sm" style={{ color: T.muted }}>Loading listing data...</p>
+        </div>
+      </div>
+    )
+  }
+
   // ── Success Screen ───────────────────────────────────────────────────────────
   if (success) {
     return (
@@ -196,8 +266,14 @@ export default function CreateListingPage() {
             </div>
           </div>
           <div>
-            <p className="text-3xl font-bold mb-2" style={{ color: T.text }}>Listing Published!</p>
-            <p className="text-sm" style={{ color: T.muted }}>Your listing is now live on Becho marketplace.</p>
+            <p className="text-3xl font-bold mb-2" style={{ color: T.text }}>
+              {isEditMode ? "Listing Updated!" : "Listing Published!"}
+            </p>
+            <p className="text-sm" style={{ color: T.muted }}>
+              {isEditMode 
+                ? "Your listing has been successfully updated." 
+                : "Your listing is now live on Becho marketplace."}
+            </p>
           </div>
           <motion.div
             initial={{ width: 0 }}
@@ -250,7 +326,9 @@ export default function CreateListingPage() {
 
         {/* Heading */}
         <div className="px-5 pt-6 pb-8">
-          <h1 className="text-2xl font-bold mb-1" style={{ color: T.text }}>Create a Listing</h1>
+          <h1 className="text-2xl font-bold mb-1" style={{ color: T.text }}>
+            {isEditMode ? "Edit Listing" : "Create a Listing"}
+          </h1>
           <p className="text-sm" style={{ color: T.muted }}>
             {form.type === "ONLINE" ? "Online / Digital resource" : "Hardware / Physical item"}
           </p>
