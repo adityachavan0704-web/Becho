@@ -499,8 +499,10 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    if (location.hash === "#listings") setActiveSection("listings")
-    else if (location.hash === "#browse") setActiveSection("browse")
+    const hash = location.hash.replace("#", "") as ActiveSection
+    if (["overview", "listings", "browse", "messages", "wishlist", "profile"].includes(hash)) {
+      setActiveSection(hash)
+    }
   }, [location.hash])
 
   const handleLogout = () => { void logout(); navigate("/", { replace: true }) }
@@ -538,48 +540,18 @@ export default function Dashboard() {
             <item.icon className="h-4 w-4 flex-shrink-0" />
             {!compact && item.label}
             {/* Show unread badge on Messages item */}
-            {item.id === "messages" && msgUnread > 0 && !compact && (
+            {item.id === "messages" && (msgUnread + inboxUnread) > 0 && !compact && (
               <span className="ml-auto text-[10px] font-bold rounded-full px-1.5 py-0.5"
                 style={{ background: "rgba(232,97,28,0.85)", color: "#fff" }}>
-                {msgUnread > 9 ? "9+" : msgUnread}
+                {(msgUnread + inboxUnread) > 9 ? "9+" : (msgUnread + inboxUnread)}
               </span>
             )}
-            {item.id === "messages" && msgUnread > 0 && compact && (
+            {item.id === "messages" && (msgUnread + inboxUnread) > 0 && compact && (
               <span className="absolute top-1 right-1 w-2 h-2 rounded-full"
                 style={{ background: "rgba(232,97,28,0.85)" }} />
             )}
           </button>
         ))}
-
-        {/* Inbox link */}
-        <button
-          id="dashboard-inbox-btn"
-          onClick={() => { navigate("/inbox"); setMobileSidebarOpen(false) }}
-          title={compact ? "Inbox" : undefined}
-          className="w-full flex items-center gap-3 rounded-xl text-sm font-medium transition-all duration-200 relative"
-          style={{
-            ...navInactive,
-            padding: compact ? "10px" : "10px 16px",
-            justifyContent: compact ? "center" : undefined,
-          }}
-        >
-          <Inbox className="h-4 w-4 flex-shrink-0" />
-          {!compact && (
-            <>
-              Inbox
-              {inboxUnread > 0 && (
-                <span className="ml-auto text-[10px] font-bold rounded-full px-1.5 py-0.5"
-                  style={{ background: "rgba(232,97,28,0.85)", color: "#fff" }}>
-                  {inboxUnread > 9 ? "9+" : inboxUnread}
-                </span>
-              )}
-            </>
-          )}
-          {compact && inboxUnread > 0 && (
-            <span className="absolute top-1 right-1 w-2 h-2 rounded-full"
-              style={{ background: "rgba(232,97,28,0.85)" }} />
-          )}
-        </button>
 
         {/* Quick upload */}
         {!compact && (

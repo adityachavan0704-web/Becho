@@ -57,11 +57,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
 
   const handleNavClick = (id: string) => {
     setMobileSidebarOpen(false)
-    if (id === "messages") {
-      navigate("/inbox")
-    } else {
-      navigate(`/dashboard#${id}`)
-    }
+    navigate(`/dashboard#${id}`)
   }
 
   const navActive = { background: "rgba(232,97,28,0.12)", color: T.text }
